@@ -1,4 +1,5 @@
 from app import db
+import datetime
 import jwt
 
 class User(UserMixin, db.Model, Serializer):
@@ -29,12 +30,14 @@ class User(UserMixin, db.Model, Serializer):
     def super(self):
         return self.email=="nandujkishor@gmail.com" or self.email=="aswanth366@gmail.com"
 
-    def encode_auth_token(self, user_id):
+    def encode_auth_token(self):
+        # Params: None
+        # Returns: JWT
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=10, seconds=0),
                 'iat': datetime.datetime.utcnow(),
-                'sub': user_id
+                'sub': vid
             }
             return jwt.encode(
                 payload,
@@ -45,13 +48,26 @@ class User(UserMixin, db.Model, Serializer):
             # Setup emailing to email the occured exception
             return e
 
+    @staticmethod
+    def decode_auth_token(auth_token):
+        # Params: JWT
+        # Returns: UserID / ErrorID (int)
+        try:
+            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 1
+            # Signature expired. Need to login again.
+        except jwt.InvalidTokenError:
+            return 2
+            # Invalid token. Need to login again.
+
 class College(db.Model, Serializer):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     # caid = db.Column(db.Integer)
-    district = db.Column()
-    state = db.
-    # Campus Ambassador user ID for the institution
+    district = db.Column(db.String(50))
+    state = db.Column(db.String(50))
 
     def __repr__(self):
         return '<College {}>'.format(self.name)
