@@ -2,6 +2,7 @@ import os
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
+from app.models import User
 from config import Config
 # from app.forms import 
 # from app.models import 
@@ -75,3 +76,36 @@ class user_auth(Resource):
                 # Send mail on the error
                 return jsonify(responseObject), 401
         return "Other worldly!"
+
+@farer.route('/user/')
+class userdata(Resource):
+    def get(self):
+        auth_header = request.headers.get('Authorization')
+        if auth_header:
+            auth_token = auth_header.split(" ")[1]
+        else:
+            auth_token = ''
+        if auth_token:
+            resp = User.decode_auth_token(auth_token)
+            if not isinstance(resp, str):
+                u = User.query.filter_by(id=resp).first()
+                responseObject = {
+                    'status': 'success',
+                    'data': {
+                        'user_id': user.id,
+                        'email': user.email,
+                        'time_created': user.time_created
+                    }
+                }
+                return make_response(jsonify(responseObject)), 200
+            responseObject = {
+                'status': 'fail',
+                'message': resp
+            }
+            return make_response(jsonify(responseObject)), 401
+        else:
+            responseObject = {
+                'status': 'fail',
+                'message': 'Provide a valid auth token.'
+            }
+            return make_response(jsonify(responseObject)), 401
