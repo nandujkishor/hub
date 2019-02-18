@@ -190,6 +190,8 @@ class Registrations(db.Model):
     # Event category (Workshop, ...)
     eid = db.Column(db.Integer)
     #EventID
+    tid = db.Column(db.Integer)
+    #TeamID
     pay_completed = db.Column(db.Boolean)
     # 0 if not paid, 1 if paid.
 # Need to rethink registrations
