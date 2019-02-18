@@ -123,6 +123,7 @@ class Workshops(db.Model):
     title = db.Column(db.String(200), nullable=False)
     plink = db.Column(db.String(30))
     # Permalink (extension only)
+    short = db.Column(db.String(200))
     about = db.Column(db.String(3000)) #Content in markdown
     # about on the workshop (1000 char)
     prereq = db.Column(db.String(3000)) #Content in markdown
@@ -180,6 +181,7 @@ class Contests(db.Model):
     # For internal use - expenses
     incharge = db.Column(db.Integer)
 
+<<<<<<< Updated upstream
 class Registrations(db.Model):
     regid = db.Column(db.Integer, primary_key=True)
     # Acts as the cart data + registrations
@@ -191,15 +193,28 @@ class Registrations(db.Model):
     #EventID
     pay_completed = db.Column(db.Boolean)
     # 0 if not paid, 1 if paid.
+=======
+# class RegLog(db.Model):
+#     regid = db.Column(db.Integer, nullable=False)
+#     # Acts as the cart data + registrations
+#     vid = db.Column(db.Integer,primary_key=True)
+#     #UserID
+#     cat = db.Column(db.Integer, primary_key=True)
+#     # Event category (Workshop, ...)
+#     eid = db.Column(db.Integer, primary_key=True)
+#     #EventID
+#     pay_completed = db.Column(db.Boolean)
+#     # 0 if not paid, 1 if paid.
+>>>>>>> Stashed changes
 # Need to rethink registrations
 
 class EventDLog(db.Model):
     # Logs Event dashboard changes
     # 1 for addition of a new event, 2 for edit, 3 for deletion
-    vid = db.Column(db.Integer,primary_key=True) 
+    vid = db.Column(db.Integer,primary_key=True)
     #UserID
     cat = db.Column(db.Integer, primary_key=True)
     # Event category (Workshop, ...)
-    eid = db.Column(db.Integer, primary_key=True) 
+    eid = db.Column(db.Integer, primary_key=True)
     #EventID
     action = db.Column(db.Integer)
