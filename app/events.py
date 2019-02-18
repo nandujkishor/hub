@@ -7,9 +7,9 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 
-events = api.namespace('events', description="Event management")
+events = api.namespace('events', description="Events management")
 
-@events.route('/workshops/')
+@events.route('/workshops')
 class events_workshops(Resource):
 
     # API Params: JSON([Standard])
@@ -19,7 +19,17 @@ class events_workshops(Resource):
     @api.doc('List of all Workshops')
     def get(self):
         workshops = Workshops.query.all()
-        return jsonify(Workshops.serialize_list(workshops))
+        wlist = []
+        for w in workshops:
+            wlist.append({
+                'id':w.id,
+                'title':w.title,
+                'plink':w.plink,
+                'short':w.short,
+                'department':w.department,
+                'fee':w.fee,
+            })
+        return jsonify(workshops)
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
@@ -29,8 +39,8 @@ class events_workshops(Resource):
     def post(self):
         data = request.get_json()
         workshop = Workshops(title=data.get('title'),
-                    about=data.get('description'),
-                    company=data.get('compname'),
+                    about=data.get('about'),
+                    company=data.get('company'),
                     fee=data.get('fee'),
                     instructor=data.get('instructor'),
                     abins = data.get('abins')
@@ -60,7 +70,8 @@ class events_workshops_indv(Resource):
         data = request.get_json()
         workshop = Workshops.query.filter_by(id=id).first()
         workshop.title=data.get('title')
-        workshop.about=data.get('discription')
+        workshop.about=data.get('about')
+        workshop.company=data.get('company')
         workshop.fee=data.get('fee')
         workshop.instructor=data.get('instructor')
         workshop.abins=data.get('abins')
