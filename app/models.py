@@ -54,13 +54,39 @@ class User(UserMixin, db.Model, Serializer):
         # Returns: UserID / ErrorID (int)
         try:
             payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
-            return payload['sub']
+            is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
+            if is_blacklisted_token:
+                return 'Token blacklisted. Please log in again.'
+            else:
+                return payload['sub']
         except jwt.ExpiredSignatureError:
             return 1
             # Signature expired. Need to login again.
         except jwt.InvalidTokenError:
             return 2
             # Invalid token. Need to login again.
+
+class BlacklistToken(db.Model):
+    # Token Model for storing JWT tokens
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    token = db.Column(db.String(500), unique=True, nullable=False)
+    blacklisted_on = db.Column(db.DateTime, nullable=False)
+
+    def __init__(self, token):
+        self.token = token
+        self.blacklisted_on = datetime.datetime.now()
+
+    def __repr__(self):
+        return '<id: token: {}'.format(self.token)
+
+    @staticmethod
+    def check_blacklist(auth_token):
+        # check whether auth token has been blacklisted
+        res = BlacklistToken.query.filter_by(token=str(auth_token)).first()
+        if res:
+            return True  
+        else:
+            return False
 
 class College(db.Model, Serializer):
     id = db.Column(db.Integer, primary_key=True)
@@ -126,10 +152,19 @@ class Workshops(db.Model, Serializer):
     incharge = db.Column(db.Integer)
     # V-ID of the internal person incharge
     support = db.Column(db.Integer)
+
+    # Data for timings and count
+    d1stime = db.Column(db.DateTime)
+    d1enime = db.Column(db.DateTime)
+    d2stime = db.Column(db.DateTime)
+    d2enime = db.Column(db.DateTime)
+    d3stime = db.Column(db.DateTime)
+    d3enime = db.Column(db.DateTime)
+    seats = db.Column(db.Integer)
+
     # V-ID of the support person assigned to the event
     pub = db.Column(db.Boolean, default=False)
     # Publish
-# Workshop schedule addition needed - slot management with timings, seats available and so on.
 # Need to build a seperate schema to manage expenses. Each row currosponds to certain payment, with which event for.
 # Need to build a tag management system, to associate events in general.
 
@@ -149,17 +184,17 @@ class Contests(db.Model):
     # For internal use - expenses
     incharge = db.Column(db.Integer)
 
-# class RegLog(db.Model):
-#     regid = db.Column(db.Integer, nullable=False)
-#     # Acts as the cart data + registrations
-#     vid = db.Column(db.Integer,primary_key=True) 
-#     #UserID
-#     cat = db.Column(db.Integer, primary_key=True)
-#     # Event category (Workshop, ...)
-#     eid = db.Column(db.Integer, primary_key=True) 
-#     #EventID
-#     pay_completed = db.Column(db.Boolean)
-#     # 0 if not paid, 1 if paid.
+class Registrations(db.Model):
+    regid = db.Column(db.Integer, primary_key=True)
+    # Acts as the cart data + registrations
+    vid = db.Column(db.Integer)
+    #UserID
+    cat = db.Column(db.Integer)
+    # Event category (Workshop, ...)
+    eid = db.Column(db.Integer)
+    #EventID
+    pay_completed = db.Column(db.Boolean)
+    # 0 if not paid, 1 if paid.
 # Need to rethink registrations
 
 class EventDLog(db.Model):

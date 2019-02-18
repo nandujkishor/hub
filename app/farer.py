@@ -4,8 +4,8 @@ from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.models import User
 from config import Config
-# from app.forms import 
-# from app.models import 
+# from app.forms import
+# from app.models import
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -13,6 +13,14 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 
 farer = api.namespace('farer', description="Farer management")
+
+def auth_token(request):
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        auth_token = auth_header.split(" ")[1]
+    else:
+        auth_token = ''
+    return auth_token
 
 @farer.route('/auth/user/')
 class user_auth(Resource):
@@ -77,14 +85,12 @@ class user_auth(Resource):
                 return jsonify(responseObject), 401
         return "Other worldly!"
 
-@farer.route('/user/')
-class userdata(Resource):
+    # API Params: JSON(Auth header, [Standard])
+    # Standard: IP, Sender ID
+    # Returns: User info
+    # Provides user information based on the header provided
     def get(self):
-        auth_header = request.headers.get('Authorization')
-        if auth_header:
-            auth_token = auth_header.split(" ")[1]
-        else:
-            auth_token = ''
+        auth_token = auth_token(request)
         if auth_token:
             resp = User.decode_auth_token(auth_token)
             if not isinstance(resp, str):
@@ -92,20 +98,20 @@ class userdata(Resource):
                 responseObject = {
                     'status': 'success',
                     'data': {
-                        'user_id': user.id,
-                        'email': user.email,
-                        'time_created': user.time_created
+                        'user_id': u.id,
+                        'email': u.email,
+                        'time_created': u.time_created
                     }
                 }
-                return make_response(jsonify(responseObject)), 200
+                return jsonify(responseObject), 200
             responseObject = {
                 'status': 'fail',
                 'message': resp
             }
-            return make_response(jsonify(responseObject)), 401
+            return jsonify(responseObject), 401
         else:
             responseObject = {
                 'status': 'fail',
                 'message': 'Provide a valid auth token.'
             }
-            return make_response(jsonify(responseObject)), 401
+            return jsonify(responseObject), 401
