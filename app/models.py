@@ -84,7 +84,7 @@ class BlacklistToken(db.Model):
         # check whether auth token has been blacklisted
         res = BlacklistToken.query.filter_by(token=str(auth_token)).first()
         if res:
-            return True  
+            return True
         else:
             return False
 
@@ -136,9 +136,9 @@ class Workshops(db.Model):
     # About the lead instructor
     vidurl = db.Column(db.String(400))
     # URL for video on the workshop, if any, from Youtube, Vimeo or any other service.
-    picture1 = db.Column(db.String(200))
-    picture2 = db.Column(db.String(200))
-    picture3 = db.Column(db.String(200))
+    img1 = db.Column(db.String(200))
+    img2 = db.Column(db.String(200))
+    img3 = db.Column(db.String(200))
     lead = db.Column(db.String(30))
     company = db.Column(db.String(30))
     # Conducting company, if any
@@ -149,7 +149,6 @@ class Workshops(db.Model):
     incharge = db.Column(db.Integer)
     # V-ID of the internal person incharge
     support = db.Column(db.Integer)
-
     # Data for timings and count
     d1stime = db.Column(db.DateTime)
     d1enime = db.Column(db.DateTime)
@@ -171,6 +170,7 @@ class Contests(db.Model):
     img1 = db.Column(db.String(300))
     img2 = db.Column(db.String(300))
     img2 = db.Column(db.String(300))
+    short = db.Column(db.String(200))
     about = db.Column(db.String(6000), nullable=False)
     rules = db.Column(db.String(6000))
     prereq = db.Column(db.String(6000))

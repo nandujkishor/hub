@@ -45,12 +45,25 @@ class events_workshops(Resource):
         'title':'Title',
         'plink':'Permanent Link',
         'short':'Short Description',
+        'about':'Long Description in md',
+        'prereq':'Prerequisites in md',
+        'department':'Department',
+        'theme':'Theme',
         'instructor':'Instructor Name',
         'abins':'About the Lead Instructor',
-        'department':'Department',
-        'fee':'Workshop Fee',
+        'vidurl':'Video URL',
+        'company':'Company Name',
+        'lead':'Company Lead',
+        'contact':'Contact No',
         'incharge':'Incharge V-ID',
-            })
+        'support':'Supporter V-ID',
+        'fee':'Workshop Fee',
+        'seats':'No of Seats',
+        'companylogo':'Company Logo location',
+        'img1':'Image 1 location',
+        'img2':'Image 2 location',
+        'img3':'Image 3 location',
+        })
     def post(self):
         try:
             data = request.get_json()
@@ -120,12 +133,25 @@ class events_workshops_indv(Resource):
         'title':'Title',
         'plink':'Permanent Link',
         'short':'Short Description',
+        'about':'Long Description in md',
+        'prereq':'Prerequisites in md',
+        'department':'Department',
+        'theme':'Theme',
         'instructor':'Instructor Name',
         'abins':'About the Lead Instructor',
-        'department':'Department',
-        'fee':'Workshop Fee',
+        'vidurl':'Video URL',
+        'company':'Company Name',
+        'lead':'Company Lead',
+        'contact':'Contact No',
         'incharge':'Incharge V-ID',
-            })
+        'support':'Supporter V-ID',
+        'fee':'Workshop Fee',
+        'seats':'No of Seats',
+        'companylogo':'Company Logo location',
+        'img1':'Image 1 location',
+        'img2':'Image 2 location',
+        'img3':'Image 3 location',
+        })
     def put(self, id):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
@@ -160,7 +186,6 @@ class events_workshops_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Delete Workshop
-    @api.doc('Delete Workshop')
     def delete(self, id):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
@@ -185,15 +210,199 @@ class events_workshops_indv(Resource):
             }
         return jsonify(responseObject)
 
+@events.route('/contests')
+class events_contests(Resource):
+    # API Params: JSON([Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON Array
+    # Send list of all contests
+    def get(self):
+        try:
+            contests = Contests.query.all()
+            responseObject = []
+            for contest in contests:
+                responseObject.append({
+                    'id':contest.id,
+                    'title':contest.title,
+                    'short':contest.short,
+                    'pworth':contest.pworth,
+                    'team_limit':contest.team_limit,
+                    'fee':contest.fee
+                })
+        except Exception as e:
+                print(e)
+                # Send email
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+                }
+        return jsonify(responseObject)
 
-@events.route('/talks/')
+    # API Params: JSON([Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON Status
+    # Add Contest
+    @api.doc(params={
+        'title':'Title',
+        'short':'Short Description',
+        'about':'Long Description in md',
+        'rules':'Rules',
+        'prereq':'Prerequisite in md',
+        'organiser':'Organiser Name',
+        'prize1':'Prize 1',
+        'prize2':'Prize 2',
+        'prize3':'Prize 3',
+        'pworth':'Total Prize Worth',
+        'fee':'Entry Fee',
+        'team_limit':'No of Team Members',
+        'expense':'Expenses for internal use',
+        'incharge':'Incharge V-ID',
+    })
+    def post(self):
+        try:
+            data = request.get_json()
+            contest = Contests(
+                title=data.get('title'),
+                short=data.get('short'),
+                pworth=data.get('pworth'),
+                team_limit=data.get('team_limit'),
+                fee=data.get('fee'),
+                incharge=data.get('incharge')
+            )
+            db.session.add(contest)
+            db.session.commit()
+            responseObject={
+                'status':'success',
+                'message':' Contest Details Succefully Posted'
+            }
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured'
+            }
+        return jsonify(responseObject)
+
+@events.route('/contests/<int:id>')
+class events_contests_indv(Resource):
+
+    # API Params: JSON([Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON Array
+    # Send details of the Contest
+    def get(self, id):
+        try:
+            contest = Contests.query.filter_by(id=id).first()
+            if contest is not None:
+                responseObject = {
+                    'title':contest.title,
+                    'short':contest.short,
+                    'pworth':contest.pworth,
+                    'team_limit':contest.team_limit,
+                    'fee':contest.fee,
+                    'incharge':contest.incharge
+                }
+            else:
+                responseObject ={
+                    'status':'fail',
+                    'message':'invalid contest id'
+                }
+        except Exception as e:
+                print(e)
+                # Send email
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+                }
+        return jsonify(responseObject)
+
+    # API Params: JSON([Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON Status Code
+    # Edit details of the Workshop
+    @api.doc(params={
+        'title':'Title',
+        'short':'Short Description',
+        'about':'Long Description in md',
+        'rules':'Rules',
+        'prereq':'Prerequisite in md',
+        'organiser':'Organiser Name',
+        'prize1':'Prize 1',
+        'prize2':'Prize 2',
+        'prize3':'Prize 3',
+        'pworth':'Total Prize Worth',
+        'fee':'Entry Fee',
+        'team_limit':'No of Team Members',
+        'expense':'Expenses for internal use',
+        'incharge':'Incharge V-ID',
+    })
+    def put(self, id):
+        try:
+            contest = Contests.query.filter_by(id=id).first()
+            if contest is not None:
+                data = request.get_json()
+                contest.title=data.get('title')
+                contest.short=data.get('short')
+                contest.pworth=data.get('pworth')
+                contest.fee=data.get('fee')
+                contest.incharge=data.get('incharge')
+                contest.team_limit=data.get('team_limit')
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'Contest details edited successfully'
+                }
+            else:
+                responseObject = {
+                    'status':'failed',
+                    'message':'invalid workshop id'
+                }
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+            }
+        return jsonify(responseObject)
+
+    # API Params: JSON([Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON Status Code
+    # Delete Workshop
+    @api.doc('Delete Contest')
+    def delete(self, id):
+        try:
+            contest = Contests.query.filter_by(id=id).first()
+            if contest is not None:
+                db.session.delete(contest)
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'contest deleted'
+                }
+            else:
+                responseObject = {
+                    'status':'failed',
+                    'message':'Invalid contest id'
+                }
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+            }
+        return jsonify(responseObject)
+
+@events.route('/talks')
 class events_talks(Resource):
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Array
     # Send list of all Talks
-    @api.doc('List of all talks')
     def get(self):
         talks = Talks.query.all()
         return jsonify(Talks.serialize_list(talks))
@@ -251,105 +460,6 @@ class events_talks_indv(Resource):
         talk = Talks.query.filter_by(id=id).first()
         if talk is not None:
             db.session.delete(talk)
-            db.session.commit()
-            return jsonify(200)
-
-        return jsonify(406)
-
-@events.route('/contests/')
-class events_contests(Resource):
-    # API Params: JSON([Standard])
-    # Standard: IP, Sender ID
-    # Returns: JSON Array
-    # Send list of all contests
-    @api.doc('List of all Contests')
-    def get(self):
-        contests = Contests.query.all()
-        return jsonify(Contests.serialize_list(contest))
-
-    # API Params: JSON([Standard])
-    # Standard: IP, Sender ID
-    # Returns: JSON Status
-    # Add Talk
-    @api.doc('Contest addition')
-    def post(self):
-        data = request.get_json()
-        contest = Contests(title=data.get('title'),
-                    about=data.get('description'),
-                    task=data.get('task'),
-                    pricing=data.get('pricing'),
-                    team_limit=data.get('team_limit'),
-                    expense=data.get('expense'),
-                    incharge=data.get('incharge')
-                    )
-        db.session.add(contest)
-        db.session.commit()
-        print(contest)
-        return jsonify(201)
-
-@events.route('/contests/<int:id>/')
-class events_contests_indv(Resource):
-
-    # API Params: JSON([Standard])
-    # Standard: IP, Sender ID
-    # Returns: JSON Array
-    # Send details of the Contest
-    @api.doc('Detials of the Contest')
-    def get(self, id):
-        contest = Contests.query.filter_by(id=id).first()
-        c = {
-
-        }
-        return jsonify(contest.serialize())
-
-    # API Params: JSON([Standard])
-    # Standard: IP, Sender ID
-    # Returns: JSON Status Code
-    # Edit details of the Contest
-    @api.doc('Edit details of the Contest')
-    def put(self, id):
-        try:
-            data=request.get_json()
-            print("Some data: ", data)
-            if data is not None:
-                contest = Contests.query.filter_by(id=id).first()
-                contest.title=data.get('title')
-                contest.about=data.get('description')
-                contest.task=data.get('task')
-                contest.pricing=data.get('pricing')
-                contest.team_limit=data.get('team_limit')
-                contest.expense=data.get('expense')
-                contest.incharge=data.get('incharge')
-                db.session.commit()
-                responseObject = {
-                    'status':'success',
-                    'message':'Details successfully modified'
-                }
-                return jsonify(responseObject), 201
-            else:
-                responseObject = {
-                    'status':'fail',
-                    'message':'Invalid data'
-                }
-                return jsonify(responseObject), 401
-        except Exception as e:
-            print(e)
-            # Send email
-            responseObject = {
-                'status':'fail',
-                'message':'Error occured'
-            }
-            return jsonify(responseObject), 401
-
-    # API Params: JSON([Standard])
-    # Standard: IP, Sender ID
-    # Returns: JSON Status Code
-    # Delete Contest
-    @api.doc('Delete Contest')
-    def delete(self, id):
-        contest = Contests.query.filter_by(id=id).first()
-        if talk is not None:
-            db.session.delete(contest)
             db.session.commit()
             return jsonify(200)
 
