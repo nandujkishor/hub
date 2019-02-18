@@ -202,6 +202,9 @@ class events_contests_indv(Resource):
     @api.doc('Detials of the Contest')
     def get(self, id):
         contest = Contests.query.filter_by(id=id).first()
+        c = {
+            
+        }
         return jsonify(contest.serialize())
 
     # API Params: JSON([Standard])
@@ -210,17 +213,38 @@ class events_contests_indv(Resource):
     # Edit details of the Contest
     @api.doc('Edit details of the Contest')
     def put(self, id):
-        data=request.get_json()
-        contest = Contests.query.filter_by(id=id).first()
-        contest.title=data.get('title')
-        contest.about=data.get('description')
-        contest.task=data.get('task')
-        contest.pricing=data.get('pricing')
-        contest.team_limit=data.get('team_limit')
-        contest.expense=data.get('expense')
-        contest.incharge=data.get('incharge')
-        db.session.commit()
-        return jsonify(200)
+        try:
+            data=request.get_json()
+            print("Some data: ", data)
+            if data is not None:
+                contest = Contests.query.filter_by(id=id).first()
+                contest.title=data.get('title')
+                contest.about=data.get('description')
+                contest.task=data.get('task')
+                contest.pricing=data.get('pricing')
+                contest.team_limit=data.get('team_limit')
+                contest.expense=data.get('expense')
+                contest.incharge=data.get('incharge')
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'Details successfully modified'
+                }
+                return jsonify(responseObject), 201
+            else:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Invalid data'
+                }
+                return jsonify(responseObject), 401
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured'
+            }
+            return jsonify(responseObject), 401
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
