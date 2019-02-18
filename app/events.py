@@ -320,7 +320,7 @@ class events_contests_indv(Resource):
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
-    # Edit details of the Workshop
+    # Edit details of the Contest
     @api.doc(params={
         'title':'Title',
         'short':'Short Description',
@@ -370,8 +370,7 @@ class events_contests_indv(Resource):
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
-    # Delete Workshop
-    @api.doc('Delete Contest')
+    # Delete Contest
     def delete(self, id):
         try:
             contest = Contests.query.filter_by(id=id).first()
@@ -401,66 +400,177 @@ class events_talks(Resource):
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
-    # Returns: JSON Array
-    # Send list of all Talks
+    # Returns: JSON Status
+    # List all the Talks
     def get(self):
-        talks = Talks.query.all()
-        return jsonify(Talks.serialize_list(talks))
+        try:
+            talks = Talks.query.all()
+            responseObject = []
+            for talk in talks:
+                responseObject.append({
+                    'id':talk.id,
+                    'title':talk.title,
+                    'person':talk.person,
+                    'fee':talk.fee
+                })
+        except Exception as e:
+                print(e)
+                # Send email
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+                }
+        return jsonify(responseObject)
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
-    # Returns: JSON Status Code
+    # Returns: JSON Status
     # Add Talk
-    @api.doc('Talk addition')
+    @api.doc(params={
+        'id':'Talk ID',
+        'plink':'Permanent Link',
+        'short':'Short Description',
+        'about':'About Description',
+        'person':'Name of the Person',
+        'desig':'Designation',
+        'contact':'Contact No',
+        'picurl':'Picture of the Talk',
+        'ppicurlsm':'Picture of the person small',
+        'ppicurllr':'Picture of the person large',
+        'fee':'fee for the talk',
+        'incharge':'Incharge V-ID'
+    })
     def post(self):
-        data = request.get_json()
-        talk = Talks(title=data.get('title'),
-                    descr=data.get('description'),
-                    person=data.get('person'),
-                    amt=data.get('amount')
-                    )
-        db.session.add(talk)
-        db.session.commit()
-        print(talk)
-        return jsonify(201)
+        try:
+            data = request.get_json()
+            talk = Talks(
+                title=data.get('title'),
+                short=data.get('short'),
+                person=data.get('person'),
+                desig=data.get('desig'),
+                fee=data.get('fee'),
+                incharge=data.get('incharge')
+            )
+            db.session.add(talk)
+            db.session.commit()
+            responseObject={
+                'status':'success',
+                'message':' Talk Details Succefully Posted'
+            }
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured'
+            }
+        return jsonify(responseObject)
 
-@events.route('/talks/<int:id>/')
+@events.route('/talks/<int:id>')
 class events_talks_indv(Resource):
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Array
     # Send details of the Talk
-    @api.doc('Detials of the talk')
     def get(self, id):
-        talk = Talks.query.filter_by(id=id).first()
-        return jsonify(talk.serialize())
+        try:
+            talk = Talks.query.filter_by(id=id).first()
+            if talk is not None:
+                responseObject = {
+                    'title':talk.title,
+                    'short':talk.short,
+                    'person':talk.person,
+                    'desig':talk.desig,
+                    'fee':talk.fee,
+                    'incharge':talk.incharge,
+                }
+            else:
+                responseObject ={
+                    'status':'fail',
+                    'message':'invalid contest id'
+                }
+        except Exception as e:
+                print(e)
+                # Send email
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+                }
+        return jsonify(responseObject)
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Edit details of the Talk
-    @api.doc('Edit details of the Talk')
+    @api.doc(params={
+        'id':'Talk ID',
+        'plink':'Permanent Link',
+        'short':'Short Description',
+        'about':'About Description',
+        'person':'Name of the Person',
+        'desig':'Designation',
+        'contact':'Contact No',
+        'picurl':'Picture of the Talk',
+        'ppicurlsm':'Picture of the person small',
+        'ppicurllr':'Picture of the person large',
+        'fee':'fee for the talk',
+        'incharge':'Incharge V-ID'
+    })
     def put(self, id):
-        data=request.get_json()
-        talk = Talks.query.filter_by(id=id).first()
-        talk.title=data.get('title')
-        talk.descr=data.get('description')
-        talk.person=data.get('person')
-        talk.amt=data.get('amount')
-        db.session.commit()
-        return jsonify(200)
+        try:
+            talk = Talks.query.filter_by(id=id).first()
+            if talk is not None:
+                data = request.get_json()
+                talk.title=talk.get('title')
+                talk.short=talk.get('short')
+                talk.person=talk.get('person')
+                talk.desig=talk.get('desig')
+                talk.fee=talk.get('fee')
+                talk.incharge=talk.get('incharge')
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'Contest details edited successfully'
+                }
+            else:
+                responseObject = {
+                    'status':'failed',
+                    'message':'invalid workshop id'
+                }
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+            }
+        return jsonify(responseObject)
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Delete Talk
-    @api.doc('Delete Talk')
     def delete(self, id):
-        talk = Talks.query.filter_by(id=id).first()
-        if talk is not None:
-            db.session.delete(talk)
-            db.session.commit()
-            return jsonify(200)
-
-        return jsonify(406)
+        try:
+            talk = Talks.query.filter_by(id=id).first()
+            if contest is not None:
+                db.session.delete(talk)
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'Talk deleted'
+                }
+            else:
+                responseObject = {
+                    'status':'failed',
+                    'message':'Invalid talk id'
+                }
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+            }
+        return jsonify(responseObject)

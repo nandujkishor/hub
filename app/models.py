@@ -100,9 +100,10 @@ class College(db.Model):
 
 class Talks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    descr = db.Column(db.String(512))
     title = db.Column(db.String(50), nullable=False)
     plink = db.Column(db.String(30))
+    short = db.Column(db.String(200))
+    about = db.Column(db.String(3000))
     person = db.Column(db.String(30), nullable=False)
     desig = db.Column(db.String(30))
     # Person designation
@@ -113,7 +114,7 @@ class Talks(db.Model):
     # Picture of the person (small)
     ppicurllr = db.Column(db.String(260))
     # Picture of the person (large)
-    amt = db.Column(db.Integer)
+    fee = db.Column(db.Integer)
     # Amount spent to bring the person
     incharge = db.Column(db.Integer)
     # ID of the internal person incharge
@@ -167,6 +168,7 @@ class Workshops(db.Model):
 class Contests(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
+    plink = db.Column(db.String(30))
     img1 = db.Column(db.String(300))
     img2 = db.Column(db.String(300))
     img2 = db.Column(db.String(300))
