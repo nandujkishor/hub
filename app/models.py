@@ -2,7 +2,7 @@ from app import db
 import datetime
 import jwt
 
-class User(UserMixin, db.Model, Serializer):
+class User(db.Model):
     vid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id = db.Column(db.String(30))
     email = db.Column(db.String(120), unique=True)
@@ -21,7 +21,7 @@ class User(UserMixin, db.Model, Serializer):
     # Levels: power directly propotional to number
     detailscomp = db.Column(db.Boolean)
     educomp = db.Column(db.Boolean)
-    time_created = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    time_created = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
     lastseen = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -88,7 +88,7 @@ class BlacklistToken(db.Model):
         else:
             return False
 
-class College(db.Model, Serializer):
+class College(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     # caid = db.Column(db.Integer)
@@ -98,7 +98,7 @@ class College(db.Model, Serializer):
     def __repr__(self):
         return '<College {}>'.format(self.name)
 
-class Talks(db.Model, Serializer):
+class Talks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     descr = db.Column(db.String(512))
     title = db.Column(db.String(50), nullable=False)
@@ -118,11 +118,7 @@ class Talks(db.Model, Serializer):
     incharge = db.Column(db.Integer)
     # ID of the internal person incharge
 
-    def serialize(self):
-        d = Serializer.serialize(self)
-        return d
-
-class Workshops(db.Model, Serializer):
+class Workshops(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     plink = db.Column(db.String(30))
@@ -207,13 +203,3 @@ class EventDLog(db.Model):
     eid = db.Column(db.Integer, primary_key=True) 
     #EventID
     action = db.Column(db.Integer)
-
-class Team(db.Model, Serializer):
-    tid = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
-    leader = db.Column(db.Integer, nullable=False) #Leader VID
-    state = db.Column(db.Integer, default=1) #1 for active, 2 for deleted / disabled
-    r1 = db.Column(db.Integer)
-    r2 = db.Column(db.Integer)
-    r3 = db.Column(db.Integer)
-    time_created = db.Column(db.DateTime, nullable=False, default=datetime.now)

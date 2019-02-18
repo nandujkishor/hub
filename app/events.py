@@ -109,7 +109,7 @@ class events_talks(Resource):
         print(talk)
         return jsonify(201)
 
-@aevents.route('/talks/<int:id>/')
+@events.route('/talks/<int:id>/')
 class events_talks_indv(Resource):
 
     # API Params: JSON([Standard])
@@ -181,7 +181,7 @@ class events_contests(Resource):
         print(contest)
         return jsonify(201)
 
-@aevents.route('/talks/<int:id>/')
+@events.route('/talks/<int:id>/')
 class events_contests_indv(Resource):
 
     # API Params: JSON([Standard])
