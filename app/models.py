@@ -208,5 +208,10 @@ class EventDLog(db.Model):
     action = db.Column(db.Integer)
 
 class Staff(db.Model):
-    vid = db.Column(db.Integer)
-    team = db.
+    vid = db.Column(db.Integer, primary_key=True)
+    team = db.Column(db.String(20), primary_key=True)
+    level = db.Column(db.Integer)
+    # 1 for base level volunteer
+    # 2 for ...
+    # 3 for people with create privilige
+    # 4 for core representative
