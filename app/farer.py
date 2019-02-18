@@ -29,8 +29,12 @@ class user_auth(Resource):
     # Returns: JWT
     # Authorizes a new / returning user and provides the Token
     def post(self):
+        print(request.args)
+        print(request.get_json())
+        print(request.form)
         data = request.get_json()
         token = data.get('idtoken')
+        print(token)
         try:
             idinfo = id_token.verify_oauth2_token(token, requests.Request())
             print(idinfo)
@@ -38,7 +42,7 @@ class user_auth(Resource):
                 raise ValueError('Wrong issuer.')
             userid = idinfo['sub']
         except:
-            flog = FarerLog(action="Login", point=point, status="error", message="ValueError - wrong issuer")
+            # flog = FarerLog(action="Login", point=point, status="error", message="ValueError - wrong issuer")
             # Send email on the error
             print("Error encountered - ValueError - Wrong issuer")
             return "Error encountered - ValueError - Wrong issuer"
@@ -48,8 +52,8 @@ class user_auth(Resource):
         if u is None:
             try:
                 u = User(id=userid, email=idinfo.get('email'), fname=idinfo.get('given_name'), lname=idinfo.get('family_name'), ppic=idinfo.get('picture'))
-                flog = FarerLog(uid=u.id, action="Register", point=point, ip=ip)
-                db.session.add(flog)
+                # flog = FarerLog(uid=u.id, action="Register", point=point, ip=ip)
+                # db.session.add(flog)
                 db.session.add(u)
                 db.session.commit()
                 # Send welcome email
@@ -57,16 +61,17 @@ class user_auth(Resource):
                 responseObject = {
                     'status': 'success',
                     'message': 'Successfully registered',
-                    'auth_token': auth_token.decode()
+                    'auth_token': auth_token
                 }
-                return jsonify(responseObject), 201
+                return jsonify(responseObject)
             except Exception as e:
                 responseObject = {
                     'status': 'fail',
-                    'message': 'Error - Please try again'
+                    'message': 'Error1 - Please try again'
                 }
+                print(e)
                 # Send mail on the error
-                return jsonify(responseObject), 401
+                return jsonify(responseObject)
         else:
             try:
                 auth_token = u.encode_auth_token()
@@ -75,14 +80,15 @@ class user_auth(Resource):
                     'message': 'Successfully logged in',
                     'auth_token': auth_token.decode()
                 }
-                return jsonify(responseObject), 201
+                return jsonify(responseObject)
             except Exception as e:
                 responseObject = {
                     'status': 'fail',
-                    'message': 'Error - Please try again'
+                    'message': 'Error2 - Please try again'
                 }
+                print(e)
                 # Send mail on the error
-                return jsonify(responseObject), 401
+                return jsonify(responseObject)
         return "Other worldly!"
 
     # API Params: JSON(Auth header, [Standard])
@@ -98,9 +104,23 @@ class user_auth(Resource):
                 responseObject = {
                     'status': 'success',
                     'data': {
-                        'user_id': u.id,
-                        'email': u.email,
-                        'time_created': u.time_created
+                        'vid':u.vid,
+                        'email':u.email,
+                        'fname':u.fname,
+                        'lname':u.lname,
+                        'ppic':u.ppic,
+                        'course':u.course,
+                        'major':u.major,
+                        'sex':u.sex,
+                        'year':u.year,
+                        'college':u.college,
+                        'institution':u.institution,
+                        'school':u.school,
+                        'phno':u.phno,
+                        'detailscomp':u.detailscomp,
+                        'educomp':u.educomp,
+                        'time_created':u.time_created,
+                        'lastseen':u.lastseen
                     }
                 }
                 return jsonify(responseObject), 200

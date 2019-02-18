@@ -1,4 +1,4 @@
-from app import db
+from app import app, db
 import datetime
 import jwt
 
@@ -37,7 +37,7 @@ class User(db.Model):
             payload = {
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=10, seconds=0),
                 'iat': datetime.datetime.utcnow(),
-                'sub': vid
+                'sub': self.vid
             }
             return jwt.encode(
                 payload,
@@ -45,6 +45,7 @@ class User(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
+            print(e)
             # Setup emailing to email the occured exception
             return e
 
