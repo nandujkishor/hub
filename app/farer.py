@@ -90,9 +90,9 @@ class user_auth(Resource):
     # Returns: User info
     # Provides user information based on the header provided
     def get(self):
-        auth_token = auth_token(request)
-        if auth_token:
-            resp = User.decode_auth_token(auth_token)
+        auth_t = auth_token(request)
+        if auth_t:
+            resp = User.decode_auth_token(auth_t)
             if not isinstance(resp, str):
                 u = User.query.filter_by(id=resp).first()
                 responseObject = {
