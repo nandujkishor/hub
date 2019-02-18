@@ -10,44 +10,79 @@ from flask_restplus import Resource, Api
 events = api.namespace('events', description="Events management")
 
 @events.route('/workshops')
+
 class events_workshops(Resource):
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON array
     # Sends list of all Workshops
-    @api.doc('List of all Workshops')
     def get(self):
         workshops = Workshops.query.all()
-        wlist = []
-        for w in workshops:
-            wlist.append({
-                'id':w.id,
-                'title':w.title,
-                'plink':w.plink,
-                'short':w.short,
-                'department':w.department,
-                'fee':w.fee,
+        responseObject = []
+        for workshop in workshops:
+            responseObject.append({
+                'id':workshop.id,
+                'title':workshop.title,
+                'plink':workshop.plink,
+                'short':workshops.short,
+                'department':workshop.department,
+                'fee':workshop.fee,
             })
-        return jsonify(workshops)
+        return jsonify(responseObject),200
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Add Workshop
-    @api.doc('Workshop addition')
+    @api.doc(params = {
+        'title':'Title',
+        'plink':'Permanent Link',
+        'short':'Short Description',
+        'instructor':'Instructor Name',
+        'abins':'About the Lead Instructor',
+        'department':'Department',
+        'fee':'Workshop Fee',
+        'incharge':'Incharge V-ID',
+            })
     def post(self):
-        data = request.get_json()
-        workshop = Workshops(title=data.get('title'),
-                    about=data.get('about'),
-                    company=data.get('company'),
-                    fee=data.get('fee'),
-                    instructor=data.get('instructor'),
-                    abins = data.get('abins')
-                    )
-        db.session.add(workshop)
-        db.session.commit()
-        return jsonify(201)
+        try:
+            data = request.get_json()
+            if data is not None:
+                print(data)
+                workshop = Workshops(
+                    title = data.get('title'),
+                    plink = data.get('plink'),
+                    short = data.get('short'),
+                    instructor = data.get('instructor'),
+                    abins = data.get('abins'),
+                    department = data.get('department'),
+                    fee = data.get('fee'),
+                    incharge = data.get('incharge')
+                )
+                db.session.add(workshop)
+                db.session.commit()
+                responseObject={
+                    'status':'success',
+                    'message':' Workshop Details Succefully Posted'
+                }
+                return jsonify(responseObject),201;
+            else:
+                responseObject={
+                    'status':'fail',
+                    'message':'Worshop Details are Empty'
+                }
+                return jsonify(responseObject),201;
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured'
+            }
+            return jsonify(responseObject), 401
+
+
 
 @events.route('/workshops/<int:id>/')
 class events_workshops_indv(Resource):
@@ -59,6 +94,14 @@ class events_workshops_indv(Resource):
     @api.doc('Details of the Workshop')
     def get(self, id):
         workshop = Workshops.query.filter_by(id=id).first()
+        responseObject = {
+            'title':workshop.title,
+            'plink':workshop.plink,
+            'short':workshop.short,
+            'instructor':workshop.instructor,
+            'abins':workshop.abins,
+            'department':workshop.department,
+        }
         return jsonify(workshop.serialize())
 
     # API Params: JSON([Standard])
@@ -192,7 +235,7 @@ class events_contests(Resource):
         print(contest)
         return jsonify(201)
 
-@events.route('/talks/<int:id>/')
+@events.route('/contests/<int:id>/')
 class events_contests_indv(Resource):
 
     # API Params: JSON([Standard])
@@ -202,6 +245,9 @@ class events_contests_indv(Resource):
     @api.doc('Detials of the Contest')
     def get(self, id):
         contest = Contests.query.filter_by(id=id).first()
+        c = {
+
+        }
         return jsonify(contest.serialize())
 
     # API Params: JSON([Standard])
@@ -210,17 +256,38 @@ class events_contests_indv(Resource):
     # Edit details of the Contest
     @api.doc('Edit details of the Contest')
     def put(self, id):
-        data=request.get_json()
-        contest = Contests.query.filter_by(id=id).first()
-        contest.title=data.get('title')
-        contest.about=data.get('description')
-        contest.task=data.get('task')
-        contest.pricing=data.get('pricing')
-        contest.team_limit=data.get('team_limit')
-        contest.expense=data.get('expense')
-        contest.incharge=data.get('incharge')
-        db.session.commit()
-        return jsonify(200)
+        try:
+            data=request.get_json()
+            print("Some data: ", data)
+            if data is not None:
+                contest = Contests.query.filter_by(id=id).first()
+                contest.title=data.get('title')
+                contest.about=data.get('description')
+                contest.task=data.get('task')
+                contest.pricing=data.get('pricing')
+                contest.team_limit=data.get('team_limit')
+                contest.expense=data.get('expense')
+                contest.incharge=data.get('incharge')
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'Details successfully modified'
+                }
+                return jsonify(responseObject), 201
+            else:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Invalid data'
+                }
+                return jsonify(responseObject), 401
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured'
+            }
+            return jsonify(responseObject), 401
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
