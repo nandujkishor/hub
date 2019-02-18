@@ -120,27 +120,35 @@ class workshop_reg(Resource):
             u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
             if data.get_status() is 0:  #Register Team
                 team_id = werkzeug.security.pbkdf2_hex(vid,salt= vid ,iterations=50000, keylen=5, hashfunc=None)
-                regis = Registrations(vid=u.vid, cat=1,tid=team_id, eid=wid)
+                regis = Registrations(vid=u.vid, cat=1,tid=team_id, eid=wid , team_size=1)
                 responseObject = {
                     'status':'Success',
                     'message':'Added to queue'
                 }
                 return jsonify(responseObject), 201
             else:                       #Join Team
-                t = Registrations.query.filter_by(vid = u.vid, wid=wid,tid=data.get_tid())
-                if t is None:
+                c = Contests.query.filter_by(id = u.eid)
+                if c.team_limit >= Registrations.query.filter_by(vid = u.vid, wid=wid,tid=data.get_tid()).count():
+                    t = Registrations.query.filter_by(vid = u.vid, wid=wid,tid=data.get_tid())
+                    if t is None:
+                        responseObject = {
+                        'state':'Fail',
+                        'message':'Invalid team id'
+                        }
+                        return jsonify(responseObject), 401
+                    else:
+                        regis = Registrations(vid=u.vid, cat=1,tid=data.get_tid(), eid=wid)
+                        responseObject = {
+                        'status':'Success',
+                        'message':'Added to queue'
+                        }
+                        return jsonify(responseObject), 201
+                else:
                     responseObject = {
                     'state':'Fail',
-                    'message':'Invalid team id'
+                    'message':'Team Full'
                     }
                     return jsonify(responseObject), 401
-                else:
-                    regis = Registrations(vid=u.vid, cat=1,tid=team_id, eid=wid)
-                    responseObject = {
-                    'status':'Success',
-                    'message':'Added to queue'
-                    }
-                    return jsonify(responseObject), 201
 
         except Exception as e:
             print(e)
