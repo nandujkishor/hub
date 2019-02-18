@@ -22,10 +22,10 @@ def auth_token(request):
         auth_token = ''
     return auth_token
 
-@farer.route('/auth/user/')
+@farer.route('/auth/user')
 class user_auth(Resource):
     # API Params: JSON(idtoken, [Standard])
-    # Standard: IP, Sender ID
+    # Standard: User IP, Sender ID
     # Returns: JWT
     # Authorizes a new / returning user and provides the Token
     def post(self):

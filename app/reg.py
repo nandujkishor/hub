@@ -1,5 +1,7 @@
 import os
 import datetime
+import random, string
+import werkzeug.security
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.models import User, Registrations
@@ -30,13 +32,13 @@ class workshop_reg(Resource):
                     'state':'success',
                     'sub':0
                 }
-                return jsonify(responseObject), 201
+                return jsonify(responseObject), 201 #Not Registered
             else:
                 responseObject = {
                     'state':'success',
                     'sub':1
                 }
-                return jsonify(responseObject), 201
+                return jsonify(responseObject), 201 #Registered
         except Exception as e:
             responseObject = {
                 'state':'fail',
@@ -68,6 +70,78 @@ class workshop_reg(Resource):
                     'message':'Added to queue'
                 }
                 return jsonify(responseObject), 201
+        except Exception as e:
+            print(e)
+            # Send mail
+            responseObject = {
+                'status':'Fail',
+                'message':'Error occured - exception'
+            }
+            return jsonify(responseObject), 401
+
+
+@reg.route('/contest/<int:wid>')
+class workshop_reg(Resource):
+    # API Params: JSON(Authorization, [Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON(Registration state)
+    def get(self, wid):
+        auth_header = auth_token(request)
+        try:
+            u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
+            w = Registrations.query.filter_by(vid = u.vid,tid=u.tid, wid=wid)
+            if w is None:
+                responseObject = {
+                    'state':'success',
+                    'sub':0
+                }
+                return jsonify(responseObject), 201 #Not Registered
+            else:
+                responseObject = {
+                    'state':'success',
+                    'sub':1
+                }
+                return jsonify(responseObject), 201 #Registered
+        except Exception as e:
+            responseObject = {
+                'state':'fail',
+                'message':'Error occured'
+            }
+            return jsonify(responseObject), 401
+
+    # API Params: JSON(idtoken, [Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON
+    # Registers the user to a workshop
+    def post(self, wid):
+        data = request.get_json()
+        auth_header = auth_token(request)
+        try:
+            u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
+            if data.get_status() is 0:  #Register Team
+                team_id = werkzeug.security.pbkdf2_hex(vid,salt= vid ,iterations=50000, keylen=5, hashfunc=None)
+                regis = Registrations(vid=u.vid, cat=1,tid=team_id, eid=wid)
+                responseObject = {
+                    'status':'Success',
+                    'message':'Added to queue'
+                }
+                return jsonify(responseObject), 201
+            else:                       #Join Team
+                t = Registrations.query.filter_by(vid = u.vid, wid=wid,tid=data.get_tid())
+                if t is None:
+                    responseObject = {
+                    'state':'Fail',
+                    'message':'Invalid team id'
+                    }
+                    return jsonify(responseObject), 401
+                else:
+                    regis = Registrations(vid=u.vid, cat=1,tid=team_id, eid=wid)
+                    responseObject = {
+                    'status':'Success',
+                    'message':'Added to queue'
+                    }
+                    return jsonify(responseObject), 201
+
         except Exception as e:
             print(e)
             # Send mail

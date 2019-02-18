@@ -171,12 +171,19 @@ class Contests(db.Model):
     img1 = db.Column(db.String(300))
     img2 = db.Column(db.String(300))
     img2 = db.Column(db.String(300))
-    about = db.Column(db.String(2000), nullable=False)
-    task = db.Column(db.String(512))
-    pricing = db.Column(db.Integer, nullable=False)
+    about = db.Column(db.String(6000), nullable=False)
+    rules = db.Column(db.String(6000))
+    prereq = db.Column(db.String(6000))
+    organiser = db.Column(db.String(40))
+    prize1 = db.Column(db.Integer)
+    prize2 = db.Column(db.Integer)
+    prize3 = db.Column(db.Integer)
+    pworth = db.Column(db.Integer)
+    # Prizes worth ...
+    fee = db.Column(db.Integer, nullable=False)
     # Pricing per team (1 to any)
-    team_limit = db.Column(db.Integer)
-    # Need to manage teams
+    team_limit = db.Column(db.Integer, default=1)
+    # Max. no of students in a team
     expense = db.Column(db.Integer)
     # For internal use - expenses
     incharge = db.Column(db.Integer)
@@ -190,6 +197,8 @@ class Registrations(db.Model):
     # Event category (Workshop, ...)
     eid = db.Column(db.Integer)
     #EventID
+    tid = db.Column(db.Integer)
+    #TeamID
     pay_completed = db.Column(db.Boolean)
     # 0 if not paid, 1 if paid.
 # Need to rethink registrations
@@ -204,3 +213,12 @@ class EventDLog(db.Model):
     eid = db.Column(db.Integer, primary_key=True)
     #EventID
     action = db.Column(db.Integer)
+
+class Staff(db.Model):
+    vid = db.Column(db.Integer, primary_key=True)
+    team = db.Column(db.String(20), primary_key=True)
+    level = db.Column(db.Integer)
+    # 1 for base level volunteer
+    # 2 for ...
+    # 3 for people with create privilige
+    # 4 for core representative
