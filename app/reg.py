@@ -118,8 +118,7 @@ class workshop_reg(Resource):
         try:
             u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
             if data.get_status() is 0:  #Register Team
-                team_id = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-                
+                team_id = werkzeug.security.pbkdf2_hex(vid,salt= vid ,iterations=50000, keylen=5, hashfunc=None)
                 regis = Registrations(vid=u.vid, cat=1,tid=team_id, eid=wid)
                 responseObject = {
                     'status':'Success',
@@ -130,7 +129,7 @@ class workshop_reg(Resource):
                 t = Registrations.query.filter_by(vid = u.vid, wid=wid,tid=data.get_tid())
                 if t is None:
                     responseObject = {
-                    'state':'Error',
+                    'state':'Fail',
                     'message':'Invalid team id'
                     }
                     return jsonify(responseObject), 401
