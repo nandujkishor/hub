@@ -1,5 +1,5 @@
 import datetime
-from flask import render_template, flash, redirect, request, url_for, jsonify
+from flask import render_template, flash, redirect, request, url_for, jsonify,json
 from app import app, db, api
 from config import Config
 from app.models import Workshops,Talks,Contests
@@ -10,7 +10,6 @@ from flask_restplus import Resource, Api
 events = api.namespace('events', description="Events management")
 
 @events.route('/workshops')
-
 class events_workshops(Resource):
 
     # API Params: JSON([Standard])
@@ -18,18 +17,25 @@ class events_workshops(Resource):
     # Returns: JSON array
     # Sends list of all Workshops
     def get(self):
-        workshops = Workshops.query.all()
-        responseObject = []
-        for workshop in workshops:
-            responseObject.append({
-                'id':workshop.id,
-                'title':workshop.title,
-                'plink':workshop.plink,
-                'short':workshops.short,
-                'department':workshop.department,
-                'fee':workshop.fee,
-            })
-        return jsonify(responseObject),200
+        try:
+            workshops = Workshops.query.all()
+            responseObject = []
+            for workshop in workshops:
+                responseObject.append({
+                    'id':workshop.id,
+                    'title':workshop.title,
+                    'plink':workshop.plink,
+                    'short':workshop.short,
+                    'department':workshop.department,
+                    'fee':workshop.fee
+                })
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'failure',
+                'Message':'Error Occured'
+            }
+        return jsonify(responseObject)
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
@@ -48,31 +54,22 @@ class events_workshops(Resource):
     def post(self):
         try:
             data = request.get_json()
-            if data is not None:
-                print(data)
-                workshop = Workshops(
-                    title = data.get('title'),
-                    plink = data.get('plink'),
-                    short = data.get('short'),
-                    instructor = data.get('instructor'),
-                    abins = data.get('abins'),
-                    department = data.get('department'),
-                    fee = data.get('fee'),
-                    incharge = data.get('incharge')
-                )
-                db.session.add(workshop)
-                db.session.commit()
-                responseObject={
-                    'status':'success',
-                    'message':' Workshop Details Succefully Posted'
-                }
-                return jsonify(responseObject),201;
-            else:
-                responseObject={
-                    'status':'fail',
-                    'message':'Worshop Details are Empty'
-                }
-                return jsonify(responseObject),201;
+            workshop = Workshops(
+                title = data.get('title'),
+                plink = data.get('plink'),
+                short = data.get('short'),
+                instructor = data.get('instructor'),
+                abins = data.get('abins'),
+                department = data.get('department'),
+                fee = data.get('fee'),
+                incharge = data.get('incharge')
+            )
+            db.session.add(workshop)
+            db.session.commit()
+            responseObject={
+                'status':'success',
+                'message':' Workshop Details Succefully Posted'
+            }
         except Exception as e:
             print(e)
             # Send email
@@ -80,46 +77,84 @@ class events_workshops(Resource):
                 'status':'fail',
                 'message':'Error occured'
             }
-            return jsonify(responseObject), 401
+        return jsonify(responseObject)
 
-
-
-@events.route('/workshops/<int:id>/')
+@events.route('/workshops/<int:id>')
 class events_workshops_indv(Resource):
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Array
     # Send details of the Workshop
-    @api.doc('Details of the Workshop')
     def get(self, id):
-        workshop = Workshops.query.filter_by(id=id).first()
-        responseObject = {
-            'title':workshop.title,
-            'plink':workshop.plink,
-            'short':workshop.short,
-            'instructor':workshop.instructor,
-            'abins':workshop.abins,
-            'department':workshop.department,
-        }
-        return jsonify(workshop.serialize())
+        try:
+            workshop = Workshops.query.filter_by(id=id).first()
+            if workshop is not None:
+                responseObject = {
+                    'title':workshop.title,
+                    'plink':workshop.plink,
+                    'short':workshop.short,
+                    'instructor':workshop.instructor,
+                    'abins':workshop.abins,
+                    'department':workshop.department,
+                }
+            else:
+                responseObject ={
+                    'status':'fail',
+                    'message':'invalid workshop id'
+                }
+        except Exception as e:
+                print(e)
+                # Send email
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+                }
+        return jsonify(responseObject)
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Edit details of the Workshop
-    @api.doc('Edit details of the Workshop')
+    @api.doc(params = {
+        'title':'Title',
+        'plink':'Permanent Link',
+        'short':'Short Description',
+        'instructor':'Instructor Name',
+        'abins':'About the Lead Instructor',
+        'department':'Department',
+        'fee':'Workshop Fee',
+        'incharge':'Incharge V-ID',
+            })
     def put(self, id):
-        data = request.get_json()
-        workshop = Workshops.query.filter_by(id=id).first()
-        workshop.title=data.get('title')
-        workshop.about=data.get('about')
-        workshop.company=data.get('company')
-        workshop.fee=data.get('fee')
-        workshop.instructor=data.get('instructor')
-        workshop.abins=data.get('abins')
-        db.session.commit()
-        return jsonify(200)
+        try:
+            workshop = Workshops.query.filter_by(id=id).first()
+            if workshop is not None:
+                data = request.get_json()
+                workshop.title=data.get('title')
+                workshop.about=data.get('about')
+                workshop.company=data.get('company')
+                workshop.fee=data.get('fee')
+                workshop.instructor=data.get('instructor')
+                workshop.abins=data.get('abins')
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'workshop details edited successfully'
+                }
+            else:
+                responseObject = {
+                    'status':'failed',
+                    'message':'invalid workshop id'
+                }
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+            }
+        return jsonify(responseObject)
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
@@ -127,12 +162,29 @@ class events_workshops_indv(Resource):
     # Delete Workshop
     @api.doc('Delete Workshop')
     def delete(self, id):
-        workshop = Workshops.query.filter_by(id=id).first()
-        if workshop is not None:
-            db.session.delete(workshop)
-            db.session.commit()
-            return jsonify(200)
-        return jsonify(406)
+        try:
+            workshop = Workshops.query.filter_by(id=id).first()
+            if workshop is not None:
+                db.session.delete(workshop)
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'workshop deleted'
+                }
+            else:
+                responseObject = {
+                    'status':'failed',
+                    'message':'Invalid workshop id'
+                }
+        except Exception as e:
+            print(e)
+            # Send email
+            responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+            }
+        return jsonify(responseObject)
+
 
 @events.route('/talks/')
 class events_talks(Resource):
