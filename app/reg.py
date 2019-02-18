@@ -1,6 +1,7 @@
 import os
 import datetime
 import random, string
+import werkzeug.security
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.models import User, Registrations
