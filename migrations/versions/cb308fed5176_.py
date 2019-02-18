@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: be7f4086540c
+Revision ID: cb308fed5176
 Revises: 
-Create Date: 2019-02-18 23:45:27.706117
+Create Date: 2019-02-19 00:48:23.591937
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'be7f4086540c'
+revision = 'cb308fed5176'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -35,6 +35,7 @@ def upgrade():
     op.create_table('contests',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=200), nullable=False),
+    sa.Column('plink', sa.String(length=30), nullable=True),
     sa.Column('img1', sa.String(length=300), nullable=True),
     sa.Column('img2', sa.String(length=300), nullable=True),
     sa.Column('short', sa.String(length=200), nullable=True),
@@ -76,16 +77,17 @@ def upgrade():
     )
     op.create_table('talks',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('descr', sa.String(length=512), nullable=True),
     sa.Column('title', sa.String(length=50), nullable=False),
     sa.Column('plink', sa.String(length=30), nullable=True),
+    sa.Column('short', sa.String(length=200), nullable=True),
+    sa.Column('about', sa.String(length=3000), nullable=True),
     sa.Column('person', sa.String(length=30), nullable=False),
     sa.Column('desig', sa.String(length=30), nullable=True),
     sa.Column('contact', sa.String(length=10), nullable=True),
     sa.Column('picurl', sa.String(length=260), nullable=True),
     sa.Column('ppicurlsm', sa.String(length=260), nullable=True),
     sa.Column('ppicurllr', sa.String(length=260), nullable=True),
-    sa.Column('amt', sa.Integer(), nullable=True),
+    sa.Column('fee', sa.Integer(), nullable=True),
     sa.Column('incharge', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )

@@ -522,12 +522,12 @@ class events_talks_indv(Resource):
             talk = Talks.query.filter_by(id=id).first()
             if talk is not None:
                 data = request.get_json()
-                talk.title=talk.get('title')
-                talk.short=talk.get('short')
-                talk.person=talk.get('person')
-                talk.desig=talk.get('desig')
-                talk.fee=talk.get('fee')
-                talk.incharge=talk.get('incharge')
+                talk.title=data.get('title')
+                talk.short=data.get('short')
+                talk.person=data.get('person')
+                talk.desig=data.get('desig')
+                talk.fee=data.get('fee')
+                talk.incharge=data.get('incharge')
                 db.session.commit()
                 responseObject = {
                     'status':'success',
@@ -554,7 +554,7 @@ class events_talks_indv(Resource):
     def delete(self, id):
         try:
             talk = Talks.query.filter_by(id=id).first()
-            if contest is not None:
+            if talk is not None:
                 db.session.delete(talk)
                 db.session.commit()
                 responseObject = {
