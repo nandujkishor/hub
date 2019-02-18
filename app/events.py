@@ -10,13 +10,13 @@ from flask_restplus import Resource, Api
 events = api.namespace('events', description="Events management")
 
 @events.route('/workshops')
+
 class events_workshops(Resource):
 
     # API Params: JSON([Standard])
     # Standard: IP, Sender ID
     # Returns: JSON array
     # Sends list of all Workshops
-    @api.doc('List of all Workshops')
     def get(self):
         workshops = Workshops.query.all()
         wlist = []
@@ -35,7 +35,13 @@ class events_workshops(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Add Workshop
-    @api.doc('Workshop addition')
+    @api.doc(params={   'id': 'Workshop ID',
+                        'title':'Title',
+                        'plink':'Permanent Link',
+                        'short':'Short Description',
+                        'department':'Department',
+                        'fee':'Workshop Fee',
+                        })
     def post(self):
         data = request.get_json()
         workshop = Workshops(title=data.get('title'),
