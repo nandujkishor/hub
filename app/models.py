@@ -204,3 +204,7 @@ class EventDLog(db.Model):
     eid = db.Column(db.Integer, primary_key=True)
     #EventID
     action = db.Column(db.Integer)
+
+class Staff(db.Model):
+    vid = db.Column(db.Integer)
+    team = db.
