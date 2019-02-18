@@ -124,7 +124,7 @@ class Workshops(db.Model):
     plink = db.Column(db.String(30))
     # Permalink (extension only)
     short = db.Column(db.String(200))
-    about = db.Column(db.String(3000)) #Content in markdown
+    about = db.Column(db.String(3000))
     # about on the workshop (1000 char)
     prereq = db.Column(db.String(3000)) #Content in markdown
     department = db.Column(db.Integer)
@@ -171,7 +171,7 @@ class Contests(db.Model):
     img2 = db.Column(db.String(300))
     img2 = db.Column(db.String(300))
     short = db.Column(db.String(200))
-    about = db.Column(db.String(6000), nullable=False)
+    about = db.Column(db.String(6000))
     rules = db.Column(db.String(6000))
     prereq = db.Column(db.String(6000))
     organiser = db.Column(db.String(40))
@@ -180,7 +180,7 @@ class Contests(db.Model):
     prize3 = db.Column(db.Integer)
     pworth = db.Column(db.Integer)
     # Prizes worth ...
-    fee = db.Column(db.Integer, nullable=False)
+    fee = db.Column(db.Integer)
     # Pricing per team (1 to any)
     team_limit = db.Column(db.Integer, default=1)
     # Max. no of students in a team

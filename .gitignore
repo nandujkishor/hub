@@ -1,6 +1,6 @@
 venv/
 vidyut/
 __pycache__
-migrations/
 instance/
 .vscode
+.pyc
