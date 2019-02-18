@@ -223,5 +223,5 @@ class Staff(db.Model):
     level = db.Column(db.Integer)
     # 1 for base level volunteer
     # 2 for ...
-    # 3 for people with create privilige
+    # 3 for people with create previlige
     # 4 for core representative

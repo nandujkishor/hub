@@ -17,7 +17,7 @@ farer = api.namespace('farer', description="Farer management")
 def auth_token(request):
     auth_header = request.headers.get('Authorization')
     if auth_header:
-        auth_token = auth_header.split(" ")[1]
+        auth_token = auth_header.split(" ")[0]
     else:
         auth_token = ''
     return auth_token
@@ -100,7 +100,9 @@ class user_auth(Resource):
         if auth_t:
             resp = User.decode_auth_token(auth_t)
             if not isinstance(resp, str):
-                u = User.query.filter_by(id=resp).first()
+                print(resp)
+                u = User.query.filter_by(vid=resp).first()
+                print(u)
                 responseObject = {
                     'status': 'success',
                     'data': {
@@ -123,15 +125,158 @@ class user_auth(Resource):
                         'lastseen':u.lastseen
                     }
                 }
-                return jsonify(responseObject), 200
+                return jsonify(responseObject)
             responseObject = {
                 'status': 'fail',
                 'message': resp
             }
-            return jsonify(responseObject), 401
+            return jsonify(responseObject)
         else:
             responseObject = {
                 'status': 'fail',
                 'message': 'Provide a valid auth token.'
             }
-            return jsonify(responseObject), 401
+            return jsonify(responseObject)
+
+@farer.route('/staff/')
+class StaffAPI(Resource):
+    def get(self):
+        auth_t = auth_token(request)
+        if auth_t:
+            resp = User.decode_auth_token(auth_t)
+            if not isinstance(resp, str):
+                print(resp)
+                u = User.query.filter_by(vid=resp).first()
+                print(u)
+                st = Staff.query.filter_by(vid=resp).all()
+                roles = []
+                for s in st:
+                    roles.append({
+                        'team':s.team,
+                        'level':s.level
+                    })
+                return jsonify(st)
+                # Returns empty list
+
+    # Adds a staff profile to an existing account
+    # Need sudo access to perform operation
+    def post(self):
+        auth_t = auth_token(request)
+        if auth_t:
+            resp = User.decode_auth_token(auth_t)
+            u = User.query.filter_by(vid=resp).first()
+            req = request.get_json()
+            if u.super():
+                st = Staff.query.filter_by(vid=req.get('vid'), team=req.get('team'))
+                if st is not None:
+                    st.level = req.get('level')
+                else:
+                    st = Staff(vid=req.get('vid'), team=req.get('team'), level=req.get('level'))
+
+@farer.route('/user/list/detail')
+class userslistd(Resource):
+    # Params: Standard with Auth header
+    def get(self):
+        users = Users.query.all()
+        usej = []
+        for u in users:
+            usej.append({
+                'vid':u.vid,
+                'email':u.email,
+                'fname':u.fname,
+                'lname':u.lname,
+                'ppic':u.ppic,
+                'course':u.course,
+                'major':u.major,
+                'sex':u.sex,
+                'year':u.year,
+                'college':u.college,
+                'institution':u.institution,
+                'school':u.school,
+                'phno':u.phno,
+                'detailscomp':u.detailscomp,
+                'educomp':u.educomp,
+                'time_created':u.time_created,
+                'lastseen':u.lastseen
+            })
+        return jsonify(users)
+
+@farer.route('/user/list/short')
+class userslistd(Resource):
+    # Params: Standard with Auth header
+    def get(self):
+        users = Users.query.all()
+        usej = []
+        for u in users:
+            usej.append({
+                'vid':u.vid,
+                'email':u.email,
+                'fname':u.fname,
+                'lname':u.lname,
+                'ppic':u.ppic,
+                'detailscomp':u.detailscomp,
+                'educomp':u.educomp,
+                'time_created':u.time_created,
+                'lastseen':u.lastseen
+            })
+        return jsonify(usej)
+
+@farer.route('/user/education')
+class farer_u_edu(Resource):
+    # Manages data incoming
+    def put(self):
+        # Requires JSON Data
+        try:
+            auth_t = auth_token(request)
+            if auth_t:
+                resp = User.decode_auth_token(auth_t)
+                if not isinstance(resp, str):
+                    print(resp)
+                    u = User.query.filter_by(vid=resp).first()
+                    print(u)
+                else:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Authorization failure:C1'
+                    }
+                    return jsonify(responseObject)
+            else:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Authorization failure:C2'
+                }
+                return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            # Send mail on the exception
+            return 401
+        user = User.query.filter_by(id=resp).first()
+        user.course = form.course.data
+        user.major = form.major.data
+        user.college = form.college.data
+        user.institution = form.institution.data
+        user.year = form.year.data
+        user.educomp = True
+        db.session.commit()
+        responseObject = {
+            'status':'success',
+            'message':'Successfully completed addition of Data'
+        }
+        return jsonify(responseObject)
+
+@farer.route('/user/details')
+class farer_u_edu(Resource):
+    # Manages Details data (incoming)
+    def put(self):
+        user = User.query.filter_by(id=current_user.id).first()
+        user.fname = form.fname.data
+        user.lname = form.lname.data
+        user.phno = form.phno.data
+        user.sex = form.sex.data
+        user.detailscomp = True
+        db.session.commit()
+        responseObject = {
+            'status':'success',
+            'message':'Successfully completed addition of Data'
+        }
+        return jsonify(responseObject)

@@ -16,6 +16,7 @@ class events_workshops(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON array
     # Sends list of all Workshops
+    # Accessible to all users
     def get(self):
         try:
             workshops = Workshops.query.all()
@@ -41,6 +42,7 @@ class events_workshops(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Add Workshop
+    # Permission: l3, l4 (Workshops)
     @api.doc(params = {
         'title':'Title',
         'plink':'Permanent Link',
@@ -66,6 +68,43 @@ class events_workshops(Resource):
         })
     def post(self):
         try:
+            auth_t = auth_token(request)
+            if auth_t:
+                resp = User.decode_auth_token(auth_t)
+                if not isinstance(resp, str):
+                    print(resp)
+                    u = User.query.filter_by(vid=resp).first()
+                    print(u)
+                    st = Staff.query.filter_by(vid=u.vid, team="Workshop").first()
+                    if st is None:
+                        responseObject = {
+                            'status':'fail',
+                            'message':'Not staff'
+                        }
+                        return jsonify(responseObject)
+                    elif st.level < 3:
+                        responseObject = {
+                            'status':'fail',
+                            'message':'Not enough permissions'
+                        }
+                        return jsonify(responseObject)
+                else:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Authorization failure:C1'
+                    }
+                    return jsonify(responseObject)
+            else:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Authorization failure:C2'
+                }
+                return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            # Send mail on the exception
+            return 401
+        try:
             data = request.get_json()
             workshop = Workshops(
                 title = data.get('title'),
@@ -77,6 +116,7 @@ class events_workshops(Resource):
                 fee = data.get('fee'),
                 incharge = data.get('incharge')
             )
+            # Put a log in Farerlog
             db.session.add(workshop)
             db.session.commit()
             responseObject={
