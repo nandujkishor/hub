@@ -133,20 +133,17 @@ class Workshops(db.Model):
     # Need to come up with a numbering for departments
     theme = db.Column(db.String(20))
     # Theme, if any
-    instructor = db.Column(db.String(40))
-    abins = db.Column(db.String(300))
-    # About the lead instructor
     vidurl = db.Column(db.String(400))
     # URL for video on the workshop, if any, from Youtube, Vimeo or any other service.
     img1 = db.Column(db.String(200))
     img2 = db.Column(db.String(200))
     img3 = db.Column(db.String(200))
     lead = db.Column(db.String(30))
-    company = db.Column(db.String(30))
-    # Conducting company, if any
-    companylogo = db.Column(db.String(200))
+    org = db.Column(db.String(30))
+    # Conducting organisation, if any
+    orglogo = db.Column(db.String(200))
     contact = db.Column(db.String(10))
-    # Organising company contact details
+    # Organising organisation contact details
     fee = db.Column(db.Integer)
     incharge = db.Column(db.Integer)
     # V-ID of the internal person incharge
