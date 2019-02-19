@@ -1,0 +1,6 @@
+venv/
+vidyut/
+__pycache__
+instance/
+.vscode
+.pyc
