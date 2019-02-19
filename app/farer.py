@@ -2,7 +2,7 @@ import os
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.models import User
+from app.models import User, Staff
 from config import Config
 # from app.forms import
 # from app.models import
@@ -138,7 +138,17 @@ class user_auth(Resource):
             }
             return jsonify(responseObject)
 
-@farer.route('/staff/')
+@farer.route('/user/count')
+class usercount(Resource):
+    def get(self):
+        u = User.query.all()
+        responseObject = {
+            'status':'success',
+            'sub':len(u)
+        }
+        return jsonify(responseObject)
+
+@farer.route('/staff')
 class StaffAPI(Resource):
     def get(self):
         auth_t = auth_token(request)
@@ -176,6 +186,7 @@ class StaffAPI(Resource):
 @farer.route('/user/list/detail')
 class userslistd(Resource):
     # Params: Standard with Auth header
+    # Access only for 4 and above
     def get(self):
         users = Users.query.all()
         usej = []
@@ -280,3 +291,31 @@ class farer_u_edu(Resource):
             'message':'Successfully completed addition of Data'
         }
         return jsonify(responseObject)
+
+@farer.route('/registered/college')
+class reg_coll(Resource):
+    # Provides the list of colleges among registered users
+    # Headers: Authorization
+    def get(self):
+        colleges = User.query.with_entities(User.college).distinct().all()
+        clist = []
+        for c in colleges:
+            clist.append({
+                'id':college.id,
+                'name':college.name,
+                'district':college.district,
+                'state':college.state
+            })
+        return jsonify(clist)
+
+@farer.route('/registered/college/count')
+class reg_coll_count(Resource):
+    # Provides the count of colleges with registered users
+    def get(self):
+        colleges = User.query.with_entities(User.college).distinct().all()
+        responseObject = {
+            'status':'success',
+            'sub':len(colleges)
+        }
+        return jsonify(responseObject)
+

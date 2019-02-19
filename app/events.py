@@ -132,6 +132,12 @@ class events_workshops(Resource):
             }
         return jsonify(responseObject)
 
+@events.route('/workshops/count')
+class w_count(Resource):
+    def get(self):
+        w = Workshops.query.all()
+        return len(w)
+
 @events.route('/workshops/<int:id>')
 class events_workshops_indv(Resource):
 
@@ -324,6 +330,12 @@ class events_contests(Resource):
             }
         return jsonify(responseObject)
 
+@events.route('/contests/count')
+class c_count(Resource):
+    def get(self):
+        c = Contests.query.all()
+        return len(c)
+
 @events.route('/contests/<int:id>')
 class events_contests_indv(Resource):
 
@@ -505,6 +517,12 @@ class events_talks(Resource):
                 'message':'Error occured'
             }
         return jsonify(responseObject)
+
+@events.route('/talks/count')
+class w_count(Resource):
+    def get(self):
+        t = Talks.query.all()
+        return len(t)
 
 @events.route('/talks/<int:id>')
 class events_talks_indv(Resource):
