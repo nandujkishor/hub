@@ -2,5 +2,7 @@ venv/
 vidyut/
 __pycache__
 instance/
+migrations/
+app.db
 .vscode
 .pyc

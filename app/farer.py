@@ -162,7 +162,10 @@ class user_auth(Resource):
                         'status':'Fail',
                         'message':'User not logged in'
                     }
+                    return jsonify(responseObject)
+
                 print(u)
+
                 responseObject = {
                     'status': 'success',
                     'data': {
@@ -186,10 +189,12 @@ class user_auth(Resource):
                     }
                 }
                 return jsonify(responseObject)
+
             responseObject = {
                 'status': 'fail',
                 'message': resp
             }
+
             return jsonify(responseObject)
         else:
             responseObject = {
@@ -389,6 +394,7 @@ class farer_u_edu(Resource):
                 'message':'Successfully completed addition of Data'
             }
         except Exception as e:
+            print(e)
             responseObject = {
                 'status':'fail',
                 'message':'Error occured'
