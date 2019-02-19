@@ -152,7 +152,7 @@ class contest_reg(Resource):
 
         except Exception as e:
             print(e)
-                                        # Send mail
+            # Send mail
             responseObject = {
                 'status':'Fail',
                 'message':'Error occured - exception'
