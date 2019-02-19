@@ -405,4 +405,3 @@ class reg_coll_count(Resource):
             'sub':len(colleges)
         }
         return jsonify(responseObject)
-
