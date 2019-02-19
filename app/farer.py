@@ -158,7 +158,10 @@ class user_auth(Resource):
                         'status':'Fail',
                         'message':'User not logged in'
                     }
+                    return jsonify(responseObject)
+
                 print(u)
+                
                 responseObject = {
                     'status': 'success',
                     'data': {
@@ -182,10 +185,12 @@ class user_auth(Resource):
                     }
                 }
                 return jsonify(responseObject)
+            
             responseObject = {
                 'status': 'fail',
                 'message': resp
             }
+            
             return jsonify(responseObject)
         else:
             responseObject = {
@@ -368,7 +373,9 @@ class farer_u_edu(Resource):
 
         try:
             inc = request.get_json()
-            user = User.query.filter_by(id=current_user.id).first()
+            print("VID = " + str(u.vid))
+            user = User.query.filter_by(vid=u.vid).first()
+            print("USER = " + str(user))
             user.fname = inc.get('fname')
             user.lname = inc.get('lname')
             user.phno = inc.get('phno')
@@ -380,6 +387,7 @@ class farer_u_edu(Resource):
                 'message':'Successfully completed addition of Data'
             }
         except Exception as e:
+            print(e)
             responseObject = {
                 'status':'fail',
                 'message':'Error occured'

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 0e1365ed17fd
+Revision ID: 5189acc767db
 Revises: 
-Create Date: 2019-02-19 11:07:49.189273
+Create Date: 2019-02-19 22:04:25.575992
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0e1365ed17fd'
+revision = '5189acc767db'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,11 +38,13 @@ def upgrade():
     sa.Column('plink', sa.String(length=30), nullable=True),
     sa.Column('img1', sa.String(length=300), nullable=True),
     sa.Column('img2', sa.String(length=300), nullable=True),
+    sa.Column('img3', sa.String(length=300), nullable=True),
     sa.Column('short', sa.String(length=200), nullable=True),
     sa.Column('about', sa.String(length=6000), nullable=True),
     sa.Column('rules', sa.String(length=6000), nullable=True),
     sa.Column('prereq', sa.String(length=6000), nullable=True),
     sa.Column('organiser', sa.String(length=40), nullable=True),
+    sa.Column('department', sa.Integer(), nullable=True),
     sa.Column('prize1', sa.Integer(), nullable=True),
     sa.Column('prize2', sa.Integer(), nullable=True),
     sa.Column('prize3', sa.Integer(), nullable=True),
@@ -119,28 +121,21 @@ def upgrade():
     sa.Column('plink', sa.String(length=30), nullable=True),
     sa.Column('short', sa.String(length=200), nullable=True),
     sa.Column('about', sa.String(length=3000), nullable=True),
-    sa.Column('prereq', sa.String(length=3000), nullable=True),
+    sa.Column('prereq', sa.Text(), nullable=True),
     sa.Column('department', sa.Integer(), nullable=True),
     sa.Column('theme', sa.String(length=20), nullable=True),
-    sa.Column('instructor', sa.String(length=40), nullable=True),
-    sa.Column('abins', sa.String(length=300), nullable=True),
     sa.Column('vidurl', sa.String(length=400), nullable=True),
     sa.Column('img1', sa.String(length=200), nullable=True),
     sa.Column('img2', sa.String(length=200), nullable=True),
     sa.Column('img3', sa.String(length=200), nullable=True),
     sa.Column('lead', sa.String(length=30), nullable=True),
-    sa.Column('company', sa.String(length=30), nullable=True),
-    sa.Column('companylogo', sa.String(length=200), nullable=True),
+    sa.Column('org', sa.String(length=30), nullable=True),
+    sa.Column('orglogo', sa.String(length=200), nullable=True),
     sa.Column('contact', sa.String(length=10), nullable=True),
     sa.Column('fee', sa.Integer(), nullable=True),
     sa.Column('incharge', sa.Integer(), nullable=True),
     sa.Column('support', sa.Integer(), nullable=True),
-    sa.Column('d1stime', sa.DateTime(), nullable=True),
-    sa.Column('d1enime', sa.DateTime(), nullable=True),
-    sa.Column('d2stime', sa.DateTime(), nullable=True),
-    sa.Column('d2enime', sa.DateTime(), nullable=True),
-    sa.Column('d3stime', sa.DateTime(), nullable=True),
-    sa.Column('d3enime', sa.DateTime(), nullable=True),
+    sa.Column('duration', sa.Text(), nullable=True),
     sa.Column('seats', sa.Integer(), nullable=True),
     sa.Column('pub', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id')
