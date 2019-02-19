@@ -102,7 +102,11 @@ class user_auth(Resource):
         print(u)
         if u is None:
             try:
-                u = User(id=userid, email=idinfo.get('email'), fname=idinfo.get('given_name'), lname=idinfo.get('family_name'), ppic=idinfo.get('picture'))
+                u = User(   id=userid,
+                            email=idinfo.get('email'),
+                            fname=idinfo.get('given_name'),
+                            lname=idinfo.get('family_name'),
+                            ppic=idinfo.get('picture'))
                 # flog = FarerLog(uid=u.id, action="Register", point=point, ip=ip)
                 # db.session.add(flog)
                 db.session.add(u)
@@ -212,8 +216,8 @@ class StaffAPI(Resource):
             resp = User.decode_auth_token(auth_t)
             if not isinstance(resp, str):
                 print(resp)
-                u = User.query.filter_by(vid=resp).first()
-                print(u)
+                # u = User.query.filter_by(vid=resp).first()
+                # print(u)
                 st = Staff.query.all()
                 roles = []
                 for s in st:
@@ -222,10 +226,13 @@ class StaffAPI(Resource):
                         'level':s.level
                     })
                 return jsonify(roles)
-                # Returns empty list
-
     # Adds a staff profile to an existing account
     # Need sudo access to perform operation
+    @api.doc(params={
+        'vid':'Vidyut ID',
+        'team':'Team Name',
+        'level':'Level of the User'
+    })
     def post(self):
         auth_t = auth_token(request)
         if auth_t:
@@ -233,18 +240,24 @@ class StaffAPI(Resource):
             u = User.query.filter_by(vid=resp).first()
             req = request.get_json()
             if u.super():
-                st = Staff.query.filter_by(vid=req.get('vid'), team=req.get('team'))
+                st = Staff.query.filter_by(vid=req.get('vid'), team=req.get('team')).first()
                 if st is not None:
                     st.level = req.get('level')
+                    db.session.commit()
+                    responseObject={
+                        'status':'success',
+                        'message':'Upgraded Staff Level'
+                    }
+                    return jsonify(responseObject)
                 else:
                     st = Staff(vid=req.get('vid'), team=req.get('team'), level=req.get('level'))
                     db.session.add(st)
-                db.session.commit()
-                responseObject={
-                    'status':'success',
-                    'message':'Upgraded to Staff'
-                }
-                return jsonify(responseObject)
+                    db.session.commit()
+                    responseObject={
+                        'status':'success',
+                        'message':'Upgraded to Staff'
+                    }
+                    return jsonify(responseObject)
 
 @farer.route('/user/list/detail')
 class userslistd(Resource):
@@ -298,45 +311,42 @@ class userslistd(Resource):
 @farer.route('/user/education')
 class farer_u_edu(Resource):
     # Manages data incoming
+    @api.doc(params={
+        'course':'Course',
+        'major':'Major',
+        'college':'College',
+        'institution':'Institution',
+        'year':'Year',
+        'educomp':'Education details completed'
+    })
+    @authorize(request)
     def put(self):
-        # Requires JSON Data
         try:
-            auth_t = auth_token(request)
-            if auth_t:
-                resp = User.decode_auth_token(auth_t)
-                if not isinstance(resp, str):
-                    print(resp)
-                    u = User.query.filter_by(vid=resp).first()
-                    print(u)
-                else:
-                    responseObject = {
-                        'status':'fail',
-                        'message':'Authorization failure:C1'
-                    }
-                    return jsonify(responseObject)
+            user = User.query.filter_by(id=resp).first()
+            if user is not None:
+                user.course = form.course.data
+                user.major = form.major.data
+                user.college = form.college.data
+                user.institution = form.institution.data
+                user.year = form.year.data
+                user.educomp = True
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'Successfully completed addition of Data'
+                }
             else:
                 responseObject = {
-                    'status':'fail',
-                    'message':'Authorization failure:C2'
+                    'status':'failure',
+                    'message':'Invalid User'
                 }
-                return jsonify(responseObject)
+            return jsonify(responseObject)
         except Exception as e:
-            print(e)
-            # Send mail on the exception
-            return 401
-        user = User.query.filter_by(id=resp).first()
-        user.course = form.course.data
-        user.major = form.major.data
-        user.college = form.college.data
-        user.institution = form.institution.data
-        user.year = form.year.data
-        user.educomp = True
-        db.session.commit()
-        responseObject = {
-            'status':'success',
-            'message':'Successfully completed addition of Data'
-        }
-        return jsonify(responseObject)
+            responseObject = {
+                'status':'failure',
+                'message':'Error Occured'
+            }
+            return jsonify(responseObject)
 
 @farer.route('/user/details')
 class farer_u_edu(Resource):
@@ -365,10 +375,9 @@ class farer_u_edu(Resource):
         except Exception as e:
             print(e)
 
-
         try:
             inc = request.get_json()
-            user = User.query.filter_by(id=current_user.id).first()
+            user = User.query.filter_by(vid=resp).first()
             user.fname = inc.get('fname')
             user.lname = inc.get('lname')
             user.phno = inc.get('phno')
@@ -386,6 +395,7 @@ class farer_u_edu(Resource):
             }
         return jsonify(responseObject)
 
+#need to work on this
 @farer.route('/registered/college')
 class reg_coll(Resource):
     # Provides the list of colleges among registered users

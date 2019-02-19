@@ -211,7 +211,7 @@ class EventDLog(db.Model):
 
 class Staff(db.Model):
     vid = db.Column(db.Integer, primary_key=True)
-    team = db.Column(db.String(20), primary_key=True)
+    team = db.Column(db.String(20))
     level = db.Column(db.Integer)
     # 1 for base level volunteer
     # 2 for ...
