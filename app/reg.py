@@ -81,7 +81,7 @@ class workshop_reg(Resource):
 
 
 @reg.route('/contest/<int:wid>')
-class workshop_reg(Resource):
+class contest_reg(Resource):
     # API Params: JSON(Authorization, [Standard])
     # Standard: IP, Sender ID
     # Returns: JSON(Registration state)
