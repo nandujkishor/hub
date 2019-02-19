@@ -1,6 +1,7 @@
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify,json
 from app import app, db, api
+from app.farer import authorize
 from config import Config
 from app.models import Workshops,Talks,Contests
 from werkzeug.utils import secure_filename
@@ -66,55 +67,24 @@ class events_workshops(Resource):
         'img2':'Image 2 location',
         'img3':'Image 3 location',
         })
+    @authorize(request)
     def post(self):
-        try:
-            auth_t = auth_token(request)
-            if auth_t:
-                resp = User.decode_auth_token(auth_t)
-                if not isinstance(resp, str):
-                    print(resp)
-                    u = User.query.filter_by(vid=resp).first()
-                    print(u)
-                    st = Staff.query.filter_by(vid=u.vid, team="Workshop").first()
-                    if st is None:
-                        responseObject = {
-                            'status':'fail',
-                            'message':'Not staff'
-                        }
-                        return jsonify(responseObject)
-                    elif st.level < 3:
-                        responseObject = {
-                            'status':'fail',
-                            'message':'Not enough permissions'
-                        }
-                        return jsonify(responseObject)
-                else:
-                    responseObject = {
-                        'status':'fail',
-                        'message':'Authorization failure:C1'
-                    }
-                    return jsonify(responseObject)
-            else:
-                responseObject = {
-                    'status':'fail',
-                    'message':'Authorization failure:C2'
-                }
-                return jsonify(responseObject)
-        except Exception as e:
-            print(e)
-            # Send mail on the exception
-            return 401
         try:
             data = request.get_json()
             workshop = Workshops(
                 title = data.get('title'),
                 plink = data.get('plink'),
                 short = data.get('short'),
-                instructor = data.get('instructor'),
-                abins = data.get('abins'),
+                about = data.get('about'),
                 department = data.get('department'),
+                theme = data.get('theme'),
+                vidurl = data.get('vidurl'),
+                duration = data.get('duration'),
+                org = data.get('org'),
+                contact = data.get('contact'),
                 fee = data.get('fee'),
-                incharge = data.get('incharge')
+                incharge = data.get('incharge'),
+                seats = data.get('seats')
             )
             # Put a log in Farerlog
             db.session.add(workshop)
@@ -147,13 +117,26 @@ class events_workshops_indv(Resource):
     # Send details of the Workshop
     def get(self, id):
         try:
+            auth_t = auth_token(request)
+            if auth_t:
+                resp = User.decode_auth_token(auth_t)
             workshop = Workshops.query.filter_by(id=id).first()
             if workshop is not None:
                 responseObject = {
                     'title':workshop.title,
                     'plink':workshop.plink,
                     'short':workshop.short,
+                    'about':workshop.about,
                     'department':workshop.department,
+                    'theme':workshop.theme,
+                    'vidurl':workshop.vidurl,
+                    'contact':workshop.contact,
+                    'fee':workshop.fee,
+                    'incharge':workshop.incharge,
+                    'support':workshop.support,
+                    'duration':workshop.duration,
+                    'seats':workshop.seats,
+                    'pub':workshop.pub
                 }
             else:
                 responseObject ={

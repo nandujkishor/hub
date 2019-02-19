@@ -1,4 +1,5 @@
 import os
+from functools import wraps
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
@@ -21,6 +22,56 @@ def auth_token(request):
     else:
         auth_token = ''
     return auth_token
+
+def authorize(request):
+    def auth_with_request(func):
+        @wraps(func)
+        def d_view(*args, **kwargs):
+            try:
+                auth_t = auth_token(request)
+                if auth_t:
+                    resp = User.decode_auth_token(auth_t)
+                    if not isinstance(resp, str):
+                        print("Response ", resp)
+                        u = User.query.filter_by(vid=resp).first()
+                        if u is None:
+                            responseObject = {
+                                'status':'fail',
+                                'message':'Go check your DB'
+                            }
+                            return jsonify(responseObject)
+                        st = Staff.query.filter_by(vid=u.vid, team="Workshop").first()
+                        if st is None:
+                            responseObject = {
+                                'status':'fail',
+                                'message':'Not staff'
+                            }
+                            return jsonify(responseObject)
+                        elif st.level < 3:
+                            responseObject = {
+                                'status':'fail',
+                                'message':'Not enough permissions'
+                            }
+                            return jsonify(responseObject)
+                    else:
+                        responseObject = {
+                            'status':'fail',
+                            'message':'Authorization failure:C1'
+                        }
+                        return jsonify(responseObject)
+                else:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Authorization failure:C2'
+                    }
+                    return jsonify(responseObject)
+            except Exception as e:
+                print(e)
+                # Send mail on the exception
+                return 401
+            return func(*args, **kwargs)
+        return d_view
+    return auth_with_request
 
 @farer.route('/auth/user')
 class user_auth(Resource):
@@ -284,17 +335,48 @@ class farer_u_edu(Resource):
 class farer_u_edu(Resource):
     # Manages Details data (incoming)
     def put(self):
-        user = User.query.filter_by(id=current_user.id).first()
-        user.fname = form.fname.data
-        user.lname = form.lname.data
-        user.phno = form.phno.data
-        user.sex = form.sex.data
-        user.detailscomp = True
-        db.session.commit()
-        responseObject = {
-            'status':'success',
-            'message':'Successfully completed addition of Data'
-        }
+        try:
+            auth_t = auth_token(request)
+            if auth_t:
+                resp = User.decode_auth_token(auth_t)
+                if not isinstance(resp, str):
+                    print(resp)
+                    u = User.query.filter_by(vid=resp).first()
+                    print(u)
+                else:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Error in auth'
+                    }
+                    return jsonify(responseObject)
+            else:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error in auth'
+                }
+                return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+
+
+        try:
+            inc = request.get_json()
+            user = User.query.filter_by(id=current_user.id).first()
+            user.fname = inc.get('fname')
+            user.lname = inc.get('lname')
+            user.phno = inc.get('phno')
+            user.sex = inc.get('sex')
+            user.detailscomp = True
+            db.session.commit()
+            responseObject = {
+                'status':'success',
+                'message':'Successfully completed addition of Data'
+            }
+        except Exception as e:
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured'
+            }
         return jsonify(responseObject)
 
 @farer.route('/registered/college')

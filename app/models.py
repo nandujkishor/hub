@@ -128,7 +128,7 @@ class Workshops(db.Model):
     short = db.Column(db.String(200))
     about = db.Column(db.String(3000))
     # about on the workshop (1000 char)
-    prereq = db.Column(db.String(3000)) #Content in markdown
+    prereq = db.Column(db.Text) #Content in markdown
     department = db.Column(db.Integer)
     # Need to come up with a numbering for departments
     theme = db.Column(db.String(20))
@@ -149,14 +149,8 @@ class Workshops(db.Model):
     # V-ID of the internal person incharge
     support = db.Column(db.Integer)
     # Data for timings and count
-    d1stime = db.Column(db.DateTime)
-    d1enime = db.Column(db.DateTime)
-    d2stime = db.Column(db.DateTime)
-    d2enime = db.Column(db.DateTime)
-    d3stime = db.Column(db.DateTime)
-    d3enime = db.Column(db.DateTime)
+    duration = db.Column(db.Text)
     seats = db.Column(db.Integer)
-
     # V-ID of the support person assigned to the event
     pub = db.Column(db.Boolean, default=False)
     # Publish

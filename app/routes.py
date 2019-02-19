@@ -3,6 +3,7 @@ import json
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
+from app.farer import authorize
 from config import Config
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
