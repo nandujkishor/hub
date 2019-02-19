@@ -117,10 +117,10 @@ class user_auth(Resource):
                 return jsonify(responseObject)
             except Exception as e:
                 responseObject = {
-                    'status': 'fail',
+                    'status': 'error',
                     'message': 'Error1 - Please try again'
                 }
-                print(e)
+                print("Error", e)
                 # Send mail on the error
                 return jsonify(responseObject)
         else:
