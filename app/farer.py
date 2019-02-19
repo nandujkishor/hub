@@ -102,6 +102,11 @@ class user_auth(Resource):
             if not isinstance(resp, str):
                 print(resp)
                 u = User.query.filter_by(vid=resp).first()
+                if u is None:
+                    responseObject = {
+                        'status':'Fail',
+                        'message':'User not logged in'
+                    }
                 print(u)
                 responseObject = {
                     'status': 'success',

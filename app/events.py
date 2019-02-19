@@ -153,8 +153,6 @@ class events_workshops_indv(Resource):
                     'title':workshop.title,
                     'plink':workshop.plink,
                     'short':workshop.short,
-                    'instructor':workshop.instructor,
-                    'abins':workshop.abins,
                     'department':workshop.department,
                 }
             else:
@@ -186,8 +184,8 @@ class events_workshops_indv(Resource):
         'instructor':'Instructor Name',
         'abins':'About the Lead Instructor',
         'vidurl':'Video URL',
-        'company':'Company Name',
-        'lead':'Company Lead',
+        'org':'Organiser Name',
+        'lead':'Organiser Lead',
         'contact':'Contact No',
         'incharge':'Incharge V-ID',
         'support':'Supporter V-ID',
@@ -205,10 +203,8 @@ class events_workshops_indv(Resource):
                 data = request.get_json()
                 workshop.title=data.get('title')
                 workshop.about=data.get('about')
-                workshop.company=data.get('company')
+                workshop.org=data.get('org')
                 workshop.fee=data.get('fee')
-                workshop.instructor=data.get('instructor')
-                workshop.abins=data.get('abins')
                 db.session.commit()
                 responseObject = {
                     'status':'success',
