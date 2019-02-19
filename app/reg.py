@@ -17,59 +17,57 @@ from google.auth.transport import requests
 
 reg = api.namespace('reg', description="Registration management")
 
-@reg.route('/workshop/<int:wid>')
+@reg.route('/workshop/<int:id>')
 class workshop_reg(Resource):
     # API Params: JSON(Authorization, [Standard])
     # Standard: IP, Sender ID
     # Returns: JSON(Registration state)
-    def get(self, wid):
-        auth_header = auth_token(request)
+    def get(self,id):
         try:
-            u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
-            w = Registrations.query.filter_by(vid = u.vid, wid=wid)
-            if w is None:
+            auth_header = auth_token(request)
+            #u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
+            w = Registrations.query.filter_by(eid=id)
+            if w is not None:
                 responseObject = {
-                    'state':'success',
-                    'sub':0
+                    'status':'success',
+                    'message':'List of registrations',
+                    'sub':'0'
                 }
-                return jsonify(responseObject), 201 #Not Registered
             else:
                 responseObject = {
-                    'state':'success',
-                    'sub':1
+                    'status':'success',
+                    'message':'0 regestrations for this workshop',
+                    'sub':'1'
                 }
-                return jsonify(responseObject), 201 #Registered
         except Exception as e:
             responseObject = {
                 'state':'fail',
                 'message':'Error occured'
             }
-            return jsonify(responseObject), 401
+        return jsonify(responseObject)
 
     # API Params: JSON(idtoken, [Standard])
     # Standard: IP, Sender ID
     # Returns: JSON
     # Registers the user to a workshop
-    def post(self, wid):
+    def post(self, id):
         data = request.get_json()
         auth_header = auth_token(request)
         try:
             u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
-            reglist = Registrations.query.filter_by(wid = wid).all()
-            workshop = Workshop.query.filter_by(wid = wid).first()
-            if (count(reglist) >= workshop.seats):
+            seats = Registrations.query.filter_by(eid = id).count()
+            workshop = Workshop.query.filter_by(eid = id).first()
+            if (seats >= workshop.seats):
                 responseObject = {
                     'status':'Fail',
                     'message':'Slot unavailable'
                 }
-                return jsonify(responseObject), 401
             else:
                 regis = Registrations(vid=u.vid, cat=1, eid=wid)
                 responseObject = {
                     'status':'Success',
                     'message':'Added to queue'
                 }
-                return jsonify(responseObject), 201
         except Exception as e:
             print(e)
             # Send mail
@@ -77,37 +75,36 @@ class workshop_reg(Resource):
                 'status':'Fail',
                 'message':'Error occured - exception'
             }
-            return jsonify(responseObject), 401
-
+        return jsonify(responseObject)
 
 @reg.route('/contest/<int:wid>')
-class workshop_reg(Resource):
+class contest_reg(Resource):
     # API Params: JSON(Authorization, [Standard])
     # Standard: IP, Sender ID
     # Returns: JSON(Registration state)
-    def get(self, wid):
+    def get(self, id):
         auth_header = auth_token(request)
         try:
             u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
-            w = Registrations.query.filter_by(vid = u.vid,tid=u.tid, wid=wid)
+            w = Registrations.query.filter_by(vid = u.vid,tid=u.tid,eid=id)
             if w is None:
                 responseObject = {
-                    'state':'success',
-                    'sub':0
+                    'status':'success',
+                    'sub':'0',
+                    'message':'Not registered for this workshop'
                 }
-                return jsonify(responseObject), 201 #Not Registered
             else:
                 responseObject = {
-                    'state':'success',
-                    'sub':1
+                    'status':'success',
+                    'sub':'1',
+                    'message':'Registered for this workshop'
                 }
-                return jsonify(responseObject), 201 #Registered
         except Exception as e:
             responseObject = {
-                'state':'fail',
+                'status':'failure',
                 'message':'Error occured'
             }
-            return jsonify(responseObject), 401
+        return jsonify(responseObject)
 
     # API Params: JSON(idtoken, [Standard])
     # Standard: IP, Sender ID
