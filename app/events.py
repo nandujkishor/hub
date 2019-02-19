@@ -274,6 +274,7 @@ class events_contests(Resource):
         'rules':'Rules',
         'prereq':'Prerequisite in md',
         'organiser':'Organiser Name',
+        'department':'Department No.',
         'prize1':'Prize 1',
         'prize2':'Prize 2',
         'prize3':'Prize 3',
@@ -287,9 +288,10 @@ class events_contests(Resource):
         try:
             data = request.get_json()
             contest = Contests(
-                title=data.get('title'),
-                short=data.get('short'),
-                pworth=data.get('pworth'),
+                title = data.get('title'),
+                short = data.get('short'),
+                pworth = data.get('pworth'),
+                department = data.get('department'),
                 team_limit=data.get('team_limit'),
                 fee=data.get('fee'),
                 incharge=data.get('incharge')

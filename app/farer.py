@@ -214,14 +214,14 @@ class StaffAPI(Resource):
                 print(resp)
                 u = User.query.filter_by(vid=resp).first()
                 print(u)
-                st = Staff.query.filter_by(vid=resp).all()
+                st = Staff.query.all()
                 roles = []
                 for s in st:
                     roles.append({
                         'team':s.team,
                         'level':s.level
                     })
-                return jsonify(st)
+                return jsonify(roles)
                 # Returns empty list
 
     # Adds a staff profile to an existing account
@@ -238,13 +238,20 @@ class StaffAPI(Resource):
                     st.level = req.get('level')
                 else:
                     st = Staff(vid=req.get('vid'), team=req.get('team'), level=req.get('level'))
+                    db.session.add(st)
+                db.session.commit()
+                responseObject={
+                    'status':'success',
+                    'message':'Upgraded to Staff'
+                }
+                return jsonify(responseObject)
 
 @farer.route('/user/list/detail')
 class userslistd(Resource):
     # Params: Standard with Auth header
     # Access only for 4 and above
     def get(self):
-        users = Users.query.all()
+        users = User.query.all()
         usej = []
         for u in users:
             usej.append({
@@ -266,7 +273,7 @@ class userslistd(Resource):
                 'time_created':u.time_created,
                 'lastseen':u.lastseen
             })
-        return jsonify(users)
+        return jsonify(usej)
 
 @farer.route('/user/list/short')
 class userslistd(Resource):
@@ -405,4 +412,3 @@ class reg_coll_count(Resource):
             'sub':len(colleges)
         }
         return jsonify(responseObject)
-
