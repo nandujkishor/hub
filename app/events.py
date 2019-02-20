@@ -3,10 +3,11 @@ from flask import render_template, flash, redirect, request, url_for, jsonify,js
 from app import app, db, api
 from app.farer import authorize
 from config import Config
-from app.models import Workshops,Talks,Contests
+from app.models import Workshops,Talks,Contests,Registrations,User
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
+from app.farer import auth_token
 
 events = api.namespace('events', description="Events management")
 
@@ -29,7 +30,8 @@ class events_workshops(Resource):
                     'plink':workshop.plink,
                     'short':workshop.short,
                     'department':workshop.department,
-                    'fee':workshop.fee
+                    'fee':workshop.fee,
+                    'seats':workshop.seats
                 })
         except Exception as e:
             print(e)
@@ -67,7 +69,7 @@ class events_workshops(Resource):
         'img2':'Image 2 location',
         'img3':'Image 3 location',
         })
-    @authorize(request)
+    # @authorize(request)
     def post(self):
         try:
             data = request.get_json()
@@ -613,3 +615,61 @@ class events_talks_indv(Resource):
                     'message':'Error occured'
             }
         return jsonify(responseObject)
+
+@events.route('/registration')
+class events_registration(Resource):
+
+    def post(self):
+        try:
+            auth_t = auth_token(request)
+            resp = User.decode_auth_token(auth_t)
+            data = request.get_json()
+            reg = Registrations.query.filter_by(vid=resp, cat=data.get('cat'), eid=data.get('eid')).first()
+            if reg is not None:
+                responseObject={
+                    'status':'failure',
+                    'message':'User already Registered'
+                }
+                return jsonify(responseObject)
+            else:
+                #Workshop Registration
+                if data.get('cat') == 1:
+                    w = Workshops.query.filter_by(id=data.get('id')).first()
+                    if w is not None:
+                        seats = Registrations.query.filter_by(cat=1, eid=data.get('eid')).count()
+                        if seats < w.seats:
+                            r = Registrations(vid=resp, cat=1, eid=data.get('eid'))
+                            db.session.add(r)
+                            db.session.commit()
+                            responseObject={
+                                'status':'success',
+                                'message':'Registration Success'
+                            }
+                        else:
+                            responseObject={
+                                'status':'failure',
+                                'message':'No seats'
+                            }
+                    else:
+                        responseObject = {
+                            'status':'failure',
+                            'message':'Invalid workshop ID'
+                        }
+                    return jsonify(responseObject);
+                # elif data.get('cat') == 2:
+                #     c = Contests.query.filter_by(id=data.get('id')).first()
+                #     if c is not None:
+                #
+                #     return (23)
+                else:
+                    responseObject={
+                        'status':'failure',
+                        'message':'Invalid Category'
+                    }
+                    return jsonify(responseObject);
+        except Exception as e:
+            print(e)
+            responseObject={
+                'status':'Failure',
+                'message':'Error Occured'
+            }
