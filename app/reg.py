@@ -115,7 +115,7 @@ class contest_reg(Resource):
         auth_header = auth_token(request)
         try:
             u = User.query.filter_by(vid = User.decode_auth_token(auth_header)).first()
-            if data.get_status() is 0:  #Register Team
+            if data.get('choice') is 0:  #Register Team
                 team_id = werkzeug.security.pbkdf2_hex(vid,salt= vid ,iterations=50000, keylen=5, hashfunc=None)
                 regis = Registrations(vid=u.vid, cat=1,tid=team_id, eid=wid , team_size=1)
                 responseObject = {
