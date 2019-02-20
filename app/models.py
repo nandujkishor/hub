@@ -28,7 +28,7 @@ class User(db.Model):
         return '<User {}>'.format(self.email)
 
     def super(self):
-        return self.email=="nandujkishor@gmail.com" or self.email=="aswanth366@gmail.com"
+        return self.email=="nandujkishor@gmail.com" or self.email=="aswanth366@gmail.com" or self.email=="bvsabhishek@gmail.com"
 
     def encode_auth_token(self):
         # Params: None

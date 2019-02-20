@@ -15,6 +15,7 @@ from google.auth.transport import requests
 
 farer = api.namespace('farer', description="Farer management")
 
+#
 def auth_token(request):
     auth_header = request.headers.get('Authorization')
     if auth_header:
@@ -22,7 +23,7 @@ def auth_token(request):
     else:
         auth_token = ''
     return auth_token
-
+#
 def authorize(request):
     def auth_with_request(func):
         @wraps(func)
@@ -203,6 +204,130 @@ class user_auth(Resource):
             }
             return jsonify(responseObject)
 
+@farer.route('/user/details')
+class farer_u_edu(Resource):
+    # Manages Details data (incoming)
+    def put(self):
+        try:
+            auth_t = auth_token(request)
+            if auth_t:
+                resp = User.decode_auth_token(auth_t)
+                if not isinstance(resp, str):
+                    inc = request.get_json()
+                    user = User.query.filter_by(vid=resp).first()
+                    user.fname = inc.get('fname')
+                    user.lname = inc.get('lname')
+                    user.phno = inc.get('phno')
+                    user.sex = inc.get('sex')
+                    user.detailscomp = True
+                    db.session.commit()
+                    responseObject = {
+                        'status':'success',
+                        'message':'Successfully completed addition of personel data'
+                    }
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured'
+            }
+        return jsonify(responseObject)
+
+@farer.route('/user/education')
+class farer_u_edu(Resource):
+    # Manages data incoming
+    @api.doc(params={
+        'course':'Course',
+        'major':'Major',
+        'college':'College',
+        'institution':'Institution',
+        'year':'Year',
+        'educomp':'Education details completed'
+    })
+    def put(self):
+        try:
+            auth_t = auth_token(request)
+            if auth_t:
+                resp = User.decode_auth_token(auth_t)
+                print(resp)
+                if not isinstance(resp, str):
+                    inc = request.get_json()
+                    user = User.query.filter_by(vid=resp).first()
+                    if user is not None:
+                        user.course = inc.get('course')
+                        user.major = inc.get('major')
+                        user.college = inc.get('college')
+                        user.institution = inc.get('institution')
+                        user.year = inc.get('year')
+                        user.educomp = True
+                        db.session.commit()
+                        responseObject = {
+                            'status':'success',
+                            'message':'Successfully completed addition of Educational Data'
+                        }
+                    else:
+                        responseObject = {
+                            'status':'failure',
+                            'message':'Invalid User'
+                        }
+                    return jsonify(responseObject)
+        except Exception as e:
+            responseObject = {
+                'status':'failure',
+                'message':'Error Occured'
+            }
+            return jsonify(responseObject)
+
+
+@farer.route('/user/list/detail')
+class userslistd(Resource):
+    # Params: Standard with Auth header
+    # Access only for 4 and above
+    def get(self):
+        users = User.query.all()
+        usej = []
+        for u in users:
+            usej.append({
+                'vid':u.vid,
+                'email':u.email,
+                'fname':u.fname,
+                'lname':u.lname,
+                'ppic':u.ppic,
+                'course':u.course,
+                'major':u.major,
+                'sex':u.sex,
+                'year':u.year,
+                'college':u.college,
+                'institution':u.institution,
+                'school':u.school,
+                'phno':u.phno,
+                'detailscomp':u.detailscomp,
+                'educomp':u.educomp,
+                'time_created':u.time_created,
+                'lastseen':u.lastseen
+            })
+        return jsonify(usej)
+
+@farer.route('/user/list/short')
+class userslistd(Resource):
+    # Params: Standard with Auth header
+    def get(self):
+        users = User.query.all()
+        usej = []
+        for u in users:
+            usej.append({
+                'vid':u.vid,
+                'email':u.email,
+                'fname':u.fname,
+                'lname':u.lname,
+                'ppic':u.ppic,
+                'detailscomp':u.detailscomp,
+                'educomp':u.educomp,
+                'time_created':u.time_created,
+                'lastseen':u.lastseen
+            })
+        return jsonify(usej)
+
 @farer.route('/user/count')
 class usercount(Resource):
     def get(self):
@@ -263,143 +388,6 @@ class StaffAPI(Resource):
                         'message':'Upgraded to Staff'
                     }
                     return jsonify(responseObject)
-
-@farer.route('/user/list/detail')
-class userslistd(Resource):
-    # Params: Standard with Auth header
-    # Access only for 4 and above
-    def get(self):
-        users = User.query.all()
-        usej = []
-        for u in users:
-            usej.append({
-                'vid':u.vid,
-                'email':u.email,
-                'fname':u.fname,
-                'lname':u.lname,
-                'ppic':u.ppic,
-                'course':u.course,
-                'major':u.major,
-                'sex':u.sex,
-                'year':u.year,
-                'college':u.college,
-                'institution':u.institution,
-                'school':u.school,
-                'phno':u.phno,
-                'detailscomp':u.detailscomp,
-                'educomp':u.educomp,
-                'time_created':u.time_created,
-                'lastseen':u.lastseen
-            })
-        return jsonify(usej)
-
-@farer.route('/user/list/short')
-class userslistd(Resource):
-    # Params: Standard with Auth header
-    def get(self):
-        users = Users.query.all()
-        usej = []
-        for u in users:
-            usej.append({
-                'vid':u.vid,
-                'email':u.email,
-                'fname':u.fname,
-                'lname':u.lname,
-                'ppic':u.ppic,
-                'detailscomp':u.detailscomp,
-                'educomp':u.educomp,
-                'time_created':u.time_created,
-                'lastseen':u.lastseen
-            })
-        return jsonify(usej)
-
-@farer.route('/user/education')
-class farer_u_edu(Resource):
-    # Manages data incoming
-    @api.doc(params={
-        'course':'Course',
-        'major':'Major',
-        'college':'College',
-        'institution':'Institution',
-        'year':'Year',
-        'educomp':'Education details completed'
-    })
-    @authorize(request)
-    def put(self):
-        try:
-            user = User.query.filter_by(id=resp).first()
-            if user is not None:
-                user.course = form.course.data
-                user.major = form.major.data
-                user.college = form.college.data
-                user.institution = form.institution.data
-                user.year = form.year.data
-                user.educomp = True
-                db.session.commit()
-                responseObject = {
-                    'status':'success',
-                    'message':'Successfully completed addition of Data'
-                }
-            else:
-                responseObject = {
-                    'status':'failure',
-                    'message':'Invalid User'
-                }
-            return jsonify(responseObject)
-        except Exception as e:
-            responseObject = {
-                'status':'failure',
-                'message':'Error Occured'
-            }
-            return jsonify(responseObject)
-
-@farer.route('/user/details')
-class farer_u_edu(Resource):
-    # Manages Details data (incoming)
-    def put(self):
-        try:
-            auth_t = auth_token(request)
-            if auth_t:
-                resp = User.decode_auth_token(auth_t)
-                if not isinstance(resp, str):
-                    print(resp)
-                    u = User.query.filter_by(vid=resp).first()
-                    print(u)
-                else:
-                    responseObject = {
-                        'status':'fail',
-                        'message':'Error in auth'
-                    }
-                    return jsonify(responseObject)
-            else:
-                responseObject = {
-                    'status':'fail',
-                    'message':'Error in auth'
-                }
-                return jsonify(responseObject)
-        except Exception as e:
-            print(e)
-
-        try:
-            inc = request.get_json()
-            user = User.query.filter_by(vid=resp).first()
-            user.fname = inc.get('fname')
-            user.lname = inc.get('lname')
-            user.phno = inc.get('phno')
-            user.sex = inc.get('sex')
-            user.detailscomp = True
-            db.session.commit()
-            responseObject = {
-                'status':'success',
-                'message':'Successfully completed addition of Data'
-            }
-        except Exception as e:
-            print(e)
-            responseObject = {
-                'status':'fail',
-                'message':'Error occured'
-            }
-        return jsonify(responseObject)
 
 #need to work on this
 @farer.route('/registered/college')
