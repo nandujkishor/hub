@@ -80,10 +80,12 @@ class user_auth(Resource):
     # Standard: User IP, Sender ID
     # Returns: JWT
     # Authorizes a new / returning user and provides the Token
+    @api.doc(params={
+        'idtoken':'Identification token from google',
+    })
     def post(self):
         print(request.args)
         print(request.get_json())
-        print(request.form)
         data = request.get_json()
         token = data.get('idtoken')
         print(token)
@@ -164,9 +166,7 @@ class user_auth(Resource):
                         'message':'User not logged in'
                     }
                     return jsonify(responseObject)
-
                 print(u)
-
                 responseObject = {
                     'status': 'success',
                     'data': {
@@ -205,26 +205,45 @@ class user_auth(Resource):
             return jsonify(responseObject)
 
 @farer.route('/user/details')
-class farer_u_edu(Resource):
+class farer_u_det(Resource):
     # Manages Details data (incoming)
+    @api.doc(params={
+        'fname':'First Name',
+        'lname':'Last Name',
+        'phno':'Phone No',
+        'sex':'Sex',
+        'detailscomp':'Personel details completed'
+    })
     def put(self):
         try:
             auth_t = auth_token(request)
             if auth_t:
                 resp = User.decode_auth_token(auth_t)
                 if not isinstance(resp, str):
-                    inc = request.get_json()
                     user = User.query.filter_by(vid=resp).first()
-                    user.fname = inc.get('fname')
-                    user.lname = inc.get('lname')
-                    user.phno = inc.get('phno')
-                    user.sex = inc.get('sex')
-                    user.detailscomp = True
-                    db.session.commit()
-                    responseObject = {
-                        'status':'success',
-                        'message':'Successfully completed addition of personel data'
-                    }
+                    if user is not None:
+                        if user.detailscomp is None:
+                            inc = request.get_json()
+                            user.fname = inc.get('fname')
+                            user.lname = inc.get('lname')
+                            user.phno = inc.get('phno')
+                            user.sex = inc.get('sex')
+                            user.detailscomp = True
+                            db.session.commit()
+                            responseObject = {
+                                'status':'success',
+                                'message':'Successfully completed addition of personel data'
+                            }
+                        else:
+                            responseObject = {
+                                'status':'failure',
+                                'message':'Personel deatils added already'
+                            }
+                    else:
+                        responseObject = {
+                            'status':'failure',
+                            'message':'Invalid User'
+                        }
         except Exception as e:
             print(e)
             responseObject = {
@@ -254,17 +273,23 @@ class farer_u_edu(Resource):
                     inc = request.get_json()
                     user = User.query.filter_by(vid=resp).first()
                     if user is not None:
-                        user.course = inc.get('course')
-                        user.major = inc.get('major')
-                        user.college = inc.get('college')
-                        user.institution = inc.get('institution')
-                        user.year = inc.get('year')
-                        user.educomp = True
-                        db.session.commit()
-                        responseObject = {
-                            'status':'success',
-                            'message':'Successfully completed addition of Educational Data'
-                        }
+                        if user.educomp is None:
+                            user.course = inc.get('course')
+                            user.major = inc.get('major')
+                            user.college = inc.get('college')
+                            user.institution = inc.get('institution')
+                            user.year = inc.get('year')
+                            user.educomp = True
+                            db.session.commit()
+                            responseObject = {
+                                'status':'success',
+                                'message':'Successfully completed addition of Educational Data'
+                            }
+                        else:
+                            responseObject = {
+                                'status':'failure',
+                                'message':'Educational details added already'
+                            }
                     else:
                         responseObject = {
                             'status':'failure',
