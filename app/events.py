@@ -69,7 +69,7 @@ class events_workshops(Resource):
         'img2':'Image 2 location',
         'img3':'Image 3 location',
         })
-    # @authorize(request)
+    @authorize(request)
     def post(self):
         try:
             data = request.get_json()
@@ -619,6 +619,11 @@ class events_talks_indv(Resource):
 @events.route('/registration')
 class events_registration(Resource):
 
+    @api.doc(params={
+        'cat':'Event Catagory',
+        'eid':'Event ID',
+        'tid':'Team ID'
+    })
     def post(self):
         try:
             auth_t = auth_token(request)
@@ -634,7 +639,7 @@ class events_registration(Resource):
             else:
                 #Workshop Registration
                 if data.get('cat') == 1:
-                    w = Workshops.query.filter_by(id=data.get('id')).first()
+                    w = Workshops.query.filter_by(id=data.get('eid')).first()
                     if w is not None:
                         seats = Registrations.query.filter_by(cat=1, eid=data.get('eid')).count()
                         if seats < w.seats:
@@ -655,15 +660,74 @@ class events_registration(Resource):
                             'status':'failure',
                             'message':'Invalid workshop ID'
                         }
-                    return jsonify(responseObject);
-                # elif data.get('cat') == 2:
-                #     c = Contests.query.filter_by(id=data.get('id')).first()
-                #     if c is not None:
-                #
-                #     return (23)
+                    return jsonify(responseObject)
+                elif data.get('cat') == 2:
+                    c = Contests.query.filter_by(id=data.get('eid')).first()
+                    if c is not None:
+                        if c.team_limit is 1:
+                            r = Registrations(vid=resp, cat=2, eid=data.get('eid'))
+                            db.session.add(r)
+                            db.session.commit()
+                            responseObject={
+                                'status':'success',
+                                'message':'Registration Success'
+                            }
+                        elif data.get('tid') is None:
+                            tid = werkzeug.security.pbkdf2_hex(vid,salt= vid ,iterations=50000, keylen=5, hashfunc=None)
+                            r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=tid)
+                            db.session.add(r)
+                            db.session.commit()
+                            responseObject={
+                                'status':'success',
+                                'message':'Registration Success'
+                            }
+                        else:
+                            team = Registrations.query.filter_by(cat=2, eid=data.get('eid'), tid=data.get('tid')).count()
+                            if count < c.team_limit:
+                                r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=form.data.get('eid'))
+                                db.session.add(r)
+                                db.session.commit()
+                                responseObject={
+                                    'status':'success',
+                                    'message':'Registration Success'
+                                }
+                            else:
+                                responseObject={
+                                    'status':'failure',
+                                    'message':'Team is full'
+                                }
+                    else:
+                        responseObject = {
+                            'status':'failure',
+                            'message':'Invalid Event ID'
+                        }
+                    return jsonify(responseObject)
+                elif data.get('cat') == 3:
+                    t = Talks.query.filter_by(id=data.get('eid')).first()
+                    if t is not None:
+                        seats = Registrations.query.filter_by(cat=3, eid=data.get('eid')).count()
+                        if seats < w.seats:
+                            r = Registrations(vid=resp, cat=3, eid=data.get('eid'))
+                            db.session.add(r)
+                            db.session.commit()
+                            responseObject={
+                                'status':'success',
+                                'message':'Registration Success'
+                            }
+                        else:
+                            responseObject={
+                                'status':'failure',
+                                'message':'No seats'
+                            }
+                    else:
+                        responseObject = {
+                            'status':'failure',
+                            'message':'Invalid Talk ID'
+                        }
+                    return jsonify(responseObject)
                 else:
-                    responseObject={
-                        'status':'failure',
+                    responseObject = {
+                        'status':'Failure',
                         'message':'Invalid Category'
                     }
                     return jsonify(responseObject);
@@ -673,3 +737,4 @@ class events_registration(Resource):
                 'status':'Failure',
                 'message':'Error Occured'
             }
+            return jsonif(responseObject)
