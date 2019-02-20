@@ -619,6 +619,27 @@ class events_talks_indv(Resource):
 @events.route('/registration')
 class events_registration(Resource):
 
+    def get(self):
+        try:
+            reg = Registrations.query.all()
+            responseObject = []
+            for regs in reg:
+                responseObject.append({
+                    'regid':regs.regid,
+                    'vid':regs.vid,
+                    'cat':regs.cat,
+                    'eid':regs.eid,
+                    'tid':regs.tid,
+                    'pay_completed':regs.pay_completed,
+                })
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'failure',
+                'Message':'Error Occured'
+            }
+        return jsonify(responseObject)
+        
     @api.doc(params={
         'cat':'Event Catagory',
         'eid':'Event ID',
