@@ -655,7 +655,7 @@ class events_registration(Resource):
         'eid':'Event ID',
         'tid':'Team ID'
     })
-    
+
     def post(self):
         try:
             auth_t = auth_token(request)
@@ -771,9 +771,6 @@ class events_registration(Resource):
                 'status':'Failure',
                 'message':'Error Occured'
             }
-<<<<<<< HEAD
-            return jsonify(responseObject)
-=======
             return jsonif(responseObject)
 
 @events.route('/registration/workshops/<int:id>')
@@ -878,4 +875,3 @@ class events_registration_talks(Resource):
                     'message':'Error occured'
                 }
         return jsonify(responseObject)
->>>>>>> 1e64d3fc468d5eb4492b53db8e906b9856b1b864
