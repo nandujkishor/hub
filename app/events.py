@@ -1,7 +1,8 @@
 import datetime
+import werkzeug.security
 from flask import render_template, flash, redirect, request, url_for, jsonify,json
 from app import app, db, api
-from app.farer import authorize
+from app.farer import authorizestaff
 from config import Config
 from app.models import Workshops,Talks,Contests,Registrations,User
 from werkzeug.utils import secure_filename
@@ -69,7 +70,7 @@ class events_workshops(Resource):
         'img2':'Image 2 location',
         'img3':'Image 3 location',
         })
-    @authorize(request)
+    @authorizestaff(request,"workshop")
     def post(self):
         try:
             data = request.get_json()
@@ -158,6 +159,7 @@ class events_workshops_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Edit details of the Workshop
+    @authorizestaff(request,"workshops")
     @api.doc(params = {
         'title':'Title',
         'plink':'Permanent Link',
@@ -181,6 +183,7 @@ class events_workshops_indv(Resource):
         'img2':'Image 2 location',
         'img3':'Image 3 location',
         })
+    @authorizestaff(request,"workshops")
     def put(self, id):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
@@ -213,6 +216,7 @@ class events_workshops_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Delete Workshop
+    @authorizestaff(request,"workshops")
     def delete(self, id):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
@@ -286,6 +290,7 @@ class events_contests(Resource):
         'expense':'Expenses for internal use',
         'incharge':'Incharge V-ID',
     })
+    @authorizestaff(request,"contests")
     def post(self):
         try:
             data = request.get_json()
@@ -372,6 +377,7 @@ class events_contests_indv(Resource):
         'expense':'Expenses for internal use',
         'incharge':'Incharge V-ID',
     })
+    @authorizestaff(request,"contests")
     def put(self, id):
         try:
             contest = Contests.query.filter_by(id=id).first()
@@ -406,6 +412,7 @@ class events_contests_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Delete Contest
+    @authorizestaff(request,"contests")
     def delete(self, id):
         try:
             contest = Contests.query.filter_by(id=id).first()
@@ -475,6 +482,7 @@ class events_talks(Resource):
         'fee':'fee for the talk',
         'incharge':'Incharge V-ID'
     })
+    @authorizestaff(request,"talks")
     def post(self):
         try:
             data = request.get_json()
@@ -558,6 +566,7 @@ class events_talks_indv(Resource):
         'fee':'fee for the talk',
         'incharge':'Incharge V-ID'
     })
+    @authorizestaff(request,"talks")
     def put(self, id):
         try:
             talk = Talks.query.filter_by(id=id).first()
@@ -592,6 +601,7 @@ class events_talks_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Delete Talk
+    @authorizestaff(request,"talks")
     def delete(self, id):
         try:
             talk = Talks.query.filter_by(id=id).first()
@@ -639,12 +649,13 @@ class events_registration(Resource):
                 'Message':'Error Occured'
             }
         return jsonify(responseObject)
-        
+
     @api.doc(params={
         'cat':'Event Catagory',
         'eid':'Event ID',
         'tid':'Team ID'
     })
+    
     def post(self):
         try:
             auth_t = auth_token(request)
@@ -694,7 +705,9 @@ class events_registration(Resource):
                                 'message':'Registration Success'
                             }
                         elif data.get('tid') is None:
-                            tid = werkzeug.security.pbkdf2_hex(vid,salt= vid ,iterations=50000, keylen=5, hashfunc=None)
+                            print("team id gen")
+                            tid = werkzeug.security.pbkdf2_hex(resp,resp ,iterations=50000, keylen=5, hashfunc=None)
+                            print(tid)
                             r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=tid)
                             db.session.add(r)
                             db.session.commit()
@@ -758,4 +771,4 @@ class events_registration(Resource):
                 'status':'Failure',
                 'message':'Error Occured'
             }
-            return jsonif(responseObject)
+            return jsonify(responseObject)

@@ -23,8 +23,12 @@ def auth_token(request):
     else:
         auth_token = ''
     return auth_token
-#
+
+#normal user authorization
 def authorize(request):
+        return
+#authorize staff
+def authorizestaff(request,team):
     def auth_with_request(func):
         @wraps(func)
         def d_view(*args, **kwargs):
@@ -33,7 +37,7 @@ def authorize(request):
                 if auth_t:
                     resp = User.decode_auth_token(auth_t)
                     if not isinstance(resp, str):
-                        print("Response ", resp)
+                        print("Authorization staff for  ", resp)
                         u = User.query.filter_by(vid=resp).first()
                         if u is None:
                             responseObject = {
@@ -41,7 +45,7 @@ def authorize(request):
                                 'message':'Go check your DB'
                             }
                             return jsonify(responseObject)
-                        st = Staff.query.filter_by(vid=u.vid, team="Workshop").first()
+                        st = Staff.query.filter_by(vid=u.vid, team=team).first()
                         if st is None:
                             responseObject = {
                                 'status':'fail',
