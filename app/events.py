@@ -771,4 +771,111 @@ class events_registration(Resource):
                 'status':'Failure',
                 'message':'Error Occured'
             }
+<<<<<<< HEAD
             return jsonify(responseObject)
+=======
+            return jsonif(responseObject)
+
+@events.route('/registration/workshops/<int:id>')
+class events_registration_workshop(Resource):
+
+    # API Params: JSON([Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON Array
+    # Send details of the Talk
+    def get(self, id):
+        try:
+            reg = Registrations.query.filter_by(cat=1,eid=id)
+            if reg is not None:
+                responseObject = []
+                for regs in reg:
+                    responseObject.append({
+                        'regid':regs.regid,
+                        'vid':regs.vid,
+                        'cat':regs.cat,
+                        'eid':regs.eid,
+                        'pay_completed':regs.pay_completed,
+                    })
+            else:
+                responseObject ={
+                    'status':'fail',
+                    'message':'invalid contest id'
+                }
+        except Exception as e:
+                print(e)
+                # Send email
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+                }
+        return jsonify(responseObject)
+
+@events.route('/registration/contests/<int:id>')
+class events_registration_contests(Resource):
+
+    # API Params: JSON([Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON Array
+    # Send details of the Talk
+    def get(self, id):
+        try:
+            reg = Registrations.query.filter_by(cat=2,eid=id)
+            if reg is not None:
+                responseObject = []
+                for regs in reg:
+                    responseObject.append({
+                        'regid':regs.regid,
+                        'vid':regs.vid,
+                        'cat':regs.cat,
+                        'eid':regs.eid,
+                        'tid':regs.tid,
+                        'pay_completed':regs.pay_completed,
+                    })
+            else:
+                responseObject ={
+                    'status':'fail',
+                    'message':'invalid contest id'
+                }
+        except Exception as e:
+                print(e)
+                # Send email
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+                }
+        return jsonify(responseObject)
+
+@events.route('/registration/talks/<int:id>')
+class events_registration_talks(Resource):
+
+    # API Params: JSON([Standard])
+    # Standard: IP, Sender ID
+    # Returns: JSON Array
+    # Send details of the Talk
+    def get(self, id):
+        try:
+            reg = Registrations.query.filter_by(cat=3,eid=id)
+            if reg is not None:
+                responseObject = []
+                for regs in reg:
+                    responseObject.append({
+                        'regid':regs.regid,
+                        'vid':regs.vid,
+                        'cat':regs.cat,
+                        'eid':regs.eid,
+                        'pay_completed':regs.pay_completed,
+                    })
+            else:
+                responseObject ={
+                    'status':'fail',
+                    'message':'invalid contest id'
+                }
+        except Exception as e:
+                print(e)
+                # Send email
+                responseObject = {
+                    'status':'fail',
+                    'message':'Error occured'
+                }
+        return jsonify(responseObject)
+>>>>>>> 1e64d3fc468d5eb4492b53db8e906b9856b1b864
