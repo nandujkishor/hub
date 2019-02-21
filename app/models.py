@@ -45,7 +45,7 @@ class User(db.Model):
                 algorithm='HS256'
             )
         except Exception as e:
-            print(e)
+            print("EXCEPTION CAUGHT = ", e)
             # Setup emailing to email the occured exception
             return e
 
