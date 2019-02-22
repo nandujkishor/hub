@@ -15,7 +15,6 @@ from google.auth.transport import requests
 
 farer = api.namespace('farer', description="Farer management")
 
-#
 def auth_token(request):
     auth_header = request.headers.get('Authorization')
     if auth_header:
@@ -434,6 +433,19 @@ class reg_coll(Resource):
                 'state':college.state
             })
         return jsonify(clist)
+
+@farer.route('/user/contact')
+class user_contact(Resource):
+    def get(self):
+        ent = request.get_json()
+        print(ent)
+        user = User.query.filter_by(vid=ent.get('vid')).first()
+        responseObject = {
+            'fname':user.fname,
+            'lname':user.lname,
+            'phno':user.phno
+        }
+        return jsonify(responseObject)
 
 @farer.route('/registered/college/count')
 class reg_coll_count(Resource):
