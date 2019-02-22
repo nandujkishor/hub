@@ -139,7 +139,7 @@ class user_auth(Resource):
         print(token)
         try:
             idinfo = id_token.verify_oauth2_token(token, requests.Request())
-            print(idinfo)
+            print("DEBUGGING = ", idinfo['iss'])
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
             userid = idinfo['sub']
@@ -148,9 +148,11 @@ class user_auth(Resource):
             # Send email on the error
             print("Error encountered - ValueError - Wrong issuer")
             return "Error encountered - ValueError - Wrong issuer"
+        
         print(idinfo['email'])
         u = User.query.filter_by(id = userid).first()
         print(u)
+        
         if u is None:
             try:
                 u = User(   id=userid,
