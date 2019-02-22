@@ -134,7 +134,8 @@ class user_auth(Resource):
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise ValueError('Wrong issuer.')
             userid = idinfo['sub']
-        except:
+        except Exception as e:
+            print(e)
             # flog = FarerLog(action="Login", point=point, status="error", message="ValueError - wrong issuer")
             # Send email on the error
             print("Error encountered - ValueError - Wrong issuer")

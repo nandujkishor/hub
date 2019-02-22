@@ -137,6 +137,7 @@ class events_workshops_indv(Resource):
                     'vidurl':workshop.vidurl,
                     'contact':workshop.contact,
                     'fee':workshop.fee,
+                    'org':workshop.org,
                     'incharge':workshop.incharge,
                     'support':workshop.support,
                     'seats':workshop.seats,
@@ -184,11 +185,21 @@ class events_workshops_indv(Resource):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
             if workshop is not None:
+                
                 data = request.get_json()
+                
                 workshop.title=data.get('title')
                 workshop.about=data.get('about')
+                workshop.short=data.get('short')
+                workshop.rules=data.get('rules')
+                workshop.prereq=data.get('prereq')
+                workshop.seats=data.get('seats')
+                workshop.incharge=data.get('incharge')
+                workshop.support=data.get('support')
                 workshop.org=data.get('org')
                 workshop.fee=data.get('fee')
+                workshop.department=data.get('department')
+                
                 db.session.commit()
                 responseObject = {
                     'status':'success',
