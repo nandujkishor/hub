@@ -25,7 +25,41 @@ def auth_token(request):
 
 #normal user authorization
 def authorize(request):
-        return
+    def normauth_with_request(func):
+        @wraps(func)
+        def nd_view(*args, **kwargs):
+            try:
+                auth_t = auth_token(request)
+                if auth_t:
+                    resp = User.decode_auth_token(auth_t)
+                    if not isinstance(resp, str):
+                        u = User.query.filter_by(vid=resp).first()
+                        if u is None:
+                            responseObject = {
+                                'status':'fail',
+                                'message':'Go check your DB'
+                            }
+                            return jsonify(responseObject)
+                    else:
+                        responseObject = {
+                            'status':'fail',
+                            'message':'Authorization failure:C1'
+                        }
+                        return jsonify(responseObject)
+                else:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Authorization failure:C2'
+                    }
+                    return jsonify(responseObject)
+            except Exception as e:
+                print(e)
+                # Send mail on the exception
+                return 401
+            return func(*args, **kwargs)
+        return nd_view
+    return normauth_with_request
+
 #authorize staff
 def authorizestaff(request,team):
     def auth_with_request(func):
@@ -44,6 +78,8 @@ def authorizestaff(request,team):
                                 'message':'Go check your DB'
                             }
                             return jsonify(responseObject)
+                        if u.super():
+                            return func(*args, **kwargs)
                         st = Staff.query.filter_by(vid=u.vid, team=team).first()
                         if st is None:
                             responseObject = {

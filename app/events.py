@@ -2,7 +2,7 @@ import datetime
 import werkzeug.security
 from flask import render_template, flash, redirect, request, url_for, jsonify,json
 from app import app, db, api
-from app.farer import authorizestaff
+from app.farer import authorizestaff, authorize
 from config import Config
 from app.models import Workshops,Talks,Contests,Registrations,User
 from werkzeug.utils import secure_filename
@@ -655,7 +655,7 @@ class events_registration(Resource):
         'eid':'Event ID',
         'tid':'Team ID'
     })
-
+    @authorize(request)
     def post(self):
         try:
             auth_t = auth_token(request)
