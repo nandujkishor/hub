@@ -7,8 +7,6 @@ from app import app, db, api
 from app.models import User, Registrations
 from app.farer import auth_token
 from config import Config
-# from app.forms import
-# from app.models import
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -17,6 +15,7 @@ from google.auth.transport import requests
 
 reg = api.namespace('reg', description="Registration management")
 
+# Not in usage. Need to decide the state
 @reg.route('/workshop/<int:id>')
 class workshop_reg(Resource):
     # API Params: JSON(Authorization, [Standard])

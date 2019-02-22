@@ -142,6 +142,7 @@ class Eventsmixin():
     pub = db.Column(db.Boolean, default=False)
 
 # Not currently in usage
+# Need to better define after talks
 class Talks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     person = db.Column(db.String(50), nullable=False)

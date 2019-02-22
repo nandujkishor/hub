@@ -72,7 +72,7 @@ class events_workshops(Resource):
         'img2':'Image 2 location',
         'img3':'Image 3 location',
         })
-    @authorizestaff(request,"workshop")
+    @authorizestaff(request,"workshop", 3)
     def post(self):
         try:
             data = request.get_json()
@@ -161,7 +161,7 @@ class events_workshops_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Edit details of the Workshop
-    @authorizestaff(request,"workshops")
+    @authorizestaff(request,"workshops", 3)
     @api.doc(params = {
         'title':'Title',
         'plink':'Permanent Link',
@@ -180,7 +180,7 @@ class events_workshops_indv(Resource):
         'img2':'Image 2 location',
         'img3':'Image 3 location',
         })
-    @authorizestaff(request,"workshops")
+    @authorizestaff(request,"workshops", 3)
     def put(self, id):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
@@ -223,7 +223,7 @@ class events_workshops_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Delete Workshop
-    @authorizestaff(request,"workshops")
+    @authorizestaff(request,"workshops", 3)
     def delete(self, id):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
@@ -297,7 +297,7 @@ class events_contests(Resource):
         'expense':'Expenses for internal use',
         'incharge':'Incharge V-ID',
     })
-    @authorizestaff(request,"contests")
+    @authorizestaff(request,"contests", 3)
     def post(self):
         try:
             data = request.get_json()
@@ -384,7 +384,7 @@ class events_contests_indv(Resource):
         'expense':'Expenses for internal use',
         'incharge':'Incharge V-ID',
     })
-    @authorizestaff(request,"contests")
+    @authorizestaff(request,"contests", 3)
     def put(self, id):
         try:
             contest = Contests.query.filter_by(id=id).first()
@@ -419,7 +419,7 @@ class events_contests_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Delete Contest
-    @authorizestaff(request,"contests")
+    @authorizestaff(request,"contests", 3)
     def delete(self, id):
         try:
             contest = Contests.query.filter_by(id=id).first()
@@ -489,7 +489,7 @@ class events_talks(Resource):
         'fee':'fee for the talk',
         'incharge':'Incharge V-ID'
     })
-    @authorizestaff(request,"talks")
+    @authorizestaff(request,"talks", 3)
     def post(self):
         try:
             data = request.get_json()
@@ -573,7 +573,7 @@ class events_talks_indv(Resource):
         'fee':'fee for the talk',
         'incharge':'Incharge V-ID'
     })
-    @authorizestaff(request,"talks")
+    @authorizestaff(request,"talks", 3)
     def put(self, id):
         try:
             talk = Talks.query.filter_by(id=id).first()
@@ -608,7 +608,7 @@ class events_talks_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Delete Talk
-    @authorizestaff(request,"talks")
+    @authorizestaff(request,"talks", 3)
     def delete(self, id):
         try:
             talk = Talks.query.filter_by(id=id).first()
