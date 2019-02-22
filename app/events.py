@@ -135,13 +135,14 @@ class events_workshops_indv(Resource):
                     'about':workshop.about,
                     'department':workshop.department,
                     'vidurl':workshop.vidurl,
-                    'contact':workshop.contact,
                     'fee':workshop.fee,
                     'org':workshop.org,
                     'incharge':workshop.incharge,
                     'support':workshop.support,
                     'seats':workshop.seats,
-                    'pub':workshop.pub
+                    'pub':workshop.pub,
+                    'rules':workshop.rules,
+                    'prereq':workshop.prereq
                 }
             else:
                 responseObject ={
@@ -361,18 +362,19 @@ class events_contests_indv(Resource):
             if contest is not None:
                 responseObject = {
                     'title':contest.title,
-                    'short':contest.short,
-                    'team_limit':contest.team_limit,
-                    'fee':contest.fee,
+                    'department':contest.department,
+                    'about':contest.about,
                     'prize1':contest.prize1,
                     'prize2':contest.prize2,
                     'prize3':contest.prize3,
+                    'short':contest.short,
                     'pworth':contest.pworth,
+                    'team_limit':contest.team_limit,
+                    'fee':contest.fee,
+                    'incharge':contest.incharge,
+                    'support':contest.support,
                     'rules':contest.rules,
                     'prereq':contest.prereq,
-                    'support':contest.support,
-                    'incharge':contest.incharge,
-                    'department':contest.department
                 }
             else:
                 responseObject ={
