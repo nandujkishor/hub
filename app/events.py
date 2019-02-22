@@ -274,6 +274,7 @@ class events_contests(Resource):
                     'incharge':contest.incharge,
                     'support':contest.support,
                     'rules':contest.rules,
+                    'prereq':contest.prereq,
                 })
             print(responseObject)
         except Exception as e:
@@ -318,6 +319,8 @@ class events_contests(Resource):
                 team_limit=data.get('team_limit'),
                 support=data.get('support'),
                 about=data.get('about'),
+                rules=data.get('rules'),
+                prereq=data.get('prereq'), 
                 prize1=data.get('prize1'),
                 prize2=data.get('prize2'),
                 prize3=data.get('prize3'),
