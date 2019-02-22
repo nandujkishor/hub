@@ -1,5 +1,5 @@
 # hub
-Microservices point with providing authentication and data, integrated as an API Gateway.
+Microservices point providing authentication and data, integrated as an API Gateway.
 
 switch-hub provides services for Vidyut websites and mobile apps. Check the API documentation at /doc. By default, the development server runs on port 3000.
 
