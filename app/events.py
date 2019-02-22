@@ -30,8 +30,13 @@ class events_workshops(Resource):
                     'title':workshop.title,
                     'plink':workshop.plink,
                     'short':workshop.short,
+                    'about':workshop.about,
+                    'org': workshop.org,
                     'department':workshop.department,
                     'fee':workshop.fee,
+                    'rules':workshop.rules,
+                    'seats':workshop.seats,
+                    'prereq':workshop.prereq,
                     'seats':workshop.seats
                 })
         except Exception as e:
@@ -54,8 +59,6 @@ class events_workshops(Resource):
         'about':'Long Description in md',
         'prereq':'Prerequisites in md',
         'department':'Department',
-        'instructor':'Instructor Name',
-        'abins':'About the Lead Instructor',
         'vidurl':'Video URL',
         'company':'Company Name',
         'lead':'Company Lead',
@@ -80,10 +83,11 @@ class events_workshops(Resource):
                 about = data.get('about'),
                 department = data.get('department'),
                 vidurl = data.get('vidurl'),
-                duration = data.get('duration'),
                 org = data.get('org'),
                 contact = data.get('contact'),
                 fee = data.get('fee'),
+                rules = data.get('rules'),
+                prereq = data.get('prereq'),
                 incharge = data.get('incharge'),
                 support = data.get('support'),
                 seats = data.get('seats')
@@ -135,7 +139,6 @@ class events_workshops_indv(Resource):
                     'fee':workshop.fee,
                     'incharge':workshop.incharge,
                     'support':workshop.support,
-                    'duration':workshop.duration,
                     'seats':workshop.seats,
                     'pub':workshop.pub
                 }
@@ -165,12 +168,8 @@ class events_workshops_indv(Resource):
         'about':'Long Description in md',
         'prereq':'Prerequisites in md',
         'department':'Department',
-        'instructor':'Instructor Name',
-        'abins':'About the Lead Instructor',
         'vidurl':'Video URL',
         'org':'Organiser Name',
-        'lead':'Organiser Lead',
-        'contact':'Contact No',
         'incharge':'Incharge V-ID',
         'support':'Supporter V-ID',
         'fee':'Workshop Fee',
