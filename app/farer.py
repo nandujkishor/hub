@@ -61,7 +61,7 @@ def authorize(request):
     return normauth_with_request
 
 #authorize staff
-def authorizestaff(request,team):
+def authorizestaff(request, team, level):
     def auth_with_request(func):
         @wraps(func)
         def d_view(*args, **kwargs):
@@ -80,14 +80,23 @@ def authorizestaff(request,team):
                             return jsonify(responseObject)
                         if u.super():
                             return func(*args, **kwargs)
+                        st = Staff.query.filter_by(vid=u.vid, team="web").first()
+                        if st is not None:
+                            if st.level < level:
+                                responseObject = {
+                                    'status':'fail',
+                                    'message':'Not enough clearance levels for web'
+                                }
+                                return jsonify(responseObject)
+                            return func(*args, **kwargs)
                         st = Staff.query.filter_by(vid=u.vid, team=team).first()
-                        if st is None:
+                        if st == None:
                             responseObject = {
                                 'status':'fail',
                                 'message':'Not staff'
                             }
                             return jsonify(responseObject)
-                        elif st.level < 3:
+                        elif st.level < level:
                             responseObject = {
                                 'status':'fail',
                                 'message':'Not enough permissions'
@@ -456,7 +465,7 @@ class StaffAPI(Resource):
                         'message':'Upgraded to Staff'
                     }
                     return jsonify(responseObject)
-
+    
 #need to work on this
 @farer.route('/registered/college')
 class reg_coll(Resource):
