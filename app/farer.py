@@ -5,8 +5,7 @@ from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.models import User, Staff
 from config import Config
-# from app.forms import
-# from app.models import
+
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -61,7 +60,7 @@ def authorize(request):
     return normauth_with_request
 
 #authorize staff
-def authorizestaff(request, team, level):
+def authorizestaff(request, team="all", level=4):
     def auth_with_request(func):
         @wraps(func)
         def d_view(*args, **kwargs):
@@ -86,6 +85,21 @@ def authorizestaff(request, team, level):
                                 responseObject = {
                                     'status':'fail',
                                     'message':'Not enough clearance levels for web'
+                                }
+                                return jsonify(responseObject)
+                            return func(*args, **kwargs)
+                        if team=="all":
+                            st = Staff.query.filter_by(vid=u.vid).order_by(level).first()
+                            if st is None:
+                                responseObject = {
+                                    'status':'fail',
+                                    'message':'Not staff'
+                                }
+                                return jsonify(responseObject)
+                            elif st.level < level:
+                                responseObject = {
+                                    'status':'fail',
+                                    'message':'No clearance in any team'
                                 }
                                 return jsonify(responseObject)
                             return func(*args, **kwargs)
