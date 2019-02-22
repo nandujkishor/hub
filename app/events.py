@@ -262,11 +262,20 @@ class events_contests(Resource):
                 responseObject.append({
                     'id':contest.id,
                     'title':contest.title,
+                    'department':contest.department,
+                    'about':contest.about,
+                    'prize1':contest.prize1,
+                    'prize2':contest.prize2,
+                    'prize3':contest.prize3,
                     'short':contest.short,
                     'pworth':contest.pworth,
                     'team_limit':contest.team_limit,
-                    'fee':contest.fee
+                    'fee':contest.fee,
+                    'incharge':contest.incharge,
+                    'support':contest.support,
+                    'rules':contest.rules,
                 })
+            print(responseObject)
         except Exception as e:
                 print(e)
                 # Send email
@@ -307,6 +316,11 @@ class events_contests(Resource):
                 pworth = data.get('pworth'),
                 department = data.get('department'),
                 team_limit=data.get('team_limit'),
+                support=data.get('support'),
+                about=data.get('about'),
+                prize1=data.get('prize1'),
+                prize2=data.get('prize2'),
+                prize3=data.get('prize3'),
                 fee=data.get('fee'),
                 incharge=data.get('incharge')
             )
@@ -345,10 +359,17 @@ class events_contests_indv(Resource):
                 responseObject = {
                     'title':contest.title,
                     'short':contest.short,
-                    'pworth':contest.pworth,
                     'team_limit':contest.team_limit,
                     'fee':contest.fee,
-                    'incharge':contest.incharge
+                    'prize1':contest.prize1,
+                    'prize2':contest.prize2,
+                    'prize3':contest.prize3,
+                    'pworth':contest.pworth,
+                    'rules':contest.rules,
+                    'prereq':contest.prereq,
+                    'support':contest.support,
+                    'incharge':contest.incharge,
+                    'department':contest.department
                 }
             else:
                 responseObject ={
@@ -389,13 +410,24 @@ class events_contests_indv(Resource):
         try:
             contest = Contests.query.filter_by(id=id).first()
             if contest is not None:
+                
                 data = request.get_json()
+                
                 contest.title=data.get('title')
                 contest.short=data.get('short')
+                contest.short=data.get('about')
+                contest.short=data.get('rules')
+                contest.short=data.get('prereq')
                 contest.pworth=data.get('pworth')
                 contest.fee=data.get('fee')
                 contest.incharge=data.get('incharge')
+                contest.support=data.get('support')
+                contest.department=data.get('department')
+                contest.prize1=data.get('prize1')
+                contest.prize2=data.get('prize2')
+                contest.prize3=data.get('prize3')
                 contest.team_limit=data.get('team_limit')
+                
                 db.session.commit()
                 responseObject = {
                     'status':'success',
