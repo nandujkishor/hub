@@ -1,4 +1,5 @@
 import os
+import qrcode
 from functools import wraps
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
@@ -169,13 +170,13 @@ class user_auth(Resource):
         
         if u is None:
             try:
-                u = User(   id=userid,
-                            email=idinfo.get('email'),
-                            fname=idinfo.get('given_name'),
-                            lname=idinfo.get('family_name'),
-                            ppic=idinfo.get('picture'))
-                # flog = FarerLog(uid=u.id, action="Register", point=point, ip=ip)
-                # db.session.add(flog)
+                u = User(id=userid,
+                        email=idinfo.get('email'),
+                        fname=idinfo.get('given_name'),
+                        lname=idinfo.get('family_name'),
+                        ppic=idinfo.get('picture'))
+                # flog = FarerLog(vid=u.id, action="Register", point=point, ip=ip)
+                db.session.add(flog)
                 print("TRYING TO ADD TO DB = ", u)
                 db.session.add(u)
                 db.session.commit()

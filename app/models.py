@@ -186,7 +186,7 @@ class Registrations(db.Model):
     #EventID
     tid = db.Column(db.Integer)
     #TeamID
-    pay_completed = db.Column(db.Boolean)
+    pay_completed = db.Column(db.Boolean, default=False)
     # 0 if not paid, 1 if paid.
 # Need to rethink registrations
 
@@ -209,3 +209,8 @@ class Staff(db.Model):
     # 2 for ...
     # 3 for people with create previlige
     # 4 for core representative
+
+# class FarerLog(db.Model):
+#     vid = db.Column(db.Integer)
+#     action = db.Column(db.Integer)
+#     point = db.Column()

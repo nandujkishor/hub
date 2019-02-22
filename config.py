@@ -15,7 +15,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'hey-dude-what-a-padipiii'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'motham-padithamaanallooo'
     # MAIL_SERVER = 'smtp.office365.com'
     # MAIL_PORT = 587
     # MAIL_USE_TLS = True
