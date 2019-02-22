@@ -115,6 +115,7 @@ class user_auth(Resource):
                             ppic=idinfo.get('picture'))
                 # flog = FarerLog(uid=u.id, action="Register", point=point, ip=ip)
                 # db.session.add(flog)
+                print("TRYING TO ADD TO DB = ", u)
                 db.session.add(u)
                 db.session.commit()
                 # Send welcome email
@@ -122,8 +123,9 @@ class user_auth(Resource):
                 responseObject = {
                     'status': 'success',
                     'message': 'Successfully registered',
-                    'auth_token': auth_token
+                    'auth_token': auth_token.decode()
                 }
+                print("RESPONOSE = ", responseObject)
                 return jsonify(responseObject)
             except Exception as e:
                 responseObject = {
@@ -161,7 +163,7 @@ class user_auth(Resource):
         if auth_t:
             resp = User.decode_auth_token(auth_t)
             if not isinstance(resp, str):
-                print(resp)
+                print("RESP = ", resp)
                 u = User.query.filter_by(vid=resp).first()
                 if u is None:
                     responseObject = {
@@ -169,7 +171,9 @@ class user_auth(Resource):
                         'message':'User not logged in'
                     }
                     return jsonify(responseObject)
-                print(u)
+                
+                print("U = ", u)
+
                 responseObject = {
                     'status': 'success',
                     'data': {
