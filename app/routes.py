@@ -3,8 +3,9 @@ import json
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.farer import authorizestaff
-from app.models import Workshops,Talks,Contests,Registrations,User, College
+from app.farer import authorizestaff, authorize
+from app.models import Workshops, Talks, Contests, Registrations, User, College
+from app.mail import test_mail
 from config import Config
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -18,6 +19,12 @@ def before_request():
 @app.route('/index')
 def index():
     return render_template('index.html', page="/home", uchange="")
+
+@app.route('/mail/test')
+@authorize
+def mailtest(u):
+    test_mail(u)
+    return "Sent"
 
 # @app.route('/')
 

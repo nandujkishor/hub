@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Thank you for registering with Vidyut</title>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+  </head>
+  <style type="text/css">
+  #outlook a { padding:0; }
+    body{
+      width:100% !important;
+      -webkit-text;
+      size-adjust:100%;
+      -ms-text-size-adjust:100%;
+      margin:0;
+      padding:0;
+    }
+    .ReadMsgBody {
+      width: 100%;
+    }
+    .ExternalClass {
+      width:100%;
+    }
+    .backgroundTable {
+      margin:0 auto; padding:0; width:100%;!important;
+    }
+    table td {
+      border-collapse: collapse;
+    }
+    .ExternalClass * {
+      line-height: 115%;
+    }
+  </style>
+  <body style="margin: 0; padding: 0;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;font-family:Helvetica, arial, sans-serif;">
+      <tr align="center">
+        <td style="padding: 20px 10px 20px 20px;box-sizing:border-box;">
+          <img src="https://vidyut.amrita.edu/static/images/v-logo.png" width="150px">
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
+          Hello {{ user.fname }}!<br><br>
+          Thank you for registering with Vidyut. Please note your Vidyut ID for current and future purposes. You can find this on the website as well. We look forward to meeting you at the event. Please show the QR Code below for Vidyut registration purposes. Your Vidyut ID is V19{{ '%04d' % user.vid }}.
+        </td>
+      </tr>
+      <tr align="center">
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;font-size:50px;max-width: 600px;display: block;margin: 0 auto;" bgcolor="white">
+            <img src="{{ qrcode('V19' + '%04d' % user.vid) }}">
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
+          Please check your inbox regularly for communications from Vidyut. We wish you a wonderful year ahead. For any queries, please send an email to <a href="vidyut@am.amrita.edu">vidyut@am.amrita.edu</a>.
+        </td>
+      </tr>
+      <tr>
+      <tr align="center">
+        <td style="padding: 10px 10px 8px 5px;box-sizing:border-box;">
+          <img src="https://www.amrita.edu/sites/default/files/amrita-new-logo-color-10.png" width="180px">
+          <p>Clappana P.O<br>Amritapuri, Vallikavu<br>Kerala 690525</p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

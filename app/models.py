@@ -61,10 +61,12 @@ class User(db.Model):
             else:
                 return payload['sub']
         except jwt.ExpiredSignatureError:
-            return 1
+            print("Expired token")
+            return "Expired token"
             # Signature expired. Need to login again.
         except jwt.InvalidTokenError:
-            return 2
+            print("Invalid token")
+            return "Invalid token"
             # Invalid token. Need to login again.
 
 class BlacklistToken(db.Model):
@@ -202,7 +204,8 @@ class EventDLog(db.Model):
     action = db.Column(db.Integer)
 
 class Staff(db.Model):
-    vid = db.Column(db.Integer, primary_key=True)
+    sid = db.Column(db.Integer, primary_key=True)
+    vid = db.Column(db.Integer)
     team = db.Column(db.String(20))
     level = db.Column(db.Integer)
     # 1 for base level volunteer

@@ -55,7 +55,7 @@ def authorize(request):
                 print(e)
                 # Send mail on the exception
                 return 401
-            return func(*args, **kwargs)
+            return func(u, *args, **kwargs)
         return nd_view
     return normauth_with_request
 
@@ -222,8 +222,10 @@ class user_auth(Resource):
     # Provides user information based on the header provided
     def get(self):
         auth_t = auth_token(request)
+        print("Auth token", auth_t)
         if auth_t:
             resp = User.decode_auth_token(auth_t)
+            print("Decoded value", resp)
             if not isinstance(resp, str):
                 print("RESP = ", resp)
                 u = User.query.filter_by(vid=resp).first()
