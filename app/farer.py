@@ -473,6 +473,7 @@ class StaffAPI(Resource):
 class reg_coll(Resource):
     # Provides the list of colleges among registered users
     # Headers: Authorization
+    @authorizestaff(request, "web", 4)
     def get(self):
         colleges = User.query.with_entities(User.college).distinct().all()
         clist = []
