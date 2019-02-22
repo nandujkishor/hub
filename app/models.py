@@ -4,17 +4,17 @@ import jwt
 
 class User(db.Model):
     vid = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id = db.Column(db.String(30))
-    email = db.Column(db.String(120), unique=True)
-    fname = db.Column(db.String(30))
-    lname = db.Column(db.String(30))
-    ppic = db.Column(db.String(200))
+    id = db.Column(db.String(40))
+    email = db.Column(db.String(300), unique=True)
+    fname = db.Column(db.String(100))
+    lname = db.Column(db.String(100))
+    ppic = db.Column(db.String(256))
     course = db.Column(db.String(200))
     major = db.Column(db.String(200))
     sex = db.Column(db.Integer)
     year = db.Column(db.Integer)
     college = db.Column(db.Integer)
-    institution = db.Column(db.String(100))
+    institution = db.Column(db.String(200))
     school = db.Column(db.Boolean)
     # In case college is not listed.
     phno = db.Column(db.String(10))
@@ -99,14 +99,53 @@ class College(db.Model):
     def __repr__(self):
         return '<College {}>'.format(self.name)
 
+class Eventsmixin():
+    # Event details
+    title = db.Column(db.String(300), nullable=False)
+    plink = db.Column(db.String(80))
+    department = db.Column(db.Integer)
+    short = db.Column(db.Text)
+    about = db.Column(db.Text)
+    vidurl = db.Column(db.String(400))
+    # URL for video on the event, if any, from Youtube, Vimeo or any other service.
+    prereq = db.Column(db.Text) #Content in markdown
+    rules = db.Column(db.Text)
+    tags = db.Column(db.Text)
+    # Need tags seperated by a delimiter - ','(coma)
+    img1 = db.Column(db.String(2000))
+    img2 = db.Column(db.String(2000))
+    img3 = db.Column(db.String(2000))
+    img4 = db.Column(db.String(2000))
+
+    # Details on the Partner organisation
+    org = db.Column(db.String(30))
+    orglogo = db.Column(db.String(200))
+    contact = db.Column(db.String(10))
+
+    # Vidyut staff contact points
+    incharge = db.Column(db.Integer)
+    # ID of the internal person incharge
+    support = db.Column(db.Integer)
+    support2 = db.Column(db.Integer)
+    support3 = db.Column(db.Integer)
+
+    # Data for timings and logistics
+    d1dur = db.Column(db.Text)
+    d2dur = db.Column(db.Text)
+    d3dur = db.Column(db.Text)
+    seats = db.Column(db.Integer)
+    fee = db.Column(db.Integer)
+    expense = db.Column(db.Integer)
+    # For internal use - expenses
+
+    # State
+    pub = db.Column(db.Boolean, default=False)
+
+# Not currently in usage
 class Talks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(50), nullable=False)
-    plink = db.Column(db.String(30))
-    short = db.Column(db.String(200))
-    about = db.Column(db.String(3000))
-    person = db.Column(db.String(30), nullable=False)
-    desig = db.Column(db.String(30))
+    person = db.Column(db.String(50), nullable=False)
+    desig = db.Column(db.String(50))
     # Person designation
     contact = db.Column(db.String(10))
     picurl = db.Column(db.String(260))
@@ -117,71 +156,23 @@ class Talks(db.Model):
     # Picture of the person (large)
     fee = db.Column(db.Integer)
     # Amount spent to bring the person
-    incharge = db.Column(db.Integer)
-    # ID of the internal person incharge
 
-class Workshops(db.Model):
+class Workshops(db.Model, Eventsmixin):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    plink = db.Column(db.String(30))
-    # Permalink (extension only)
-    short = db.Column(db.String(200))
-    about = db.Column(db.String(3000))
-    # about on the workshop (1000 char)
-    prereq = db.Column(db.Text) #Content in markdown
-    department = db.Column(db.Integer)
-    # Need to come up with a numbering for departments
-    theme = db.Column(db.String(20))
-    # Theme, if any
-    vidurl = db.Column(db.String(400))
-    # URL for video on the workshop, if any, from Youtube, Vimeo or any other service.
-    img1 = db.Column(db.String(200))
-    img2 = db.Column(db.String(200))
-    img3 = db.Column(db.String(200))
     lead = db.Column(db.String(30))
-    org = db.Column(db.String(30))
-    # Conducting organisation, if any
-    orglogo = db.Column(db.String(200))
-    contact = db.Column(db.String(10))
-    # Organising organisation contact details
-    fee = db.Column(db.Integer)
-    incharge = db.Column(db.Integer)
-    # V-ID of the internal person incharge
-    support = db.Column(db.Integer)
-    # Data for timings and count
-    duration = db.Column(db.Text)
-    seats = db.Column(db.Integer)
-    # V-ID of the support person assigned to the event
-    pub = db.Column(db.Boolean, default=False)
-    # Publish
 # Need to build a seperate schema to manage expenses. Each row currosponds to certain payment, with which event for.
 # Need to build a tag management system, to associate events in general.
 
-class Contests(db.Model):
+class Contests(db.Model, Eventsmixin):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    plink = db.Column(db.String(30))
-    img1 = db.Column(db.String(300))
-    img2 = db.Column(db.String(300))
-    img3 = db.Column(db.String(300))
-    short = db.Column(db.String(200))
-    about = db.Column(db.String(6000))
-    rules = db.Column(db.String(6000))
-    prereq = db.Column(db.String(6000))
-    organiser = db.Column(db.String(40))
-    department = db.Column(db.Integer)
     prize1 = db.Column(db.Integer)
     prize2 = db.Column(db.Integer)
     prize3 = db.Column(db.Integer)
     pworth = db.Column(db.Integer)
     # Prizes worth ...
-    fee = db.Column(db.Integer)
     # Pricing per team (1 to any)
     team_limit = db.Column(db.Integer, default=1)
     # Max. no of students in a team
-    expense = db.Column(db.Integer)
-    # For internal use - expenses
-    incharge = db.Column(db.Integer)
 
 class Registrations(db.Model):
     regid = db.Column(db.Integer, primary_key=True)
