@@ -439,9 +439,9 @@ class StaffAPI(Resource):
             resp = User.decode_auth_token(auth_t)
             if not isinstance(resp, str):
                 print(resp)
-                # u = User.query.filter_by(vid=resp).first()
+                u = User.query.filter_by(vid=resp).first()
                 # print(u)
-                st = Staff.query.all()
+                st = Staff.query.filter_by(vid=u.vid).all()
                 roles = []
                 for s in st:
                     roles.append({
