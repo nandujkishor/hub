@@ -54,7 +54,6 @@ class events_workshops(Resource):
         'about':'Long Description in md',
         'prereq':'Prerequisites in md',
         'department':'Department',
-        'theme':'Theme',
         'instructor':'Instructor Name',
         'abins':'About the Lead Instructor',
         'vidurl':'Video URL',
@@ -80,13 +79,13 @@ class events_workshops(Resource):
                 short = data.get('short'),
                 about = data.get('about'),
                 department = data.get('department'),
-                theme = data.get('theme'),
                 vidurl = data.get('vidurl'),
                 duration = data.get('duration'),
                 org = data.get('org'),
                 contact = data.get('contact'),
                 fee = data.get('fee'),
                 incharge = data.get('incharge'),
+                support = data.get('support'),
                 seats = data.get('seats')
             )
             # Put a log in Farerlog
@@ -131,7 +130,6 @@ class events_workshops_indv(Resource):
                     'short':workshop.short,
                     'about':workshop.about,
                     'department':workshop.department,
-                    'theme':workshop.theme,
                     'vidurl':workshop.vidurl,
                     'contact':workshop.contact,
                     'fee':workshop.fee,
@@ -167,7 +165,6 @@ class events_workshops_indv(Resource):
         'about':'Long Description in md',
         'prereq':'Prerequisites in md',
         'department':'Department',
-        'theme':'Theme',
         'instructor':'Instructor Name',
         'abins':'About the Lead Instructor',
         'vidurl':'Video URL',
