@@ -90,7 +90,8 @@ class events_workshops(Resource):
                 prereq = data.get('prereq'),
                 incharge = data.get('incharge'),
                 support = data.get('support'),
-                seats = data.get('seats')
+                seats = data.get('seats'),
+                rmseats = data.get('seats')
             )
             # Put a log in Farerlog
             db.session.add(workshop)
