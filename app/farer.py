@@ -176,7 +176,7 @@ class user_auth(Resource):
                         lname=idinfo.get('family_name'),
                         ppic=idinfo.get('picture'))
                 # flog = FarerLog(vid=u.id, action="Register", point=point, ip=ip)
-                db.session.add(flog)
+                # db.session.add(flog)
                 print("TRYING TO ADD TO DB = ", u)
                 db.session.add(u)
                 db.session.commit()
