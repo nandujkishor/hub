@@ -4,7 +4,7 @@ from flask import render_template, flash, redirect, request, url_for, jsonify,js
 from app import app, db, api
 from app.farer import authorizestaff, authorize
 from config import Config
-from app.models import Workshops,Talks,Contests,Registrations,User
+from app.models import Workshops, Talks, Contests, Registrations, User, Transactions
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -701,122 +701,153 @@ class events_registration(Resource):
         'tid':'Team ID'
     })
     @authorize(request)
-    def post(self):
+    # This route is for registrations through payment gateway
+    def post(user, self):
         try:
-            auth_t = auth_token(request)
-            resp = User.decode_auth_token(auth_t)
             data = request.get_json()
-            reg = Registrations.query.filter_by(vid=resp, cat=data.get('cat'), eid=data.get('eid')).first()
-            if reg is not None:
-                responseObject={
-                    'status':'failure',
-                    'message':'User already Registered'
-                }
-                return jsonify(responseObject)
-            else:
-                #Workshop Registration
-                if data.get('cat') == 1:
-                    w = Workshops.query.filter_by(id=data.get('eid')).first()
-                    if w is not None:
-                        seats = Registrations.query.filter_by(cat=1, eid=data.get('eid')).count()
-                        if seats < w.seats:
-                            r = Registrations(vid=resp, cat=1, eid=data.get('eid'))
-                            db.session.add(r)
-                            db.session.commit()
-                            responseObject={
-                                'status':'success',
-                                'message':'Registration Success'
-                            }
-                        else:
-                            responseObject={
-                                'status':'failure',
-                                'message':'No seats'
-                            }
-                    else:
-                        responseObject = {
-                            'status':'failure',
-                            'message':'Invalid workshop ID'
-                        }
-                    return jsonify(responseObject)
-                elif data.get('cat') == 2:
-                    c = Contests.query.filter_by(id=data.get('eid')).first()
-                    if c is not None:
-                        if c.team_limit is 1:
-                            r = Registrations(vid=resp, cat=2, eid=data.get('eid'))
-                            db.session.add(r)
-                            db.session.commit()
-                            responseObject={
-                                'status':'success',
-                                'message':'Registration Success'
-                            }
-                        elif data.get('tid') is None:
-                            print("team id gen")
-                            tid = werkzeug.security.pbkdf2_hex(resp,resp ,iterations=50000, keylen=5, hashfunc=None)
-                            print(tid)
-                            r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=tid)
-                            db.session.add(r)
-                            db.session.commit()
-                            responseObject={
-                                'status':'success',
-                                'message':'Registration Success'
-                            }
-                        else:
-                            team = Registrations.query.filter_by(cat=2, eid=data.get('eid'), tid=data.get('tid')).count()
-                            if count < c.team_limit:
-                                r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=form.data.get('eid'))
-                                db.session.add(r)
-                                db.session.commit()
-                                responseObject={
-                                    'status':'success',
-                                    'message':'Registration Success'
-                                }
-                            else:
-                                responseObject={
-                                    'status':'failure',
-                                    'message':'Team is full'
-                                }
-                    else:
-                        responseObject = {
-                            'status':'failure',
-                            'message':'Invalid Event ID'
-                        }
-                    return jsonify(responseObject)
-                elif data.get('cat') == 3:
-                    t = Talks.query.filter_by(id=data.get('eid')).first()
-                    if t is not None:
-                        seats = Registrations.query.filter_by(cat=3, eid=data.get('eid')).count()
-                        if seats < w.seats:
-                            r = Registrations(vid=resp, cat=3, eid=data.get('eid'))
-                            db.session.add(r)
-                            db.session.commit()
-                            responseObject={
-                                'status':'success',
-                                'message':'Registration Success'
-                            }
-                        else:
-                            responseObject={
-                                'status':'failure',
-                                'message':'No seats'
-                            }
-                    else:
-                        responseObject = {
-                            'status':'failure',
-                            'message':'Invalid Talk ID'
-                        }
-                    return jsonify(responseObject)
+            #Workshop Registration
+            if data.get('cat') == 1:
+                w = Workshops.query.filter_by(id=data.get('eid')).first()
+                if w is not None:
+                    try:
+                        w.rmseats = Workshop.c.rmseats - 1
+                        db.session.commit()
+                        tr = Transactions(cat=1, eid=w.id, vid=user.vid)
+                        db.session.add(tr)
+                        db.session.commit()
+                        # Start a 20 minute scheduler to increment the workshop slot
+                        # in case the transaction got an issue / is pending.
+                        # In all other cases, take the decision on return of endpoint
+                    except Exception as e:
+                        print(e)
+                        return "No seats remaining"
+                    # seats = Registrations.query.filter_by(cat=1, eid=data.get('eid')).count()
+                    # if seats < w.seats:
+                    #     r = Registrations(vid=resp, cat=1, eid=data.get('eid'))
+                    #     db.session.add(r)
+                    #     db.session.commit()
+                    #     responseObject={
+                    #         'status':'success',
+                    #         'message':'Registration Success'
+                    #     }
+                    # else:
+                    #     responseObject={
+                    #         'status':'failure',
+                    #         'message':'No seats'
+                    #     }
                 else:
                     responseObject = {
-                        'status':'Failure',
-                        'message':'Invalid Category'
+                         'status':'failure',
+                        'message':'Invalid workshop ID'
                     }
-                    return jsonify(responseObject);
+                return jsonify(responseObject)
+            elif data.get('cat') == 2:
+                c = Contests.query.filter_by(id=data.get('eid')).first()
+                if c is not None:
+                    if c.team_limit is 1:
+                        r = Registrations(vid=resp, cat=2, eid=data.get('eid'))
+                        db.session.add(r)
+                        db.session.commit()
+                        responseObject={
+                            'status':'success',
+                            'message':'Registration Success'
+                        }
+                    elif data.get('tid') is None:
+                        print("team id gen")
+                        tid = werkzeug.security.pbkdf2_hex(resp,resp ,iterations=50000, keylen=5, hashfunc=None)
+                        print(tid)
+                        r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=tid)
+                        db.session.add(r)
+                        db.session.commit()
+                        responseObject={
+                            'status':'success',
+                            'message':'Registration Success'
+                        }
+                    else:
+                        team = Registrations.query.filter_by(cat=2, eid=data.get('eid'), tid=data.get('tid')).count()
+                        if count < c.team_limit:
+                            r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=form.data.get('eid'))
+                            db.session.add(r)
+                            db.session.commit()
+                            responseObject={
+                                'status':'success',
+                                'message':'Registration Success'
+                            }
+                        else:
+                            responseObject={
+                                'status':'failure',
+                                'message':'Team is full'
+                            }
+                else:
+                    responseObject = {
+                        'status':'failure',
+                        'message':'Invalid Event ID'
+                    }
+                return jsonify(responseObject)
         except Exception as e:
             print(e)
             responseObject={
                 'status':'Failure',
                 'message':'Error Occured'
             }
-            return jsonif(responseObject)
+            return jsonify(responseObject)
+
+@events.route('/registration/staff')
+class registration_through_staff(Resource):
+    @authorizestaff("registration", 3)
+    def get(user, self):
+        l = Registrations.query.filter_by(mode=2).all()
+        r = []
+        for i in l:
+            r.append({
+                'regid':l.regid,
+                'vid':l.vid,
+                'cat':l.cat,
+                'eid':l.eid,
+                'registime':l.registime
+            })
+        return jsonify(r)
+    
+    @authorizestaff("registration", 3)
+    def post(user, self):
+        w = Workshops.query.filter_by(id=data.get('eid')).first()
+        if w is not None:
+            try:
+                w.rmseats = Workshop.c.rmseats - 1
+                db.session.commit()
+                data = request.get_json()
+                if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'data inadequate'
+                    }
+                    return jsonify(responseObject)
+                registered = Registrations.query.filter_by(vid=data.get('vid'),
+                                                        cat=data.get('cat'),
+                                                        eid=data.get('eid')
+                                                        ).first()
+                if registered is not None:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Already registered'
+                    }
+                    return(responseObject)
+                r = Registrations(vid=data.get('vid'), 
+                                cat=data.get('cat'),
+                                eid=data.get('eid'),
+                                mode=2,
+                                regby=user.vid
+                                )
+                db.session.add(r)
+                db.session.commit()
+            except Exception as e:
+                print(e)
+                return "No seats remaining"
+        responseObject = {
+            'status':'fail',
+            'message':'no such workshop'
+        }
+        return jsonify(responseObject)
 
 @events.route('/registration/workshops/<int:id>')
 class events_registration_workshop(Resource):

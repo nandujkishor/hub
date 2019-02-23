@@ -132,7 +132,7 @@ def authorizestaff(request, team="all", level=4):
                 print(e)
                 # Send mail on the exception
                 return 401
-            return func(*args, **kwargs)
+            return func(u, *args, **kwargs)
         return d_view
     return auth_with_request
 

@@ -197,18 +197,28 @@ class Contests(db.Model, Eventsmixin):
     support3 = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
 class Registrations(db.Model):
+    # Entry only if registration is successful
     regid = db.Column(db.Integer, primary_key=True)
-    # Acts as the cart data + registrations
-    vid = db.Column(db.Integer, db.ForeignKey('user.vid'))
-    #UserID
+    vid = db.Column(db.Integer)
     cat = db.Column(db.Integer)
-    # Event category (Workshop, ...)
     eid = db.Column(db.Integer)
-    #EventID
-    tid = db.Column(db.Integer)
-    #TeamID
-    pay_completed = db.Column(db.Boolean, default=False)
+    mode = db.Column(db.Integer) # Mode of transaction 1:online 2:volunteer
+    trid = db.Column(db.Integer) # if processed through online medium
+    regby = db.Column(db.Integer, db.ForeignKey('user.vid')) # volunteer, for mode 2
+    registime = db.Column(db.DateTime, default=datetime.datetime.now())
     # 0 if not paid, 1 if paid.
+
+class Transactions(db.Model):
+    trid = db.Column(db.Integer, primary_key=True)
+    # Acts as transaction ID
+    vid = db.Column(db.Integer)
+    inittime = db.Column(db.DateTime, default=datetime.datetime.now())
+    status = db.Column(db.String(100), default="Pending")
+    outtime = db.Column(db.DateTime, default=datetime.datetime.now())
+    message = db.Column(db.Text)
+    cat = db.Column(db.Integer)
+    eid = db.Column(db.Integer)
+    amount = db.Column(db.Integer)
 
 class EventDLog(db.Model):
     # Logs Event dashboard changes
