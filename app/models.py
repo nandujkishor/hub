@@ -21,8 +21,11 @@ class User(db.Model):
     # Levels: power directly propotional to number
     detailscomp = db.Column(db.Boolean)
     educomp = db.Column(db.Boolean)
+    mailsent = db.Column(db.Boolean, default=True)
     time_created = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
     lastseen = db.Column(db.DateTime)
+    # regworkshops = db.relationship('Workshops', backref='user', lazy=True)
+    # regcontests = db.relationship('Contests', backref='user', lazy=True)
 
     def __repr__(self):
         return '<User {}>'.format(self.email)
@@ -124,18 +127,17 @@ class Eventsmixin():
     orglogo = db.Column(db.String(200))
     contact = db.Column(db.String(10))
 
-    # Vidyut staff contact points
-    incharge = db.Column(db.Integer)
-    # ID of the internal person incharge
-    support = db.Column(db.Integer)
-    support2 = db.Column(db.Integer)
-    support3 = db.Column(db.Integer)
+    # # Vidyut staff contact points
+    # incharge = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    # # ID of the internal person incharge
+    # support = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    # support2 = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    # support3 = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
     # Data for timings and logistics
     d1dur = db.Column(db.Text)
     d2dur = db.Column(db.Text)
     d3dur = db.Column(db.Text)
-    seats = db.Column(db.Integer)
     fee = db.Column(db.Integer)
     expense = db.Column(db.Integer)
     # For internal use - expenses
@@ -163,6 +165,16 @@ class Talks(db.Model):
 class Workshops(db.Model, Eventsmixin):
     id = db.Column(db.Integer, primary_key=True)
     lead = db.Column(db.String(30))
+    seats = db.Column(db.Integer)
+    rmseats = db.Column(db.Integer)
+    db.CheckConstraint('rmseats>=0')
+
+    # Vidyut staff contact points
+    incharge = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    # ID of the internal person incharge
+    support = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    support2 = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    support3 = db.Column(db.Integer, db.ForeignKey('user.vid'))
 # Need to build a seperate schema to manage expenses. Each row currosponds to certain payment, with which event for.
 # Need to build a tag management system, to associate events in general.
 
@@ -177,10 +189,17 @@ class Contests(db.Model, Eventsmixin):
     team_limit = db.Column(db.Integer, default=1)
     # Max. no of students in a team
 
+    # Vidyut staff contact points
+    incharge = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    # ID of the internal person incharge
+    support = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    support2 = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    support3 = db.Column(db.Integer, db.ForeignKey('user.vid'))
+
 class Registrations(db.Model):
     regid = db.Column(db.Integer, primary_key=True)
     # Acts as the cart data + registrations
-    vid = db.Column(db.Integer)
+    vid = db.Column(db.Integer, db.ForeignKey('user.vid'))
     #UserID
     cat = db.Column(db.Integer)
     # Event category (Workshop, ...)
@@ -190,7 +209,6 @@ class Registrations(db.Model):
     #TeamID
     pay_completed = db.Column(db.Boolean, default=False)
     # 0 if not paid, 1 if paid.
-# Need to rethink registrations
 
 class EventDLog(db.Model):
     # Logs Event dashboard changes
