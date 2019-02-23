@@ -21,8 +21,9 @@ def index():
     return render_template('index.html', page="/home", uchange="")
 
 @app.route('/mail/test')
-@authorize
+@authorize(request)
 def mailtest(u):
+    print(request.get_data())
     test_mail(u)
     return "Sent"
 
