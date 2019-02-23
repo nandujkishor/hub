@@ -54,7 +54,7 @@ def authorize(request):
             except Exception as e:
                 print(e)
                 # Send mail on the exception
-                return 401
+                # return 401
             return func(u, *args, **kwargs)
         return nd_view
     return normauth_with_request

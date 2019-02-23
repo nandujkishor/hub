@@ -11,9 +11,9 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource
 
-@app.before_request
-def before_request():
-    print("Before req")
+# @app.before_request
+# def before_request():
+#     print("Before req")
 
 @app.route('/')
 @app.route('/index')
