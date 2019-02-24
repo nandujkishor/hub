@@ -817,14 +817,14 @@ class registration_through_staff(Resource):
                 if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
                     responseObject = {
                         'status':'fail',
-                        'message':'data inadequate'
+                        'message':'Data Inadequate'
                     }
                     return jsonify(responseObject)
                 regu = User.query.filter_by(vid=data.get('vid')).first()
                 if regu is None:
                     responseObject = {
                         'status':'fail',
-                        'message':'User not registered'
+                        'message':'User does not exist'
                     }
                     return jsonify(responseObject)
                 registered = Registrations.query.filter_by(vid=data.get('vid'),
@@ -834,7 +834,7 @@ class registration_through_staff(Resource):
                 if registered is not None:
                     responseObject = {
                         'status':'fail',
-                        'message':'Already registered'
+                        'message':'User already registered for the workshop'
                     }
                     return(responseObject)
                 w.rmseats = w.rmseats - 1
@@ -857,7 +857,7 @@ class registration_through_staff(Resource):
                 return "No seats remaining"
         responseObject = {
             'status':'fail',
-            'message':'no such workshop'
+            'message':'Workshop ID incorrect'
         }
         return jsonify(responseObject)
 
