@@ -204,7 +204,7 @@ class Registrations(db.Model):
     vid = db.Column(db.Integer)
     cat = db.Column(db.Integer)
     eid = db.Column(db.Integer)
-    mode = db.Column(db.Integer) # Mode of transaction 1:online 2:volunteer
+    typ = db.Column(db.Integer) # Mode of transaction 1:online 2:volunteer
     trid = db.Column(db.Integer) # if processed through online medium
     regby = db.Column(db.Integer, db.ForeignKey('user.vid')) # volunteer, for mode 2
     registime = db.Column(db.DateTime, default=datetime.datetime.now())

@@ -810,12 +810,12 @@ class registration_through_staff(Resource):
     
     @authorizestaff(request, "registration", 3)
     def post(user, self):
+        data = request.get_json()
         w = Workshops.query.filter_by(id=data.get('eid')).first()
         if w is not None:
             try:
-                w.rmseats = Workshop.c.rmseats - 1
+                w.rmseats = w.rmseats - 1
                 db.session.commit()
-                data = request.get_json()
                 if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
                     responseObject = {
                         'status':'fail',
@@ -835,7 +835,7 @@ class registration_through_staff(Resource):
                 r = Registrations(vid=data.get('vid'), 
                                 cat=data.get('cat'),
                                 eid=data.get('eid'),
-                                mode=2,
+                                typ=2,
                                 regby=user.vid
                                 )
                 db.session.add(r)
