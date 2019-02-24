@@ -37,7 +37,8 @@ class events_workshops(Resource):
                     'rules':workshop.rules,
                     'seats':workshop.seats,
                     'prereq':workshop.prereq,
-                    'seats':workshop.seats
+                    'seats':workshop.seats,
+                    'rmseats':workshop.rmseats
                 })
         except Exception as e:
             print(e)
@@ -143,7 +144,8 @@ class events_workshops_indv(Resource):
                     'seats':workshop.seats,
                     'pub':workshop.pub,
                     'rules':workshop.rules,
-                    'prereq':workshop.prereq
+                    'prereq':workshop.prereq,
+                    'rmseats':workshop.rmseats
                 }
             else:
                 responseObject ={
