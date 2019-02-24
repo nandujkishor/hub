@@ -65,6 +65,8 @@ def authorizestaff(request, team="all", level=4):
         @wraps(func)
         def d_view(*args, **kwargs):
             try:
+                if team=="web":
+                    team = "all"
                 auth_t = auth_token(request)
                 if auth_t:
                     print(auth_t)
@@ -79,15 +81,6 @@ def authorizestaff(request, team="all", level=4):
                             }
                             return jsonify(responseObject)
                         if u.super():
-                            return func(u, *args, **kwargs)
-                        st = Staff.query.filter_by(vid=u.vid, team="web").first()
-                        if st is not None:
-                            if st.level < level:
-                                responseObject = {
-                                    'status':'fail',
-                                    'message':'Not enough clearance levels for web'
-                                }
-                                return jsonify(responseObject)
                             return func(u, *args, **kwargs)
                         if team=="all":
                             st = Staff.query.filter_by(vid=u.vid).order_by(level).first()

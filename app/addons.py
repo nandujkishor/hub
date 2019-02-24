@@ -12,5 +12,8 @@ from app.farer import auth_token
 
 add = api.namespace('addons', description="Addons service")
 
-# @add.route('/order/staff')
-# claass
+@add.route('/order/staff')
+class AddonStaff(request):
+    @authorizestaff("registration", 3)
+    def post(self):
+        return "Hello"
