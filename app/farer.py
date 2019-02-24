@@ -65,8 +65,7 @@ def authorizestaff(request, team="all", level=4):
         @wraps(func)
         def d_view(*args, **kwargs):
             try:
-                if team=="web":
-                    team = "all"
+                print("Team = ", team)
                 auth_t = auth_token(request)
                 if auth_t:
                     print(auth_t)

@@ -74,7 +74,7 @@ class events_workshops(Resource):
         'img3':'Image 3 location',
         })
     @authorizestaff(request,"workshop", 3)
-    def post(self):
+    def post(u, self):
         try:
             data = request.get_json()
             workshop = Workshops(
@@ -185,7 +185,7 @@ class events_workshops_indv(Resource):
         'img3':'Image 3 location',
         })
     @authorizestaff(request,"workshops", 3)
-    def put(self, id):
+    def put(u, self, id):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
             if workshop is not None:
@@ -228,7 +228,7 @@ class events_workshops_indv(Resource):
     # Returns: JSON Status Code
     # Delete Workshop
     @authorizestaff(request,"workshops", 3)
-    def delete(self, id):
+    def delete(u, self, id):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
             if workshop is not None:
@@ -312,7 +312,7 @@ class events_contests(Resource):
         'incharge':'Incharge V-ID',
     })
     @authorizestaff(request,"contests", 3)
-    def post(self):
+    def post(u, self):
         try:
             data = request.get_json()
             contest = Contests(
@@ -414,7 +414,7 @@ class events_contests_indv(Resource):
         'incharge':'Incharge V-ID',
     })
     @authorizestaff(request,"contests", 3)
-    def put(self, id):
+    def put(u, self, id):
         try:
             contest = Contests.query.filter_by(id=id).first()
             if contest is not None:
@@ -460,7 +460,7 @@ class events_contests_indv(Resource):
     # Returns: JSON Status Code
     # Delete Contest
     @authorizestaff(request,"contests", 3)
-    def delete(self, id):
+    def delete(u, self, id):
         try:
             contest = Contests.query.filter_by(id=id).first()
             if contest is not None:
@@ -530,7 +530,7 @@ class events_talks(Resource):
         'incharge':'Incharge V-ID'
     })
     @authorizestaff(request,"talks", 3)
-    def post(self):
+    def post(u, self):
         try:
             data = request.get_json()
             talk = Talks(
@@ -614,7 +614,7 @@ class events_talks_indv(Resource):
         'incharge':'Incharge V-ID'
     })
     @authorizestaff(request,"talks", 3)
-    def put(self, id):
+    def put(u, self, id):
         try:
             talk = Talks.query.filter_by(id=id).first()
             if talk is not None:
@@ -649,7 +649,7 @@ class events_talks_indv(Resource):
     # Returns: JSON Status Code
     # Delete Talk
     @authorizestaff(request,"talks", 3)
-    def delete(self, id):
+    def delete(u, self, id):
         try:
             talk = Talks.query.filter_by(id=id).first()
             if talk is not None:
@@ -797,7 +797,7 @@ class events_registration(Resource):
 @events.route('/registration/staff')
 class registration_through_staff(Resource):
     @authorizestaff("registration", 3)
-    def get(user, self):
+    def get(u, user, self):
         l = Registrations.query.filter_by(mode=2).all()
         r = []
         for i in l:
@@ -811,7 +811,7 @@ class registration_through_staff(Resource):
         return jsonify(r)
     
     @authorizestaff(request, "registration", 3)
-    def post(user, self):
+    def post(u, user, self):
         data = request.get_json()
         if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
             responseObject = {
