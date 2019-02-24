@@ -79,7 +79,7 @@ def authorizestaff(request, team="all", level=4):
                             }
                             return jsonify(responseObject)
                         if u.super():
-                            return func(*args, **kwargs)
+                            return func(u, *args, **kwargs)
                         st = Staff.query.filter_by(vid=u.vid, team="web").first()
                         if st is not None:
                             if st.level < level:
@@ -88,7 +88,7 @@ def authorizestaff(request, team="all", level=4):
                                     'message':'Not enough clearance levels for web'
                                 }
                                 return jsonify(responseObject)
-                            return func(*args, **kwargs)
+                            return func(u, *args, **kwargs)
                         if team=="all":
                             st = Staff.query.filter_by(vid=u.vid).order_by(level).first()
                             if st is None:
@@ -103,7 +103,7 @@ def authorizestaff(request, team="all", level=4):
                                     'message':'No clearance in any team'
                                 }
                                 return jsonify(responseObject)
-                            return func(*args, **kwargs)
+                            return func(u, *args, **kwargs)
                         st = Staff.query.filter_by(vid=u.vid, team=team).first()
                         if st == None:
                             responseObject = {
