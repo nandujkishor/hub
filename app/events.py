@@ -855,7 +855,11 @@ class registration_through_staff(Resource):
                     return jsonify(responseObject)
                 except Exception as e:
                     print(e)
-                    return "No seats remaining"
+                    responseObject = {
+                        'status':'fail',
+                        'message':'No seats remaining'
+                    }
+                    return jsonify(responseObject)
             responseObject = {
                 'status':'fail',
                 'message':'Workshop ID incorrect'
@@ -881,12 +885,21 @@ class registration_through_staff(Resource):
                     return jsonify(responseObject)
                 except Exception as e:
                     print(e)
-                    return "No seats remaining"
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Some exception occured. Contact web team (Error code: x31as432)'
+                    }
+                    return jsonify(responseObject)
             responseObject = {
                 'status':'fail',
-                'message':'Exception occcured. Please contact Web team'
+                'message':'Contest does not exist'
             }
             return jsonify(responseObject)
+        responseObject = {
+            'status':'fail',
+            'message':'Some exception occured. Contact web team (Error code: w31as432t)'
+        }
+        return jsonify(responseObject)
 
 @events.route('/registration/workshops/<int:id>')
 class events_registration_workshop(Resource):
