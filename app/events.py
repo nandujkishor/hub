@@ -811,55 +811,82 @@ class registration_through_staff(Resource):
     @authorizestaff(request, "registration", 3)
     def post(user, self):
         data = request.get_json()
-        w = Workshops.query.filter_by(id=data.get('eid')).first()
-        if w is not None:
-            try:
-                if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
+        if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
+            responseObject = {
+                'status':'fail',
+                'message':'Data Inadequate'
+            }
+            return jsonify(responseObject)
+        regu = User.query.filter_by(vid=data.get('vid')).first()
+        if regu is None:
+            responseObject = {
+                'status':'fail',
+                'message':'User does not exist'
+            }
+            return jsonify(responseObject)
+        registered = Registrations.query.filter_by(vid=data.get('vid'),
+                                                            cat=data.get('cat'),
+                                                            eid=data.get('eid')
+                                                            ).first()
+        if registered is not None:
+            responseObject = {
+                'status':'fail',
+                'message':'User already registered for the event'
+            }
+            return(responseObject)
+        if data.get('cat') is 1:
+            w = Workshops.query.filter_by(id=data.get('eid')).first()
+            if w is not None:
+                try:
+                    w.rmseats = w.rmseats - 1
+                    r = Registrations(vid=data.get('vid'), 
+                                    cat=data.get('cat'),
+                                    eid=data.get('eid'),
+                                    typ=2,
+                                    regby=user.vid
+                                    )
+                    db.session.add(r)
+                    db.session.commit()
+                    print("Successful")
                     responseObject = {
-                        'status':'fail',
-                        'message':'Data Inadequate'
+                        'status':'success',
+                        'message':'User successfully registered'
                     }
                     return jsonify(responseObject)
-                regu = User.query.filter_by(vid=data.get('vid')).first()
-                if regu is None:
+                except Exception as e:
+                    print(e)
+                    return "No seats remaining"
+            responseObject = {
+                'status':'fail',
+                'message':'Workshop ID incorrect'
+            }
+            return jsonify(responseObject)
+        elif data.get('cat') is 2:
+            c = Contests.query.filter_by(id=data.get('eid')).first()
+            if c is not None:
+                try:
+                    r = Registrations(vid=data.get('vid'), 
+                                    cat=data.get('cat'),
+                                    eid=data.get('eid'),
+                                    typ=2,
+                                    regby=user.vid
+                                    )
+                    db.session.add(r)
+                    db.session.commit()
+                    print("Successful")
                     responseObject = {
-                        'status':'fail',
-                        'message':'User does not exist'
+                        'status':'success',
+                        'message':'User successfully registered'
                     }
                     return jsonify(responseObject)
-                registered = Registrations.query.filter_by(vid=data.get('vid'),
-                                                        cat=data.get('cat'),
-                                                        eid=data.get('eid')
-                                                        ).first()
-                if registered is not None:
-                    responseObject = {
-                        'status':'fail',
-                        'message':'User already registered for the workshop'
-                    }
-                    return(responseObject)
-                w.rmseats = w.rmseats - 1
-                r = Registrations(vid=data.get('vid'), 
-                                cat=data.get('cat'),
-                                eid=data.get('eid'),
-                                typ=2,
-                                regby=user.vid
-                                )
-                db.session.add(r)
-                db.session.commit()
-                print("Successful")
-                responseObject = {
-                    'status':'success',
-                    'message':'User successfully registered'
-                }
-                return jsonify(responseObject)
-            except Exception as e:
-                print(e)
-                return "No seats remaining"
-        responseObject = {
-            'status':'fail',
-            'message':'Workshop ID incorrect'
-        }
-        return jsonify(responseObject)
+                except Exception as e:
+                    print(e)
+                    return "No seats remaining"
+            responseObject = {
+                'status':'fail',
+                'message':'Exception occcured. Please contact Web team'
+            }
+            return jsonify(responseObject)
 
 @events.route('/registration/workshops/<int:id>')
 class events_registration_workshop(Resource):
