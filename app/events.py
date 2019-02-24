@@ -808,7 +808,7 @@ class registration_through_staff(Resource):
             })
         return jsonify(r)
     
-    @authorizestaff("registration", 3)
+    @authorizestaff(request, "registration", 3)
     def post(user, self):
         w = Workshops.query.filter_by(id=data.get('eid')).first()
         if w is not None:
