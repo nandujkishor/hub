@@ -797,7 +797,7 @@ class events_registration(Resource):
 @events.route('/registration/staff')
 class registration_through_staff(Resource):
     @authorizestaff("registration", 3)
-    def get(u, user, self):
+    def get(user, self):
         l = Registrations.query.filter_by(mode=2).all()
         r = []
         for i in l:
@@ -811,7 +811,7 @@ class registration_through_staff(Resource):
         return jsonify(r)
     
     @authorizestaff(request, "registration", 3)
-    def post(u, user, self):
+    def post(user, self):
         data = request.get_json()
         if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
             responseObject = {
