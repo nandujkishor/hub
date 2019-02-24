@@ -67,6 +67,7 @@ def authorizestaff(request, team="all", level=4):
             try:
                 auth_t = auth_token(request)
                 if auth_t:
+                    print(auth_t)
                     resp = User.decode_auth_token(auth_t)
                     if not isinstance(resp, str):
                         print("Authorization staff for  ", resp)
