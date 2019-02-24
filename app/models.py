@@ -1,5 +1,7 @@
 from app import app, db
 import datetime
+# from config import Config
+from values import Prices
 import jwt
 
 class User(db.Model):
@@ -240,6 +242,25 @@ class Staff(db.Model):
     # 2 for ...
     # 3 for people with create previlige
     # 4 for core representative
+
+class OtherPurchases(db.Model):
+    purid = db.Column(db.Integer, primary_key=True)
+    vid = db.Column(db.Integer, db.ForeignKey('user.vid')) #Purchasee
+    pid = db.Column(db.Integer) # Product ID: till 10
+    tshcount = db.Column(db.Integer)
+    prscount = db.Column(db.Integer)
+    qty = db.Column(db.Integer)
+    total = db.Column(db.Integer)
+    by = db.Column(db.Integer)
+
+    def __init__(self, vid, pid, qty, by):
+        self.vid = vid
+        self.pid = pid
+        self.total = 0
+        if pid == 1:
+            # Tees only
+            self.total += qty*Prices.TEE
+            # Send mail regarding the purchase
 
 # class FarerLog(db.Model):
 #     vid = db.Column(db.Integer)
