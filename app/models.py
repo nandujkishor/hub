@@ -201,7 +201,7 @@ class Contests(db.Model, Eventsmixin):
 class Registrations(db.Model):
     # Entry only if registration is successful
     regid = db.Column(db.Integer, primary_key=True)
-    vid = db.Column(db.Integer)
+    vid = db.Column(db.Integer, db.ForeignKey('user.vid'))
     cat = db.Column(db.Integer)
     eid = db.Column(db.Integer)
     typ = db.Column(db.Integer) # Mode of transaction 1:online 2:volunteer

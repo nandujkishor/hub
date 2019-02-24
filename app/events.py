@@ -814,12 +814,17 @@ class registration_through_staff(Resource):
         w = Workshops.query.filter_by(id=data.get('eid')).first()
         if w is not None:
             try:
-                w.rmseats = w.rmseats - 1
-                db.session.commit()
                 if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
                     responseObject = {
                         'status':'fail',
-                        'message':'data inadequate'
+                        'message':'Data Inadequate'
+                    }
+                    return jsonify(responseObject)
+                regu = User.query.filter_by(vid=data.get('vid')).first()
+                if regu is None:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'User does not exist'
                     }
                     return jsonify(responseObject)
                 registered = Registrations.query.filter_by(vid=data.get('vid'),
@@ -829,9 +834,10 @@ class registration_through_staff(Resource):
                 if registered is not None:
                     responseObject = {
                         'status':'fail',
-                        'message':'Already registered'
+                        'message':'User already registered for the workshop'
                     }
                     return(responseObject)
+                w.rmseats = w.rmseats - 1
                 r = Registrations(vid=data.get('vid'), 
                                 cat=data.get('cat'),
                                 eid=data.get('eid'),
@@ -840,12 +846,21 @@ class registration_through_staff(Resource):
                                 )
                 db.session.add(r)
                 db.session.commit()
+<<<<<<< HEAD
+=======
+                print("Successful")
+                responseObject = {
+                    'status':'success',
+                    'message':'User successfully registered'
+                }
+                return jsonify(responseObject)
+>>>>>>> 8a6ebf9d79d10c8802d9ed37b9c933918ccf16dc
             except Exception as e:
                 print(e)
                 return "No seats remaining"
         responseObject = {
             'status':'fail',
-            'message':'no such workshop'
+            'message':'Workshop ID incorrect'
         }
         return jsonify(responseObject)
 
