@@ -814,12 +814,17 @@ class registration_through_staff(Resource):
         w = Workshops.query.filter_by(id=data.get('eid')).first()
         if w is not None:
             try:
-                w.rmseats = w.rmseats - 1
-                db.session.commit()
                 if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
                     responseObject = {
                         'status':'fail',
                         'message':'data inadequate'
+                    }
+                    return jsonify(responseObject)
+                regu = Users.query.filter_by(vid=data.get('vid')).first()
+                if regu is None:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'no user'
                     }
                     return jsonify(responseObject)
                 registered = Registrations.query.filter_by(vid=data.get('vid'),
@@ -832,6 +837,7 @@ class registration_through_staff(Resource):
                         'message':'Already registered'
                     }
                     return(responseObject)
+                w.rmseats = w.rmseats - 1
                 r = Registrations(vid=data.get('vid'), 
                                 cat=data.get('cat'),
                                 eid=data.get('eid'),
