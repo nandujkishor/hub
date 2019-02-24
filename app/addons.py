@@ -13,7 +13,7 @@ from app.farer import auth_token
 add = api.namespace('addons', description="Addons service")
 
 @add.route('/order/staff')
-class AddonStaff(request):
+class AddonStaff(Resource):
     @authorizestaff("registration", 3)
     def post(self):
         return "Hello"
