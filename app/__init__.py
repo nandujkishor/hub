@@ -18,4 +18,4 @@ api = Api(app,
     )
 qrcode = QRcode(app)
 
-from app import routes, farer, events, models, reg
+from app import routes, farer, events, models, reg, addons
