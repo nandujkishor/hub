@@ -840,12 +840,6 @@ class registration_through_staff(Resource):
                                 )
                 db.session.add(r)
                 db.session.commit()
-                print("Successful")
-                responseObject = {
-                    'status':'success',
-                    'message':'added user'
-                }
-                return jsonify(responseObject)
             except Exception as e:
                 print(e)
                 return "No seats remaining"
