@@ -820,11 +820,11 @@ class registration_through_staff(Resource):
                         'message':'data inadequate'
                     }
                     return jsonify(responseObject)
-                regu = Users.query.filter_by(vid=data.get('vid')).first()
+                regu = User.query.filter_by(vid=data.get('vid')).first()
                 if regu is None:
                     responseObject = {
                         'status':'fail',
-                        'message':'no user'
+                        'message':'User not registered'
                     }
                     return jsonify(responseObject)
                 registered = Registrations.query.filter_by(vid=data.get('vid'),
@@ -849,7 +849,7 @@ class registration_through_staff(Resource):
                 print("Successful")
                 responseObject = {
                     'status':'success',
-                    'message':'added user'
+                    'message':'User successfully registered'
                 }
                 return jsonify(responseObject)
             except Exception as e:
