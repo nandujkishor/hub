@@ -840,6 +840,7 @@ class registration_through_staff(Resource):
                                 )
                 db.session.add(r)
                 db.session.commit()
+                print("Successful")
                 responseObject = {
                     'status':'success',
                     'message':'added user'
