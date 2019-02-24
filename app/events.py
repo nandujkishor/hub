@@ -737,7 +737,7 @@ class events_registration(Resource):
                     #     }
                 else:
                     responseObject = {
-                         'status':'failure',
+                        'status':'failure',
                         'message':'Invalid workshop ID'
                     }
                 return jsonify(responseObject)
