@@ -271,13 +271,13 @@ class OtherPurchases(db.Model):
             self.total = qty*Prices.P2
             if qty >= 3:
                 self.total -= int(qty/3)*100
-                self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off"
+                self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
         elif pid == 3:
             # General: Headbangers + Choreonite + Fashionshow
             self.total = qty*Prices.P3
             if qty >= 3:
                 self.total -= int(qty/3)*100
-                self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off"
+                self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
         elif pid == 4:
             # Choreonite + Fashionshow
             self.total = qty*Prices.P4

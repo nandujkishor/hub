@@ -15,13 +15,13 @@ add = api.namespace('addons', description="Addons service")
 
 @add.route('/order/staff')
 class AddonStaff(Resource):
-    @authorizestaff("registration", 3)
     @api.doc(params = {
         'vid':'VID of the purchasee',
         'pid':'Product ID',
         'tsize':'(Optional) Size of the T-shirt. Based on the Product ID',
         'qty':'Quandity of the product',
         })
+    @authorizestaff(request, "registration", 3)
     def post(u, self):
         try:
             data = request.get_json()
@@ -35,7 +35,7 @@ class AddonStaff(Resource):
             db.session.commit()
             responseObject = {
                 'status':'success',
-                'message':'Purchase added. Total transaction amount: Rs. '+ op.total + 'for a total of '+op.qty+' products'
+                'message': op.message + ' Total transaction amount: Rs. '+ op.total + 'for a total of '+op.qty+' products'
             }
             return jsonify(responseObject)
         except Exception as e:
