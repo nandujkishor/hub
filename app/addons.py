@@ -26,8 +26,14 @@ class AddonStaff(Resource):
     @api.doc(params = {
         'vid':'VID of the purchasee',
         'pid':'Product ID',
-        'tsize':'(Optional) Size of the T-shirt. Based on the Product ID',
-        'qty':'Quandity of the product',
+        'roll':'(needed for amrita tickets) Amrita Roll Number',
+        'bookid':'Register book ID',
+        'scount':'S count',
+        'mcount':'M count',
+        'lcount':'L count',
+        'xlcount':'XL count',
+        'xxlcount':'XXL count',
+        'qty':'Quandity of the product'
         })
     @authorizestaff(request, "registration", 3)
     def post(u, self):
