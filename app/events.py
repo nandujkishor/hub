@@ -423,9 +423,9 @@ class events_contests_indv(Resource):
                 
                 contest.title=data.get('title')
                 contest.short=data.get('short')
-                contest.short=data.get('about')
-                contest.short=data.get('rules')
-                contest.short=data.get('prereq')
+                contest.about=data.get('about')
+                contest.rules=data.get('rules')
+                contest.prereq=data.get('prereq')
                 contest.pworth=data.get('pworth')
                 contest.fee=data.get('fee')
                 contest.incharge=data.get('incharge')
