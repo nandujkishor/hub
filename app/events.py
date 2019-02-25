@@ -166,7 +166,7 @@ class events_workshops_indv(Resource):
     # Standard: IP, Sender ID
     # Returns: JSON Status Code
     # Edit details of the Workshop
-    @authorizestaff(request,"workshops", 3)
+    # @authorizestaff(request,"workshops", 3)
     @api.doc(params = {
         'title':'Title',
         'plink':'Permanent Link',
