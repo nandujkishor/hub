@@ -19,7 +19,7 @@ class AddonStaff(Resource):
     @api.doc(params = {
         'vid':'VID of the purchasee',
         'pid':'Product ID',
-        'size':'(Optional) Size of the T-shirt. Based on the Product ID',
+        'tsize':'(Optional) Size of the T-shirt. Based on the Product ID',
         'qty':'Quandity of the product',
         })
     def post(u, self):
@@ -28,6 +28,7 @@ class AddonStaff(Resource):
             op = OtherPurchases(vid=data.get('vid'),
                                 pid=data.get('pid'),
                                 qty=data.get('qty'),
+                                tsize = data.get('tsize'),
                                 by=u.vid
                                 )
             db.session.add(op)
