@@ -863,7 +863,7 @@ class registration_through_staff(Resource):
                     db.session.add(r)
                     db.session.commit()
                     print("Successful")
-                    user = User.query.filter_by(vid=user.vid).first()
+                    user = User.query.filter_by(vid=r.vid).first()
                     wkreg_mail(user=user, workshop=w, regid=r.regid)
                     responseObject = {
                         'status':'success',
