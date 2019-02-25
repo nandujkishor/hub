@@ -911,7 +911,7 @@ class registration_through_staff(Resource):
                     return jsonify(responseObject)
                 try:
                     dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
-                    ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[w.department - 1])
+                    ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
                     responseObject = {
                         'status':'success',
                         'message':'User successfully registered'
