@@ -43,7 +43,7 @@ class AddonStaff(Resource):
             print("RECIEVING = ", data)
             pid = data.get('pid')
             qty = data.get('qty')
-            if pid is None or vid is None or data.get('book') is None or data.get('roll') is None:
+            if pid is None or data.get('vid') is None or data.get('book') is None or data.get('roll') is None:
                 responseObject = {
                     'status':'fail',
                     'message':'No proper data'
