@@ -315,6 +315,7 @@ class farer_u_det(Resource):
                             user.lname = inc.get('lname')
                             user.phno = inc.get('phno')
                             user.sex = inc.get('sex')
+                            user.referrer = inc.get('referrer')
                             user.detailscomp = True
                             db.session.commit()
                             responseObject = {
