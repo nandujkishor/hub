@@ -308,6 +308,11 @@ class farer_u_det(Resource):
                 resp = User.decode_auth_token(auth_t)
                 if not isinstance(resp, str):
                     user = User.query.filter_by(vid=resp).first()
+                    ref = inc.get('referrer')
+                    if lower(ref[0])=='v':
+                        ref = int(ref[3:])
+                    else:
+                        ref = int(ref)
                     if user is not None:
                         if user.detailscomp is None:
                             inc = request.get_json()
@@ -315,7 +320,7 @@ class farer_u_det(Resource):
                             user.lname = inc.get('lname')
                             user.phno = inc.get('phno')
                             user.sex = inc.get('sex')
-                            user.referrer = inc.get('referrer')
+                            user.referrer = ref
                             user.detailscomp = True
                             db.session.commit()
                             responseObject = {
