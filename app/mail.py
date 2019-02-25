@@ -33,11 +33,11 @@ def farer_welcome_mail(user):
             )
     return "Okay!"
 
-def wkreg_mail(user, workshop, regid):
+def wkreg_mail(user, workshop, regid, wdept):
     print("Sending Workshop registration mail to " + user.fname)
     send_mail("Workshop: "+ workshop.title + " during Vidyut'19 - registration successful", 
             body="Your Vidyut ID is " + str(user.vid),
-            htmlbody=render_template('emails/workshops-reg.html', user=user, workshop=workshop, regid=regid),
+            htmlbody=render_template('emails/workshops-reg.html', user=user, workshop=workshop, regid=regid, wdept=wdept),
             recipient=user.email
             )
     return "mail sent - hopefully"

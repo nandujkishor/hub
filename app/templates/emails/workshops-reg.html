@@ -33,27 +33,27 @@
     }
   </style>
   <body style="margin: 0; padding: 0;">
-    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;font-family:Helvetica, arial, sans-serif;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;font-family:Roboto, Helvetica, arial, sans-serif;font-stretch: 100%;line-height: 26.6px">
       <tr align="center">
         <td style="padding: 20px 10px 20px 20px;box-sizing:border-box;">
           <img src="https://vidyut.amrita.edu/static/images/v-logo.png" width="150px">
         </td>
       </tr>
       <tr>
-        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:19px" bgcolor="white">
           Hello {{ user.fname }}!<br><br>
           Your registration for the Workshop: {{ workshop.title }} is successful. Please find the details of your registration below.
         </td>
       </tr>
       <tr>
         <td style="background:#BFD2DE;padding: 15px 20px 5px 20px;box-sizing:border-box;font-size:20px;max-width: 600px;margin:0 auto;display: block;" bgcolor="white">
-            <span style="font-size:14px;">Registration ID: {{ regid }}</span>
-            <h3 style="font-weight: 400;">{{ workshop.title }}</h3>
-            <h5 style="font-weight: 400;">{{ workshop.department }} &mdash; {{ workshop.id }}</h5>
+            <span style="font-size:14px;margin:0;">Registration ID: {{ regid }}</span>
+            <h3 style="font-weight: 400;margin:0;padding:5px 0 5px 0">{{ workshop.title }}</h3>
+            <h5 style="font-weight: 400;margin:0;">{{ wdept }}</h5>
         </td>
       </tr>
       <tr>
-        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:19px" bgcolor="white">
           Please remember to bring your valid university ID for attending the workshop. Vidyut reserves the right to deny admission to any participant if found in violation of the rules of the fest or the University.
         </td>
       </tr>

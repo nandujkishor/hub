@@ -864,7 +864,8 @@ class registration_through_staff(Resource):
                     db.session.commit()
                     print("Successful")
                     user = User.query.filter_by(vid=r.vid).first()
-                    wkreg_mail(user=user, workshop=w, regid=r.regid)
+                    dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
+                    wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
                     responseObject = {
                         'status':'success',
                         'message':'User successfully registered'
