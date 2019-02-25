@@ -3,8 +3,6 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_restplus import Api
-from flask_qrcode import QRcode
-
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
@@ -16,6 +14,5 @@ api = Api(app,
     default='General',
     doc="/doc"
     )
-qrcode = QRcode(app)
 
 from app import routes, farer, events, models, reg, addons
