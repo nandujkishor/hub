@@ -174,7 +174,7 @@ class user_auth(Resource):
                 print("TRYING TO ADD TO DB = ", u)
                 db.session.add(u)
                 db.session.commit()
-                # Send welcome email
+                farer_welcome_mail()
                 auth_token = u.encode_auth_token()
                 responseObject = {
                     'status': 'success',
