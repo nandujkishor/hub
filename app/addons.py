@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 from app.farer import auth_token
+from app.mail import addon_pur
 
 add = api.namespace('addons', description="Addons service")
 
@@ -122,6 +123,15 @@ class AddonStaff(Resource):
                 'message':'Exception occured. (Error: '+str(e)+'. Please email or call web team'
             }
             return jsonify(responseObject)
+        try:
+            products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow',
+                        'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
+            title = products[pid-1]
+            purid = op.purid
+            user = User.query.filter_by(vid=op.vid).first()
+            addon_pur(user=user, title=title, purid=purid)
+        except Exception as e:
+            print(e)
         qty = str(qty)
         print(qty)
         total = str(total)
