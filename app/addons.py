@@ -15,9 +15,13 @@ add = api.namespace('addons', description="Addons service")
 
 @add.route('/order/staff')
 class AddonStaff(Resource):
-    @authorizestaff(request, "registration", 3)
-    def post(u, self):
-        return "qq"
+    # @authorizestaff(request, "registration", 2)
+    def get(self):
+        rgs = OtherPurchases.query.all()
+        r = []
+        for i in rgs:
+            print(i.__dict__)
+        return "Hello!"
 
     @api.doc(params = {
         'vid':'VID of the purchasee',
@@ -30,48 +34,52 @@ class AddonStaff(Resource):
         try:
             data = request.get_json()
             print("RECIEVING = ", data)
-            self.vid = vid
-            self.pid = pid
-            self.total = 0
-            self.qty = qty
+            pid = data.get('pid')
+            qty = data.get('qty')
             if pid == 1:
                 # Amritapuri: Proshow + Choreonite + Fashionshow
-                self.total = qty*Prices.P1
+                total = qty*Prices.P1
                 if qty >= 20:
-                    self.qty += 1
-                    self.message = "Offer applied. One free ticket added."
-                # Send mail regarding the purchase
+                    qty += int(qty/20)
+                    message = "Offer applied. "+ int(qty/20) +" free ticket(s) added."
             elif pid == 2:
                 # Outstation: Proshow + Choreonite + Fashionshow
-                self.total = qty*Prices.P2
+                total = qty*Prices.P2
                 if qty >= 3:
-                    self.total -= int(qty/3)*100
-                    self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+                    total -= int(qty/3)*100
+                    message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
             elif pid == 3:
                 # General: Headbangers + Choreonite + Fashionshow
-                self.total = qty*Prices.P3
+                total = qty*Prices.P3
                 if qty >= 3:
-                    self.total -= int(qty/3)*100
-                    self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+                    total -= int(qty/3)*100
+                    message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
             elif pid == 4:
                 # Choreonite + Fashionshow
-                self.total = qty*Prices.P4
+                total = qty*Prices.P4
             elif pid == 5:
                 # T-Shirt
-                self.tsize = tsize
-                self.total = qty*Prices.P5
+                total = qty*Prices.P5
             elif pid == 6:
-                # Amritapuri: Tickets + T-Shirt
-                self.total = qty*Prices.P6
-                self.tsize = tsize
+                # Amritapuri: All Tickets + T-Shirt
+                total = qty*(Prices.P1 + Prices.P5 - 50)
             elif pid == 7:
-                # Outstation: Tickets + T-Shirt
-                self.total = qty*Prices.P7
-                self.tsize = tsize
+                # Outstation: All Tickets + T-Shirt
+                total = qty*(Prices.P2 + Prices.P5 - 50)
+            elif pid == 8:
+                # General: Headbangers + Choreonite + Fashionshow + T-Shirt
+                total = qty*(Prices.P3 + Prices.P5 - 50)
             op = OtherPurchases(vid=data.get('vid'),
-                                pid=data.get('pid'),
-                                qty=data.get('qty'),
-                                tsize = data.get('tsize'),
+                                pid=pid,
+                                qty=qty,
+                                roll=data.get('roll'),
+                                bookid=data.get('bookid'),
+                                scount=data.get('scount'),
+                                mcount=data.get('mcount'),
+                                lcount=data.get('lcount'),
+                                xlcount=data.get('lcount'),
+                                xxlcount=data.get('lcount'),
+                                message=message,
                                 by=u.vid
                                 )
             db.session.add(op)
