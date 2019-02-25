@@ -60,19 +60,19 @@ class AddonStaff(Resource):
                 total = qty*Prices.P1
                 if qty >= 20:
                     qty += int(qty/20)
-                    message = "Offer applied. "+ int(qty/20) +" free ticket(s) added."
+                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
             elif pid == 2:
                 # Outstation: Proshow + Choreonite + Fashionshow
                 total = qty*Prices.P2
                 if qty >= 3:
                     total -= int(qty/3)*100
-                    message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
             elif pid == 3:
                 # General: Headbangers + Choreonite + Fashionshow
                 total = qty*Prices.P3
                 if qty >= 3:
                     total -= int(qty/3)*100
-                    message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
             elif pid == 4:
                 # Choreonite + Fashionshow
                 total = qty*Prices.P4
@@ -86,7 +86,7 @@ class AddonStaff(Resource):
                 total = qty*(Prices.P1 + Prices.P5 - 50)
                 if qty >= 20:
                     qty += int(qty/20)
-                    message = "Offer applied. "+ int(qty/20) +" free ticket(s) added."
+                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
             elif pid == 7:
                 # Outstation: All Tickets + T-Shirt
                 qty = scount + mcount + lcount + xlcount + xxlcount
@@ -97,7 +97,7 @@ class AddonStaff(Resource):
                 total = qty*(Prices.P3 + Prices.P5 - 50)
                 if qty >= 3:
                     total -= int(qty/3)*100
-                    message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
             op = OtherPurchases(vid=data.get('vid'),
                                 pid=pid,
                                 qty=qty,
@@ -122,8 +122,11 @@ class AddonStaff(Resource):
                 'message':'Exception occured. (Error: '+str(e)+'. Please email or call web team'
             }
             return jsonify(responseObject)
+        qty = str(qty)
+        print(qty)
+        total = str(total)
         responseObject = {
             'status':'success',
-            'message': str(op.message) + ' Total transaction amount: Rs. '+ str(op.total) + ' for a total of '+ str(op.qty) +' product(s)'
+            'message': str(message) + ' Total transaction amount: Rs. '+ total + ' for a total of '+ qty +' product(s)'
         }
         return jsonify(responseObject)
