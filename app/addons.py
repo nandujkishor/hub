@@ -3,9 +3,9 @@ import werkzeug.security
 from flask import render_template, flash, redirect, request, url_for, jsonify,json
 from app import app, db, api
 from app.farer import authorizestaff, authorize
-# from app.mail import exception_mail
+from app.mail import other
 from config import Config
-from app.models import User, Transactions
+from app.models import User, Transactions, OtherPurchases
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -40,7 +40,7 @@ class AddonStaff(Resource):
             return jsonify(responseObject)
         except Exception as e:
             print(e)
-            error_mail(e)
+            # error_mail(e)
             responseObject = {
                 'status':'fail',
                 'message':'Exception occured. Please contact web team (nandakishore@vidyut.amrita.edu)'
