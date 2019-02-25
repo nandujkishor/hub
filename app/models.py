@@ -1,7 +1,6 @@
 from app import app, db
 import datetime
 # from config import Config
-from values import Prices
 import jwt
 
 class User(db.Model):

@@ -115,6 +115,6 @@ class AddonStaff(Resource):
             return jsonify(responseObject)
         responseObject = {
             'status':'success',
-            'message': op.message + ' Total transaction amount: Rs. '+ op.total + 'for a total of '+op.qty+' products'
+            'message': op.message + ' Total transaction amount: Rs. '+ op.total + 'for a total of '+ op.qty +' products'
         }
         return jsonify(responseObject)
