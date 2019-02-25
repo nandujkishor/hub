@@ -18,6 +18,7 @@ class User(db.Model):
     college = db.Column(db.Integer)
     institution = db.Column(db.String(200))
     school = db.Column(db.Boolean)
+    level = db.Column(db.Integer)
     # In case college is not listed.
     phno = db.Column(db.String(10))
     # Levels: power directly propotional to number
@@ -26,6 +27,9 @@ class User(db.Model):
     mailsent = db.Column(db.Boolean, default=True)
     time_created = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
     lastseen = db.Column(db.DateTime)
+    mapping = db.Column(db.String(50))
+    emailsent = db.Column(db.Boolean, default=False)
+    referrer = db.Column(db.Integer, db.ForeignKey('user.vid'))
     # regworkshops = db.relationship('Workshops', backref='user', lazy=True)
     # regcontests = db.relationship('Contests', backref='user', lazy=True)
 
@@ -246,15 +250,19 @@ class Staff(db.Model):
 class OtherPurchases(db.Model):
     purid = db.Column(db.Integer, primary_key=True)
     vid = db.Column(db.Integer, db.ForeignKey('user.vid')) #Purchasee
-    pid = db.Column(db.Integer) # Product ID: 
-    tsize = db.Column(db.String(5))
+    pid = db.Column(db.Integer) # Product ID
+    scount = db.Column(db.Integer)
+    mcount = db.Column(db.Integer)
+    lcount = db.Column(db.Integer)
+    xlcount = db.Column(db.Integer)
+    xxlcount = db.Column(db.Integer)
     qty = db.Column(db.Integer)
     total = db.Column(db.Integer)
     by = db.Column(db.Integer)
     message = db.Column(db.Text)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now())
 
-    def __init__(self, vid, pid, by, tsize=""   , qty=0):
+    def __init__(self, vid, pid, by, tsize="none", qty=0):
         self.vid = vid
         self.pid = pid
         self.total = 0
