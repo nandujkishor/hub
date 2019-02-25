@@ -42,7 +42,7 @@ class AddonStaff(Resource):
             print("RECIEVING = ", data)
             pid = data.get('pid')
             qty = data.get('qty')
-            if pid is None or vid is None:
+            if pid is None or vid is None or data.get('book') is None or data.get('roll') is None:
                 responseObject = {
                     'status':'fail',
                     'message':'No proper data'
@@ -70,6 +70,7 @@ class AddonStaff(Resource):
                 total = qty*Prices.P4
             elif pid == 5:
                 # T-Shirt
+                qty = scount + mcount + lcount + xlcount + xxlcount
                 total = qty*Prices.P5
             elif pid == 6:
                 # Amritapuri: All Tickets + T-Shirt
@@ -79,9 +80,11 @@ class AddonStaff(Resource):
                     message = "Offer applied. "+ int(qty/20) +" free ticket(s) added."
             elif pid == 7:
                 # Outstation: All Tickets + T-Shirt
+                qty = scount + mcount + lcount + xlcount + xxlcount
                 total = qty*(Prices.P2 + Prices.P5 - 50)
             elif pid == 8:
                 # General: Headbangers + Choreonite + Fashionshow + T-Shirt
+                qty = scount + mcount + lcount + xlcount + xxlcount
                 total = qty*(Prices.P3 + Prices.P5 - 50)
                 if qty >= 3:
                     total -= int(qty/3)*100
