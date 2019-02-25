@@ -81,10 +81,13 @@ def authorizestaff(request, team="all", level=4):
                                 'message':'Go check your DB'
                             }
                             return jsonify(responseObject)
-                        print("sssss")
+                        
+                        print("Here")
+                        
                         if u.super():
                             return func(u, *args, **kwargs)
-                        if team=="all" or team == "web":
+                        
+                        if team=="all":
                             st = Staff.query.filter_by(vid=u.vid).order_by(level).first()
                             if st is None:
                                 responseObject = {
@@ -99,7 +102,18 @@ def authorizestaff(request, team="all", level=4):
                                 }
                                 return jsonify(responseObject)
                             return func(u, *args, **kwargs)
+
+                        print("TEAM CHECK = ", team)
+                        
                         st = Staff.query.filter_by(vid=u.vid, team=team).first()
+                        st2 = Staff.query.filter_by(vid=u.vid, team="web").first()
+                        
+                        if st == None:
+                            st = st2
+
+                        print("Staffs = ", st)
+                        print("Staffs = ", st2)
+
                         if st == None:
                             responseObject = {
                                 'status':'fail',
