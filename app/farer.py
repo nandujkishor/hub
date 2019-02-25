@@ -65,6 +65,7 @@ def authorizestaff(request, team="all", level=4):
     def auth_with_request(func):
         @wraps(func)
         def d_view(*args, **kwargs):
+            print("Initiation")
             try:
                 print("Team = ", team)
                 auth_t = auth_token(request)
@@ -80,6 +81,7 @@ def authorizestaff(request, team="all", level=4):
                                 'message':'Go check your DB'
                             }
                             return jsonify(responseObject)
+                        print("sssss")
                         if u.super():
                             return func(u, *args, **kwargs)
                         if team=="all":
