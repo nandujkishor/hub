@@ -177,10 +177,11 @@ class user_auth(Resource):
                 db.session.add(u)
                 db.session.commit()
                 try:
-                    farer_welcome_mail(user=user)
+                    farer_welcome_mail(user=u)
                     u.mailsent = True
                     db.session.commit()
                 except Exception as e:
+                    print(e)
                     print("Mail error")
                 auth_token = u.encode_auth_token()
                 responseObject = {

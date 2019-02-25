@@ -24,11 +24,10 @@ class User(db.Model):
     # Levels: power directly propotional to number
     detailscomp = db.Column(db.Boolean)
     educomp = db.Column(db.Boolean)
-    mailsent = db.Column(db.Boolean, default=True)
+    mailsent = db.Column(db.Boolean, default=False)
     time_created = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
     lastseen = db.Column(db.DateTime)
     mapping = db.Column(db.String(50))
-    emailsent = db.Column(db.Boolean, default=False)
     referrer = db.Column(db.Integer, db.ForeignKey('user.vid'))
     # regworkshops = db.relationship('Workshops', backref='user', lazy=True)
     # regcontests = db.relationship('Contests', backref='user', lazy=True)
