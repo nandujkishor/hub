@@ -190,7 +190,12 @@ class user_auth(Resource):
                 print("TRYING TO ADD TO DB = ", u)
                 db.session.add(u)
                 db.session.commit()
-                farer_welcome_mail()
+                try:
+                    farer_welcome_mail(user=user)
+                    u.mailsent = True
+                    db.session.commit()
+                except Exception as e:
+                    print("Mail error")
                 auth_token = u.encode_auth_token()
                 responseObject = {
                     'status': 'success',

@@ -26,6 +26,44 @@ class AddonStaff(Resource):
         try:
             data = request.get_json()
             print("RECIEVING = ", data)
+            self.vid = vid
+            self.pid = pid
+            self.total = 0
+            self.qty = qty
+            if pid == 1:
+                # Amritapuri: Proshow + Choreonite + Fashionshow
+                self.total = qty*Prices.P1
+                if qty >= 20:
+                    self.qty += 1
+                    self.message = "Offer applied. One free ticket added."
+                # Send mail regarding the purchase
+            elif pid == 2:
+                # Outstation: Proshow + Choreonite + Fashionshow
+                self.total = qty*Prices.P2
+                if qty >= 3:
+                    self.total -= int(qty/3)*100
+                    self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+            elif pid == 3:
+                # General: Headbangers + Choreonite + Fashionshow
+                self.total = qty*Prices.P3
+                if qty >= 3:
+                    self.total -= int(qty/3)*100
+                    self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+            elif pid == 4:
+                # Choreonite + Fashionshow
+                self.total = qty*Prices.P4
+            elif pid == 5:
+                # T-Shirt
+                self.tsize = tsize
+                self.total = qty*Prices.P5
+            elif pid == 6:
+                # Amritapuri: Tickets + T-Shirt
+                self.total = qty*Prices.P6
+                self.tsize = tsize
+            elif pid == 7:
+                # Outstation: Tickets + T-Shirt
+                self.total = qty*Prices.P7
+                self.tsize = tsize
             op = OtherPurchases(vid=data.get('vid'),
                                 pid=data.get('pid'),
                                 qty=data.get('qty'),

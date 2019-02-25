@@ -3,6 +3,7 @@ from config import Config
 from threading import Thread
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import datetime
 from flask import render_template
 from app.models import User
 
@@ -42,12 +43,30 @@ def wkreg_mail(user, workshop, regid, wdept):
             )
     return "mail sent - hopefully"
 
+def ctreg_mail(user, contest, regid, cdept):
+    print("Sending contest mail")
+    send_mail("Contest: "+ workshop.title + " during Vidyut'19 - registration successful", 
+            body="Your Vidyut ID is " + str(user.vid),
+            htmlbody=render_template('emails/contest-reg.html', user=user, contest=contest, regid=regid, wdept=cdept),
+            recipient=user.email
+            )
+    return "mail sent - hopefully"
+
 def addon_pur(user, title, purid):
     print("Sending addon purchase mail to " + user.fname)
     send_mail("Addon: "+ title + " purchase successful - Vidyut'19", 
             body="Thank you for the purchase. VID: " + str(user.vid),
             htmlbody=render_template('emails/addon-purchase.html', user=user, title=title, purid=purid),
             recipient=user.email
+            )
+    return "mail sent - hopefully"
+
+def error_mail(user, point, ip='0', time=datetime.datetime.now):
+    print("Sending error mail")
+    send_mail("Error occured: "+ title + " purchase successful - Vidyut'19", 
+            body="Thank you for the purchase. VID: " + str(user.vid),
+            htmlbody=render_template('emails/error.html', user=user, point=point, purid=purid),
+            recipient=ambtestingmaster@gmail.com
             )
     return "mail sent - hopefully"
 

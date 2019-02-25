@@ -5,7 +5,7 @@ from app import app, db, api
 from app.farer import authorizestaff, authorize
 from config import Config
 from app.models import Workshops, Talks, Contests, Registrations, User, Transactions
-from app.mail import wkreg_mail
+from app.mail import wkreg_mail, ctreg_mail
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -862,6 +862,14 @@ class registration_through_staff(Resource):
                     db.session.add(r)
                     db.session.commit()
                     print("Successful")
+                except Exception as e:
+                    print(e)
+                    responseObject = {
+                        'status':'fail',
+                        'message':'No seats remaining'
+                    }
+                    return jsonify(responseObject)
+                try:
                     user = User.query.filter_by(vid=r.vid).first()
                     dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
                     wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
@@ -871,10 +879,9 @@ class registration_through_staff(Resource):
                     }
                     return jsonify(responseObject)
                 except Exception as e:
-                    print(e)
                     responseObject = {
-                        'status':'fail',
-                        'message':'No seats remaining'
+                        'status':'success',
+                        'message':'User successfully registered. Exception encountered. Please mail or call the web team (Error: '+str(e)+')'
                     }
                     return jsonify(responseObject)
             responseObject = {
@@ -895,6 +902,16 @@ class registration_through_staff(Resource):
                     db.session.add(r)
                     db.session.commit()
                     print("Successful")
+                except Exception as e:
+                    print(e)
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Some exception occured. Contact web team (Error code: x31as432. Error: '+e+')'
+                    }
+                    return jsonify(responseObject)
+                try:
+                    dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
+                    ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[w.department - 1])
                     responseObject = {
                         'status':'success',
                         'message':'User successfully registered'
@@ -903,8 +920,8 @@ class registration_through_staff(Resource):
                 except Exception as e:
                     print(e)
                     responseObject = {
-                        'status':'fail',
-                        'message':'Some exception occured. Contact web team (Error code: x31as432)'
+                        'status':'success',
+                        'message':'User registered. Exception occured. Please call or mail web team (Error: '+str(e)+')'
                     }
                     return jsonify(responseObject)
             responseObject = {
