@@ -15,6 +15,10 @@ add = api.namespace('addons', description="Addons service")
 
 @add.route('/order/staff')
 class AddonStaff(Resource):
+    @authorizestaff(request, "registration", 3)
+    def post(u, self):
+        return "qq"
+
     @api.doc(params = {
         'vid':'VID of the purchasee',
         'pid':'Product ID',

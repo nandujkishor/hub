@@ -107,7 +107,7 @@ def authorizestaff(request, team="all", level=4):
                         
                         st = Staff.query.filter_by(vid=u.vid, team=team).first()
                         st2 = Staff.query.filter_by(vid=u.vid, team="web").first()
-                        
+
                         if st == None:
                             st = st2
 
