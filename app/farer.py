@@ -320,13 +320,18 @@ class farer_u_det(Resource):
                             user.lname = inc.get('lname')
                             user.phno = inc.get('phno')
                             user.sex = inc.get('sex')
-                            user.referrer = ref
                             user.detailscomp = True
                             db.session.commit()
                             responseObject = {
                                 'status':'success',
                                 'message':'Successfully completed addition of personel data'
                             }
+                            try:
+                                user.referrer = ref
+                                db.session.commit()
+                            except Exception as e:
+                                print(e)
+                                return "Details added. Issues: Invalid referrer"
                         else:
                             responseObject = {
                                 'status':'failure',
