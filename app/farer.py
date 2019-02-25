@@ -528,6 +528,7 @@ class user_contact(Resource):
         responseObject = {
             'fname':user.fname,
             'lname':user.lname,
+            'email':user.email,
             'phno':user.phno
         }
         return jsonify(responseObject)
