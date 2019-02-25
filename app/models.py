@@ -262,11 +262,7 @@ class OtherPurchases(db.Model):
     message = db.Column(db.Text)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now())
 
-<<<<<<< HEAD
-    def __init__(self, vid, pid, by, tsize="", qty=0):
-=======
     def __init__(self, vid, pid, by, tsize="none", qty=0):
->>>>>>> 79421025a1fc232bb0a01c249ecb8f75d76e0625
         self.vid = vid
         self.pid = pid
         self.total = 0
