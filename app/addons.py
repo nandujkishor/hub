@@ -42,6 +42,11 @@ class AddonStaff(Resource):
             print("RECIEVING = ", data)
             pid = data.get('pid')
             qty = data.get('qty')
+            if pid is None or vid is None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'No proper data'
+                }
             if pid == 1:
                 # Amritapuri: Proshow + Choreonite + Fashionshow
                 total = qty*Prices.P1
@@ -69,12 +74,18 @@ class AddonStaff(Resource):
             elif pid == 6:
                 # Amritapuri: All Tickets + T-Shirt
                 total = qty*(Prices.P1 + Prices.P5 - 50)
+                if qty >= 20:
+                    qty += int(qty/20)
+                    message = "Offer applied. "+ int(qty/20) +" free ticket(s) added."
             elif pid == 7:
                 # Outstation: All Tickets + T-Shirt
                 total = qty*(Prices.P2 + Prices.P5 - 50)
             elif pid == 8:
                 # General: Headbangers + Choreonite + Fashionshow + T-Shirt
                 total = qty*(Prices.P3 + Prices.P5 - 50)
+                if qty >= 3:
+                    total -= int(qty/3)*100
+                    message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
             op = OtherPurchases(vid=data.get('vid'),
                                 pid=pid,
                                 qty=qty,
@@ -90,16 +101,16 @@ class AddonStaff(Resource):
                                 )
             db.session.add(op)
             db.session.commit()
-            responseObject = {
-                'status':'success',
-                'message': op.message + ' Total transaction amount: Rs. '+ op.total + 'for a total of '+op.qty+' products'
-            }
-            return jsonify(responseObject)
         except Exception as e:
             print(e)
             # error_mail(e)
             responseObject = {
                 'status':'fail',
-                'message':'Exception occured. Please contact web team (nandakishore@vidyut.amrita.edu)'
+                'message':'Exception occured. (Error: '+str(e)+'. Please email or call web team'
             }
             return jsonify(responseObject)
+        responseObject = {
+            'status':'success',
+            'message': op.message + ' Total transaction amount: Rs. '+ op.total + 'for a total of '+op.qty+' products'
+        }
+        return jsonify(responseObject)
