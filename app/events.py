@@ -74,7 +74,7 @@ class events_workshops(Resource):
         'img2':'Image 2 location',
         'img3':'Image 3 location',
         })
-    @authorizestaff(request,"workshop", 3)
+    @authorizestaff(request,"workshops", 3)
     def post(u, self):
         try:
             data = request.get_json()
