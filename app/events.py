@@ -5,6 +5,7 @@ from app import app, db, api
 from app.farer import authorizestaff, authorize
 from config import Config
 from app.models import Workshops, Talks, Contests, Registrations, User, Transactions
+from app.mail import wkreg_mail
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -862,6 +863,8 @@ class registration_through_staff(Resource):
                     db.session.add(r)
                     db.session.commit()
                     print("Successful")
+                    user = User.query.filter_by(vid=user.id).first()
+                    wkreg_mail(user=user, workshop=workshop, regid=r.regid)
                     responseObject = {
                         'status':'success',
                         'message':'User successfully registered'

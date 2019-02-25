@@ -28,4 +28,5 @@ class AddonStaff(Resource):
                             qty=data.get('qty'),
                             by=u.vid
                             )
+        
         return "Hello"
