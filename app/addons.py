@@ -25,6 +25,7 @@ class AddonStaff(Resource):
     def post(u, self):
         try:
             data = request.get_json()
+            print("RECIEVING = ", data)
             op = OtherPurchases(vid=data.get('vid'),
                                 pid=data.get('pid'),
                                 qty=data.get('qty'),
