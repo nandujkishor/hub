@@ -43,6 +43,13 @@ class AddonStaff(Resource):
             print("RECIEVING = ", data)
             pid = data.get('pid')
             qty = data.get('qty')
+            scount = data.get('scount')
+            mcount = data.get('mcount')
+            lcount = data.get('lcount')
+            xlcount = data.get('xlcount')
+            xxlcount = data.get('xxlcount')
+            message = "Success."
+            print("here1")
             if pid is None or data.get('vid') is None or data.get('book') is None or data.get('roll') is None:
                 responseObject = {
                     'status':'fail',
@@ -74,6 +81,7 @@ class AddonStaff(Resource):
                 qty = scount + mcount + lcount + xlcount + xxlcount
                 total = qty*Prices.P5
             elif pid == 6:
+                qty = scount + mcount + lcount + xlcount + xxlcount
                 # Amritapuri: All Tickets + T-Shirt
                 total = qty*(Prices.P1 + Prices.P5 - 50)
                 if qty >= 20:
@@ -100,6 +108,7 @@ class AddonStaff(Resource):
                                 lcount=data.get('lcount'),
                                 xlcount=data.get('lcount'),
                                 xxlcount=data.get('lcount'),
+                                total=total,
                                 message=message,
                                 by=u.vid
                                 )
@@ -115,6 +124,6 @@ class AddonStaff(Resource):
             return jsonify(responseObject)
         responseObject = {
             'status':'success',
-            'message': op.message + ' Total transaction amount: Rs. '+ op.total + 'for a total of '+ op.qty +' products'
+            'message': str(op.message) + ' Total transaction amount: Rs. '+ str(op.total) + ' for a total of '+ str(op.qty) +' product(s)'
         }
         return jsonify(responseObject)
