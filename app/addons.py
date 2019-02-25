@@ -3,7 +3,7 @@ import werkzeug.security
 from flask import render_template, flash, redirect, request, url_for, jsonify,json
 from app import app, db, api
 from app.farer import authorizestaff, authorize
-from app.mail import other
+# from app.mail import other
 from config import Config
 from app.models import User, Transactions, OtherPurchases
 from werkzeug.utils import secure_filename

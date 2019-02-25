@@ -254,7 +254,7 @@ class OtherPurchases(db.Model):
     message = db.Column(db.Text)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now())
 
-    def __init__(self, vid, pid, by, size=None, qty=0):
+    def __init__(self, vid, pid, by, tsize=None, qty=0):
         self.vid = vid
         self.pid = pid
         self.total = 0
@@ -283,15 +283,16 @@ class OtherPurchases(db.Model):
             self.total = qty*Prices.P4
         elif pid == 5:
             # T-Shirt
+            self.tsize = tsize
             self.total = qty*Prices.P5
         elif pid == 6:
             # Amritapuri: Tickets + T-Shirt
             self.total = qty*Prices.P6
-            self.size = size
+            self.tsize = tsize
         elif pid == 7:
             # Outstation: Tickets + T-Shirt
             self.total = qty*Prices.P7
-            self.size = size
+            self.tsize = tsize
 
 # class FarerLog(db.Model):
 #     vid = db.Column(db.Integer)
