@@ -42,6 +42,15 @@ def wkreg_mail(user, workshop, regid, wdept):
             )
     return "mail sent - hopefully"
 
+def addon_pur(user, title, purid):
+    print("Sending addon purchase mail to " + user.fname)
+    send_mail("Addon: "+ title + " purchase successful - Vidyut'19", 
+            body="Thank you for the purchase. VID: " + str(user.vid),
+            htmlbody=render_template('emails/addon-purchase.html', user=user, title=title, purid=purid),
+            recipient=user.email
+            )
+    return "mail sent - hopefully"
+
 def test_mail(user):
     print("Sending test mail")
     farer_welcome_mail(user)

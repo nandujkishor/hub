@@ -35,7 +35,7 @@ class AddonStaff(Resource):
             db.session.commit()
             responseObject = {
                 'status':'success',
-                'message':'Purchase added. Total transaction amount: Rs. '+ op.total,
+                'message':'Purchase added. Total transaction amount: Rs. '+ op.total + 'for a total of '+op.qty+' products'
             }
             return jsonify(responseObject)
         except Exception as e:
