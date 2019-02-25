@@ -676,24 +676,32 @@ class events_talks_indv(Resource):
 @events.route('/registration')
 class events_registration(Resource):
 
-    def get(self):
+    @authorize(request)
+    # Endpoint for getting user registered events
+    def get(user, self):
         try:
-            reg = Registrations.query.all()
+            wor = Workshops.query.join(Registrations, Registrations.eid==Workshops.id).filter(Registrations.cat==1, Registrations.vid==user.vid).all()
+            print(wor)
             responseObject = []
-            for regs in reg:
+            for w in wor:
                 responseObject.append({
-                    'regid':regs.regid,
-                    'vid':regs.vid,
-                    'cat':regs.cat,
-                    'eid':regs.eid,
-                    'tid':regs.tid,
-                    'pay_completed':regs.pay_completed,
+                    'cat':1,
+                    'eid':w.id,
+                    'title':w.title,
                 })
+            con = Contests.query.join(Registrations, Registrations.eid==Contests.id).filter(Registrations.cat==2, Registrations.vid==user.vid).all()
+            for c in con:
+                responseObject.append({
+                    'cat':2,
+                    'eid':c.id,
+                    'title':c.title,
+                })
+            return jsonify(responseObject)
         except Exception as e:
             print(e)
             responseObject = {
                 'status':'failure',
-                'Message':'Error Occured'
+                'Message':'Exception occured. '
             }
         return jsonify(responseObject)
 
@@ -793,6 +801,10 @@ class events_registration(Resource):
                 'message':'Error Occured'
             }
             return jsonify(responseObject)
+
+# @events.route('/registration/all')
+# class registration_all(Resource):
+
 
 @events.route('/registration/staff')
 class registration_through_staff(Resource):

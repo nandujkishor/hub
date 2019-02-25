@@ -246,21 +246,52 @@ class Staff(db.Model):
 class OtherPurchases(db.Model):
     purid = db.Column(db.Integer, primary_key=True)
     vid = db.Column(db.Integer, db.ForeignKey('user.vid')) #Purchasee
-    pid = db.Column(db.Integer) # Product ID: till 10
-    tshcount = db.Column(db.Integer)
-    prscount = db.Column(db.Integer)
+    pid = db.Column(db.Integer) # Product ID: 
+    tsize = db.Column(db.String(5))
     qty = db.Column(db.Integer)
     total = db.Column(db.Integer)
     by = db.Column(db.Integer)
+    message = db.Column(db.Text)
+    purtime = db.Column(db.DateTime, default=datetime.datetime.now())
 
-    def __init__(self, vid, pid, qty, by):
+    def __init__(self, vid, pid, by, size=None, qty=0):
         self.vid = vid
         self.pid = pid
         self.total = 0
+        self.qty = qty
         if pid == 1:
-            # Tees only
-            self.total += qty*Prices.TEE
+            # Amritapuri: Proshow + Choreonite + Fashionshow
+            self.total = qty*Prices.P1
+            if qty >= 20:
+                self.qty += 1
+                self.message = "Offer applied. One free ticket added."
             # Send mail regarding the purchase
+        elif pid == 2:
+            # Outstation: Proshow + Choreonite + Fashionshow
+            self.total = qty*Prices.P2
+            if qty >= 3:
+                self.total -= int(qty/3)*100
+                self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off"
+        elif pid == 3:
+            # General: Headbangers + Choreonite + Fashionshow
+            self.total = qty*Prices.P3
+            if qty >= 3:
+                self.total -= int(qty/3)*100
+                self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off"
+        elif pid == 4:
+            # Choreonite + Fashionshow
+            self.total = qty*Prices.P4
+        elif pid == 5:
+            # T-Shirt
+            self.total = qty*Prices.P5
+        elif pid == 6:
+            # Amritapuri: Tickets + T-Shirt
+            self.total = qty*Prices.P6
+            self.size = size
+        elif pid == 7:
+            # Outstation: Tickets + T-Shirt
+            self.total = qty*Prices.P7
+            self.size = size
 
 # class FarerLog(db.Model):
 #     vid = db.Column(db.Integer)
