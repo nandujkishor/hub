@@ -254,7 +254,7 @@ class OtherPurchases(db.Model):
     message = db.Column(db.Text)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now())
 
-    def __init__(self, vid, pid, by, tsize=None, qty=0):
+    def __init__(self, vid, pid, by, tsize="", qty=0):
         self.vid = vid
         self.pid = pid
         self.total = 0
