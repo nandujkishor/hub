@@ -3,7 +3,7 @@ import werkzeug.security
 from flask import render_template, flash, redirect, request, url_for, jsonify,json
 from app import app, db, api
 from app.farer import authorizestaff, authorize
-from app.mail import exception_mail
+# from app.mail import exception_mail
 from config import Config
 from app.models import User, Transactions
 from werkzeug.utils import secure_filename
@@ -34,7 +34,7 @@ class AddonStaff(Resource):
             db.session.add(op)
             db.session.commit()
             responseObject = {
-                'status':'success'
+                'status':'success',
                 'message':'Purchase added. Total transaction amount: Rs. '+ op.total,
             }
             return jsonify(responseObject)
