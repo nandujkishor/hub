@@ -84,7 +84,7 @@ def authorizestaff(request, team="all", level=4):
                         print("sssss")
                         if u.super():
                             return func(u, *args, **kwargs)
-                        if team=="all":
+                        if team=="all" or team == "web":
                             st = Staff.query.filter_by(vid=u.vid).order_by(level).first()
                             if st is None:
                                 responseObject = {
