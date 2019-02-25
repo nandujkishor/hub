@@ -5,6 +5,7 @@ from app import app, db, api
 from app.farer import authorizestaff, authorize
 # from app.mail import other
 from config import Config
+from values import Prices
 from app.models import User, Transactions, OtherPurchases
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
