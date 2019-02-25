@@ -81,6 +81,9 @@ class AddonStaff(Resource):
                 # T-Shirt
                 qty = scount + mcount + lcount + xlcount + xxlcount
                 total = qty*Prices.P5
+                if qty >= 20:
+                    qty += int(qty/20)
+                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
             elif pid == 6:
                 qty = scount + mcount + lcount + xlcount + xxlcount
                 # Amritapuri: All Tickets + T-Shirt
