@@ -54,7 +54,7 @@ def ctreg_mail(user, contest, regid, cdept):
 
 def addon_pur(user, title, purid, count):
     print("Sending addon purchase mail to " + user.fname)
-    send_mail("Addon: "+ title + " purchase successful - Vidyut'19", 
+    send_mail("Addon: "+ title + " purchase successful - Vidyut'19",
             body="Thank you for the purchase. VID: " + str(user.vid),
             htmlbody=render_template('emails/addon-purchase.html', user=user, title=title, purid=purid, count=count),
             recipient=user.email

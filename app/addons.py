@@ -12,28 +12,36 @@ from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 from app.farer import auth_token
 from app.mail import addon_pur
+from sqlalchemy.sql import func
 
 add = api.namespace('addons', description="Addons service")
 
 @add.route('/order/staff')
 class AddonStaff(Resource):
-    # @authorizestaff(request, "registration", 2)
-    def get(self):
+    @authorizestaff(request, "sales", 2)
+    def get(u, self):
         rgs = OtherPurchases.query.all()
         r = []
+        products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow',
+                        'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
         for i in rgs:
             r.append({
                 'purid':i.purid,
                 'vid':i.vid,
                 'roll':i.roll,
+                'purchase':products[i.pid-1],
                 'bookid':i.bookid,
                 'pid':i.pid,
                 'scount':i.scount,
                 'mcount':i.mcount,
                 'lcount':i.lcount,
-
+                'xlcount':i.lcount,
+                'xxlcount':i.lcount,
+                'qty':i.qty,
+                'total':i.total,
+                'purtime':i.purtime
             })
-        return "Hello!"
+        return jsonify(r)
 
     @api.doc(params = {
         'vid':'VID of the purchasee',
@@ -152,5 +160,17 @@ class AddonStaff(Resource):
         responseObject = {
             'status':'success',
             'message': str(message) + ' Total transaction amount: Rs. '+ total + ' for a total of '+ qty +' product(s)'
+        }
+        return jsonify(responseObject)
+
+@add.route('/order/stats')
+class AddonStaffCount(Resource):
+    @authorizestaff(request, "sales", 3)
+    def get(u, self):
+        rgs = OtherPurchases.query.with_entities(func.sum(OtherPurchases.total))
+        amt = db.session.query(func.sum(OtherPurchases.total)).scalar()
+        responseObject = {
+            'status':'success',
+            'count':amt
         }
         return jsonify(responseObject)
