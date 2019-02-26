@@ -260,7 +260,7 @@ class OtherPurchases(db.Model):
     total = db.Column(db.Integer)
     by = db.Column(db.Integer)
     message = db.Column(db.Text)
-    purtime = db.Column(db.DateTime, default=datetime.datetime.now())
+    purtime = db.Column(db.DateTime, default=datetime.datetime.now)
 
 # class FarerLog(db.Model):
 #     logid = db.Column(db.Integer)

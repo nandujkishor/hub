@@ -71,9 +71,9 @@ class AddonStaff(Resource):
             elif pid == 3:
                 # General: Headbangers + Choreonite + Fashionshow
                 total = qty*Prices.P3
-                if qty >= 3:
-                    total -= int(qty/3)*100
-                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
+                # if qty >= 3:
+                #     total -= int(qty/3)*100
+                #     message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
             elif pid == 4:
                 # Choreonite + Fashionshow
                 total = qty*Prices.P4
@@ -81,16 +81,10 @@ class AddonStaff(Resource):
                 # T-Shirt
                 qty = scount + mcount + lcount + xlcount + xxlcount
                 total = qty*Prices.P5
-                if qty >= 20:
-                    qty += int(qty/20)
-                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
             elif pid == 6:
                 qty = scount + mcount + lcount + xlcount + xxlcount
                 # Amritapuri: All Tickets + T-Shirt
                 total = qty*(Prices.P1 + Prices.P5 - 50)
-                if qty >= 20:
-                    qty += int(qty/20)
-                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
             elif pid == 7:
                 # Outstation: All Tickets + T-Shirt
                 qty = scount + mcount + lcount + xlcount + xxlcount
@@ -99,9 +93,9 @@ class AddonStaff(Resource):
                 # General: Headbangers + Choreonite + Fashionshow + T-Shirt
                 qty = scount + mcount + lcount + xlcount + xxlcount
                 total = qty*(Prices.P3 + Prices.P5 - 50)
-                if qty >= 3:
-                    total -= int(qty/3)*100
-                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
+                # if qty >= 3:
+                #     total -= int(qty/3)*100
+                #     message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
             op = OtherPurchases(vid=data.get('vid'),
                                 pid=pid,
                                 qty=qty,
