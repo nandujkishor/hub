@@ -4,5 +4,6 @@ __pycache__
 instance/
 migrations/
 app.db
+config.py
 .vscode
 .pyc
