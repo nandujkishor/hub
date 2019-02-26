@@ -10,6 +10,7 @@ from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.models import User, Staff
 from config import Config
+from app.farer import authorizestaff, authorize
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -41,40 +42,41 @@ class AESCipher(object):
     def _unpad(self, s):
         return s[:-ord(s[len(s)-1:])]
 
-@pay.route('/authorize', methods=['GET', 'POST'])
-def payauth():
-    # return "Inside authorize"
-    # payload = {
-    #     'code': request.form.get('code'),
-    #     'data': request.form.get('data')
-    # }
-    try:
-        if request.method == 'POST':
-            return request.form.get('data')
-    except Exception as e:
-        return "Exception occured : " + str(e)
+@pay.route('/receive')
+class pay_receiver():
+    @authorize
+    def post():
+        # return "Inside authorize"
+        # payload = {
+        #     'code': request.form.get('code'),
+        #     'data': request.form.get('data')
+        # }
+        try:
+            if request.method == 'POST':
+                return request.form.get('data')
+        except Exception as e:
+            return "Exception occured : " + str(e)
+        return ("Check localhost")
 
-    return ("Check localhost")
+# @pay.route('/testing')
+# def payment():
+#     plaintext = "transactionId=VIDYUTTEST10|amount=1|purpose=VIDYUT19TEST|currency=inr"
+#     result = hashlib.md5(plaintext.encode())
+#     result = result.hexdigest()
+#     print("md5",result)
+#     pwc = plaintext + "|checkSum=" + result
+#     print("before aes",pwc)
+#     cipher = AESCipher(key)
+#     encd = cipher.encrypt(pwc)
+#     print("after aes", encd)
+#     return encd
 
-@pay.route('/testing/', methods=['POST', 'GET'])
-def payment():
-    plaintext = "transactionId=VIDYUTTEST10|amount=1|purpose=VIDYUT19TEST|currency=inr"
-    result = hashlib.md5(plaintext.encode())
-    result = result.hexdigest()
-    print("md5",result)
-    pwc = plaintext + "|checkSum=" + result
-    print("before aes",pwc)
-    cipher = AESCipher(key)
-    encd = cipher.encrypt(pwc)
-    print("after aes", encd)
-    return encd
+# @pay.route('/callback/', methods=['POST', 'GET'])
+# def callback():
+#     print("Inside callback")
+#     print(request.args)
+#     return "Check terminal"
 
-@pay.route('/callback/', methods=['POST', 'GET'])
-def callback():
-    print("Inside callback")
-    print(request.args)
-    return "Check terminal"
-
-@pay.route('/check/')
-def check_pay():
-    return render_template('payment.html')
+# @pay.route('/check/')
+# def check_pay():
+#     return render_template('payment.html')

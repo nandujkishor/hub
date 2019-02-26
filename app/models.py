@@ -121,15 +121,9 @@ class Eventsmixin():
     rules = db.Column(db.Text)
     tags = db.Column(db.Text)
     # Need tags seperated by a delimiter - ','(coma)
-    img1 = db.Column(db.String(2000))
-    img2 = db.Column(db.String(2000))
-    img3 = db.Column(db.String(2000))
-    img4 = db.Column(db.String(2000))
 
     # Details on the Partner organisation
     org = db.Column(db.String(30))
-    orglogo = db.Column(db.String(200))
-    contact = db.Column(db.String(10))
 
     # # Vidyut staff contact points
     # incharge = db.Column(db.Integer, db.ForeignKey('user.vid'))
@@ -142,6 +136,7 @@ class Eventsmixin():
     d1dur = db.Column(db.Text)
     d2dur = db.Column(db.Text)
     d3dur = db.Column(db.Text)
+    venue = db.Column(db.Text)
     fee = db.Column(db.Integer)
     expense = db.Column(db.Integer)
     # For internal use - expenses
