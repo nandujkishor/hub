@@ -34,6 +34,7 @@ class events_workshops(Resource):
                     'short':workshop.short,
                     'about':workshop.about,
                     'org': workshop.org,
+                    'venue': workshop.venue,
                     'department':workshop.department,
                     'fee':workshop.fee,
                     'rules':workshop.rules,
@@ -93,6 +94,7 @@ class events_workshops(Resource):
                 d1dur=data.get('d1dur'),
                 d2dur=data.get('d2dur'),
                 d3dur=data.get('d3dur'),
+                venue=data.get('venue'),
                 prereq = data.get('prereq'),
                 incharge = data.get('incharge'),
                 support = data.get('support'),
@@ -144,6 +146,7 @@ class events_workshops_indv(Resource):
                     'vidurl':workshop.vidurl,
                     'fee':workshop.fee,
                     'org':workshop.org,
+                    'venue':workshop.venue,
                     'incharge':workshop.incharge,
                     'support':workshop.support,
                     'seats':workshop.seats,
@@ -186,10 +189,6 @@ class events_workshops_indv(Resource):
         'support':'Supporter V-ID',
         'fee':'Workshop Fee',
         'seats':'No of Seats',
-        'companylogo':'Company Logo location',
-        'img1':'Image 1 location',
-        'img2':'Image 2 location',
-        'img3':'Image 3 location',
         })
     @authorizestaff(request,"workshops", 3)
     def put(u, self, id):
@@ -209,6 +208,7 @@ class events_workshops_indv(Resource):
                 workshop.support=data.get('support')
                 workshop.org=data.get('org')
                 workshop.fee=data.get('fee')
+                workshop.venue=data.get('venue')
                 workshop.d1dur=data.get('d1dur')
                 workshop.d2dur=data.get('d2dur')
                 workshop.d3dur=data.get('d3dur')
@@ -286,6 +286,7 @@ class events_contests(Resource):
                     'd1dur':contest.d1dur,
                     'd2dur':contest.d2dur,
                     'd3dur':contest.d3dur,
+                    'venue':contest.venue,
                     'team_limit':contest.team_limit,
                     'fee':contest.fee,
                     'incharge':contest.incharge,
@@ -340,6 +341,7 @@ class events_contests(Resource):
                 d1dur=data.get('d1dur'),
                 d2dur=data.get('d2dur'),
                 d3dur=data.get('d3dur'),
+                venue=data.get('venue'),
                 prereq=data.get('prereq'),
                 prize1=data.get('prize1'),
                 prize2=data.get('prize2'),
@@ -393,6 +395,7 @@ class events_contests_indv(Resource):
                     'd3dur':contest.d3dur,
                     'team_limit':contest.team_limit,
                     'fee':contest.fee,
+                    'venue':contest.venue,
                     'incharge':contest.incharge,
                     'support':contest.support,
                     'rules':contest.rules,
@@ -450,6 +453,7 @@ class events_contests_indv(Resource):
                 contest.d1dur=data.get('d1dur')
                 contest.d2dur=data.get('d2dur')
                 contest.d3dur=data.get('d3dur')
+                contest.venue=data.get('venue')
                 contest.incharge=data.get('incharge')
                 contest.support=data.get('support')
                 contest.department=data.get('department')
