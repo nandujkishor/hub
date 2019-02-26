@@ -68,12 +68,12 @@ class AddonStaff(Resource):
             xlcount = data.get('xlcount')
             xxlcount = data.get('xxlcount')
             message = "Success."
-            print("here1")
             if pid is None or data.get('vid') is None or data.get('book') is None or data.get('roll') is None:
                 responseObject = {
                     'status':'fail',
                     'message':'No proper data'
                 }
+                return jsonify(responseObject)
             if pid == 1:
                 # Amritapuri: Proshow + Choreonite + Fashionshow
                 total = qty*Prices.P1
@@ -167,10 +167,35 @@ class AddonStaff(Resource):
 class AddonStaffCount(Resource):
     @authorizestaff(request, "sales", 3)
     def get(u, self):
-        rgs = OtherPurchases.query.with_entities(func.sum(OtherPurchases.total))
         amt = db.session.query(func.sum(OtherPurchases.total)).scalar()
+        scount = db.session.query(func.sum(OtherPurchases.scount)).scalar()
+        mcount = db.session.query(func.sum(OtherPurchases.mcount)).scalar()
+        lcount = db.session.query(func.sum(OtherPurchases.lcount)).scalar()
+        xlcount = db.session.query(func.sum(OtherPurchases.xlcount)).scalar()
+        xxlcount = db.session.query(func.sum(OtherPurchases.xxlcount)).scalar()
+        pid1 = len(OtherPurchases.query.filter_by(pid=1).all())
+        pid2 = len(OtherPurchases.query.filter_by(pid=2).all())
+        pid3 = len(OtherPurchases.query.filter_by(pid=3).all())
+        pid4 = len(OtherPurchases.query.filter_by(pid=4).all())
+        pid5 = len(OtherPurchases.query.filter_by(pid=5).all())
+        pid6 = len(OtherPurchases.query.filter_by(pid=6).all())
+        pid7 = len(OtherPurchases.query.filter_by(pid=7).all())
+        pid8 = len(OtherPurchases.query.filter_by(pid=8).all())
         responseObject = {
             'status':'success',
-            'count':amt
+            'count':amt,
+            'scount':scount,
+            'mcount':mcount,
+            'lcount':lcount,
+            'xlcount':xlcount,
+            'xxlcount':xxlcount,
+            'pid1':pid1,
+            'pid2':pid2,
+            'pid3':pid3,
+            'pid4':pid4,
+            'pid5':pid5,
+            'pid6':pid6,
+            'pid7':pid7,
+            'pid8':pid8
         }
         return jsonify(responseObject)
