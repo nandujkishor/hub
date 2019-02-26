@@ -74,9 +74,6 @@ class events_workshops(Resource):
         'fee':'Workshop Fee',
         'seats':'No of Seats',
         'companylogo':'Company Logo location',
-        'img1':'Image 1 location',
-        'img2':'Image 2 location',
-        'img3':'Image 3 location',
         })
     @authorizestaff(request,"workshops", 3)
     def post(u, self):
