@@ -39,6 +39,9 @@ class events_workshops(Resource):
                     'rules':workshop.rules,
                     'seats':workshop.seats,
                     'prereq':workshop.prereq,
+                    'd1dur':workshop.d1dur,
+                    'd2dur':workshop.d2dur,
+                    'd3dur':workshop.d3dur,
                     'seats':workshop.seats,
                     'rmseats':workshop.rmseats
                 })
@@ -90,6 +93,9 @@ class events_workshops(Resource):
                 contact = data.get('contact'),
                 fee = data.get('fee'),
                 rules = data.get('rules'),
+                d1dur=data.get('d1dur'),
+                d2dur=data.get('d2dur'),
+                d3dur=data.get('d3dur'),
                 prereq = data.get('prereq'),
                 incharge = data.get('incharge'),
                 support = data.get('support'),
@@ -146,6 +152,9 @@ class events_workshops_indv(Resource):
                     'seats':workshop.seats,
                     'pub':workshop.pub,
                     'rules':workshop.rules,
+                    'd1dur':workshop.d1dur,
+                    'd2dur':workshop.d2dur,
+                    'd3dur':workshop.d3dur,
                     'prereq':workshop.prereq,
                     'rmseats':workshop.rmseats
                 }
@@ -203,6 +212,9 @@ class events_workshops_indv(Resource):
                 workshop.support=data.get('support')
                 workshop.org=data.get('org')
                 workshop.fee=data.get('fee')
+                workshop.d1dur=data.get('d1dur')
+                workshop.d2dur=data.get('d2dur')
+                workshop.d3dur=data.get('d3dur')
                 workshop.department=data.get('department')
 
                 db.session.commit()
@@ -274,6 +286,9 @@ class events_contests(Resource):
                     'prize3':contest.prize3,
                     'short':contest.short,
                     'pworth':contest.pworth,
+                    'd1dur':contest.d1dur,
+                    'd2dur':contest.d2dur,
+                    'd3dur':contest.d3dur,
                     'team_limit':contest.team_limit,
                     'fee':contest.fee,
                     'incharge':contest.incharge,
@@ -325,6 +340,9 @@ class events_contests(Resource):
                 support=data.get('support'),
                 about=data.get('about'),
                 rules=data.get('rules'),
+                d1dur=data.get('d1dur'),
+                d2dur=data.get('d2dur'),
+                d3dur=data.get('d3dur'),
                 prereq=data.get('prereq'),
                 prize1=data.get('prize1'),
                 prize2=data.get('prize2'),
@@ -373,6 +391,9 @@ class events_contests_indv(Resource):
                     'prize3':contest.prize3,
                     'short':contest.short,
                     'pworth':contest.pworth,
+                    'd1dur':contest.d1dur,
+                    'd2dur':contest.d2dur,
+                    'd3dur':contest.d3dur,
                     'team_limit':contest.team_limit,
                     'fee':contest.fee,
                     'incharge':contest.incharge,
@@ -429,6 +450,9 @@ class events_contests_indv(Resource):
                 contest.prereq=data.get('prereq')
                 contest.pworth=data.get('pworth')
                 contest.fee=data.get('fee')
+                contest.d1dur=data.get('d1dur')
+                contest.d2dur=data.get('d2dur')
+                contest.d3dur=data.get('d3dur')
                 contest.incharge=data.get('incharge')
                 contest.support=data.get('support')
                 contest.department=data.get('department')
