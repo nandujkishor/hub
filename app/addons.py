@@ -22,7 +22,17 @@ class AddonStaff(Resource):
         rgs = OtherPurchases.query.all()
         r = []
         for i in rgs:
-            print(i.__dict__)
+            r.append({
+                'purid':i.purid,
+                'vid':i.vid,
+                'roll':i.roll,
+                'bookid':i.bookid,
+                'pid':i.pid,
+                'scount':i.scount,
+                'mcount':i.mcount,
+                'lcount':i.lcount,
+
+            })
         return "Hello!"
 
     @api.doc(params = {
@@ -127,7 +137,7 @@ class AddonStaff(Resource):
             title = products[pid-1]
             purid = op.purid
             user = User.query.filter_by(vid=op.vid).first()
-            addon_pur(user=user, title=title, purid=purid)
+            addon_pur(user=user, title=title, purid=purid, count=qty)
         except Exception as e:
             print(e)
         qty = str(qty)
