@@ -78,13 +78,14 @@ class User(db.Model):
 
 class BlacklistToken(db.Model):
     # Token Model for storing JWT tokens
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(500), unique=True, nullable=False)
     blacklisted_on = db.Column(db.DateTime, nullable=False)
 
     def __init__(self, token):
         self.token = token
         self.blacklisted_on = datetime.datetime.now()
+        print("Blacklisted")
 
     def __repr__(self):
         return '<id: token: {}'.format(self.token)
@@ -204,16 +205,16 @@ class Registrations(db.Model):
     typ = db.Column(db.Integer) # Mode of transaction 1:online 2:volunteer
     trid = db.Column(db.Integer) # if processed through online medium
     regby = db.Column(db.Integer, db.ForeignKey('user.vid')) # volunteer, for mode 2
-    registime = db.Column(db.DateTime, default=datetime.datetime.now())
+    registime = db.Column(db.DateTime, default=datetime.datetime.now)
     # 0 if not paid, 1 if paid.
 
 class Transactions(db.Model):
     trid = db.Column(db.Integer, primary_key=True)
     # Acts as transaction ID
     vid = db.Column(db.Integer)
-    inittime = db.Column(db.DateTime, default=datetime.datetime.now())
+    inittime = db.Column(db.DateTime, default=datetime.datetime.now)
     status = db.Column(db.String(100), default="Pending")
-    outtime = db.Column(db.DateTime, default=datetime.datetime.now())
+    outtime = db.Column(db.DateTime, default=datetime.datetime.now)
     message = db.Column(db.Text)
     cat = db.Column(db.Integer)
     eid = db.Column(db.Integer)
