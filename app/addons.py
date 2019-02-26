@@ -106,6 +106,12 @@ class AddonStaff(Resource):
                 # if qty >= 3:
                 #     total -= int(qty/3)*100
                 #     message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
+            if qty == 0:
+                responseObject = {
+                    'status':'fail',
+                    'message':'No products added.'
+                }
+                return jsonify(responseObject)
             op = OtherPurchases(vid=data.get('vid'),
                                 pid=pid,
                                 qty=qty,
