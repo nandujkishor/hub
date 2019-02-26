@@ -88,7 +88,6 @@ class events_workshops(Resource):
                 department = data.get('department'),
                 vidurl = data.get('vidurl'),
                 org = data.get('org'),
-                contact = data.get('contact'),
                 fee = data.get('fee'),
                 rules = data.get('rules'),
                 d1dur=data.get('d1dur'),
