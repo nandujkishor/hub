@@ -6,10 +6,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     POSTGRES = {
-        'user': 'vidyut',
+        'user': 'hubtest',
         'pw': 'vidyut2018*',
-        'db': 'vidyut',
-        'host': 'ambvidyut-dev.ckhmnttmq7jx.ap-south-1.rds.amazonaws.com',
+        'db': 'hubtest',
+        'host': 'hubtest.c2r5npckrmj8.ap-south-1.rds.amazonaws.com',
         'port': '5432',
     }
     SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES
