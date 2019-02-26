@@ -137,6 +137,7 @@ class events_workshops_indv(Resource):
             workshop = Workshops.query.filter_by(id=id).first()
             if workshop is not None:
                 responseObject = {
+                    'id': workshop.id,
                     'title':workshop.title,
                     'plink':workshop.plink,
                     'short':workshop.short,
@@ -381,6 +382,7 @@ class events_contests_indv(Resource):
             contest = Contests.query.filter_by(id=id).first()
             if contest is not None:
                 responseObject = {
+                    'id': contest.id,
                     'title':contest.title,
                     'department':contest.department,
                     'about':contest.about,
