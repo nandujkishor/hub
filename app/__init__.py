@@ -12,7 +12,7 @@ api = Api(app,
     title="Switch API", 
     description="Switch services API listing.", 
     default='General',
-    doc="/doc"
+    doc=False
     )
 
 from app import routes, farer, events, models, reg, addons

@@ -4,7 +4,7 @@ from functools import wraps
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.models import User, Staff
+from app.models import User, Staff, BlacklistToken
 from app.mail import farer_welcome_mail
 from config import Config
 from werkzeug.utils import secure_filename
@@ -30,6 +30,11 @@ def authorize(request):
         def nd_view(*args, **kwargs):
             try:
                 auth_t = auth_token(request)
+                if BlacklistToken.check_blacklist(auth_t):
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Token already used. Please do not perform malpractices.'
+                    }
                 if auth_t:
                     resp = User.decode_auth_token(auth_t)
                     if not isinstance(resp, str):
@@ -198,6 +203,8 @@ class user_auth(Resource):
                     print(e)
                     print("Mail error")
                 auth_token = u.encode_auth_token()
+                while BlacklistToken.check_blacklist(auth_token):
+                    auth_token = u.encode_auth_token()
                 responseObject = {
                     'status': 'success',
                     'message': 'Successfully registered',
@@ -288,6 +295,34 @@ class user_auth(Resource):
             responseObject = {
                 'status': 'fail',
                 'message': 'Provide a valid auth token.'
+            }
+            return jsonify(responseObject)
+
+@farer.route('/logout')
+class logout(Resource):
+    # @authorize(request)
+    def post(self):
+        try:
+            auth_t = auth_token(request)
+            if auth_t is None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'No user'
+                }
+            k = BlacklistToken(token=auth_t)
+            db.session.add(k)
+            db.session.commit()
+            print("Blacklist commited")
+            responseObject = {
+                'status':'success',
+                'message':'Logout successful'
+            }
+            return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Exception occured. (Error: '+ str(e) + ')'
             }
             return jsonify(responseObject)
 
