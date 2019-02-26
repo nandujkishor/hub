@@ -79,7 +79,7 @@ class User(db.Model):
 class BlacklistToken(db.Model):
     # Token Model for storing JWT tokens
     id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(500), unique=True, nullable=False)
+    token = db.Column(db.Text, unique=True, nullable=False)
     blacklisted_on = db.Column(db.DateTime, nullable=False)
 
     def __init__(self, token):
