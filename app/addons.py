@@ -118,6 +118,7 @@ class AddonStaff(Resource):
                                 )
             db.session.add(op)
             db.session.commit()
+            print(op.purtime)
         except Exception as e:
             print(e)
             # error_mail(e)

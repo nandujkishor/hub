@@ -312,10 +312,11 @@ class farer_u_det(Resource):
                         if user.detailscomp is None:
                             inc = request.get_json()
                             ref = inc.get('referrer')
-                            if ref[0]=='v' or ref[0]=='V':
-                                ref = int(ref[3:])
-                            else:
-                                ref = int(ref)
+                            if ref:
+                                if ref[0]=='v' or ref[0]=='V':
+                                    ref = int(ref[3:])
+                                else:
+                                    ref = int(ref)
                             user.fname = inc.get('fname')
                             user.lname = inc.get('lname')
                             user.phno = inc.get('phno')
@@ -327,15 +328,20 @@ class farer_u_det(Resource):
                                 'message':'Successfully completed addition of personel data'
                             }
                             try:
-                                user.referrer = ref
-                                db.session.commit()
+                                if ref:
+                                    user.referrer = ref
+                                    db.session.commit()
                             except Exception as e:
                                 print(e)
-                                return "Details added. Issues: Invalid referrer"
+                                responseObject = {
+                                    'status':'success',
+                                    'message':'User added. Issues: Invalid referrer'
+                                }
+                                return jsonify(responseObject)
                         else:
                             responseObject = {
                                 'status':'failure',
-                                'message':'Personel deatils added already'
+                                'message':'Personal details added already'
                             }
                     else:
                         responseObject = {
