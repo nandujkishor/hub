@@ -16,6 +16,29 @@ from sqlalchemy.sql import func
 
 add = api.namespace('addons', description="Addons service")
 
+@add.route('/order/my')
+class MyOrder(Resource):
+    @authorize(request)
+    def get(u, self):
+        rgs = OtherPurchases.query.filter_by(vid=u.vid).all()
+        products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow',
+                        'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
+        for i in rgs:
+            r.append({
+                'purid':i.purid,
+                'purchase':products[i.pid-1],
+                'pid':i.pid,
+                'scount':i.scount,
+                'mcount':i.mcount,
+                'lcount':i.lcount,
+                'xlcount':i.lcount,
+                'xxlcount':i.lcount,
+                'qty':i.qty,
+                'total':i.total,
+                'purtime':i.purtime
+            })
+        return jsonify(r)
+
 @add.route('/order/staff')
 class AddonStaff(Resource):
     @authorizestaff(request, "sales", 2)
