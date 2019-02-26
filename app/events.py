@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 from app.farer import auth_token
+from datetime import date
 
 events = api.namespace('events', description="Events management")
 
@@ -189,9 +190,9 @@ class events_workshops_indv(Resource):
         try:
             workshop = Workshops.query.filter_by(id=id).first()
             if workshop is not None:
-                
+
                 data = request.get_json()
-                
+
                 workshop.title=data.get('title')
                 workshop.about=data.get('about')
                 workshop.short=data.get('short')
@@ -203,7 +204,7 @@ class events_workshops_indv(Resource):
                 workshop.org=data.get('org')
                 workshop.fee=data.get('fee')
                 workshop.department=data.get('department')
-                
+
                 db.session.commit()
                 responseObject = {
                     'status':'success',
@@ -324,7 +325,7 @@ class events_contests(Resource):
                 support=data.get('support'),
                 about=data.get('about'),
                 rules=data.get('rules'),
-                prereq=data.get('prereq'), 
+                prereq=data.get('prereq'),
                 prize1=data.get('prize1'),
                 prize2=data.get('prize2'),
                 prize3=data.get('prize3'),
@@ -418,9 +419,9 @@ class events_contests_indv(Resource):
         try:
             contest = Contests.query.filter_by(id=id).first()
             if contest is not None:
-                
+
                 data = request.get_json()
-                
+
                 contest.title=data.get('title')
                 contest.short=data.get('short')
                 contest.about=data.get('about')
@@ -435,7 +436,7 @@ class events_contests_indv(Resource):
                 contest.prize2=data.get('prize2')
                 contest.prize3=data.get('prize3')
                 contest.team_limit=data.get('team_limit')
-                
+
                 db.session.commit()
                 responseObject = {
                     'status':'success',
@@ -808,7 +809,7 @@ class events_registration(Resource):
 
 @events.route('/registration/staff')
 class registration_through_staff(Resource):
-    @authorizestaff("registration", 3)
+    @authorizestaff(request,"registration", 3)
     def get(user, self):
         l = Registrations.query.filter_by(mode=2).all()
         r = []
@@ -821,7 +822,7 @@ class registration_through_staff(Resource):
                 'registime':l.registime
             })
         return jsonify(r)
-    
+
     @authorizestaff(request, "registration", 3)
     def post(user, self):
         data = request.get_json()
@@ -853,7 +854,7 @@ class registration_through_staff(Resource):
             if w is not None:
                 try:
                     w.rmseats = w.rmseats - 1
-                    r = Registrations(vid=data.get('vid'), 
+                    r = Registrations(vid=data.get('vid'),
                                     cat=data.get('cat'),
                                     eid=data.get('eid'),
                                     typ=2,
@@ -893,7 +894,7 @@ class registration_through_staff(Resource):
             c = Contests.query.filter_by(id=data.get('eid')).first()
             if c is not None:
                 try:
-                    r = Registrations(vid=data.get('vid'), 
+                    r = Registrations(vid=data.get('vid'),
                                     cat=data.get('cat'),
                                     eid=data.get('eid'),
                                     typ=2,
@@ -934,6 +935,78 @@ class registration_through_staff(Resource):
             'message':'Some exception occured. Contact web team (Error code: w31as432t)'
         }
         return jsonify(responseObject)
+
+@events.route('/registration/check')
+class events_registration_check(Resource):
+
+    # End point for getting total registrations made by a user
+    @api.doc(params={
+        'vid':'Vidyut ID',
+        'start':'Start Date',
+        'end':'End Date'
+            })
+    # @authorizestaff(request,"registrations", 3)
+    def get(self):
+        try:
+            data = request.get_json()
+            start = datetime.datetime.strptime(data.get('start')+' 00:00:00', '%d-%m-%Y %H:%M:%S')
+            end = datetime.datetime.strptime(data.get('end')+' 23:59:59', '%d-%m-%Y %H:%M:%S')
+            if start<=end:
+                regs = db.session.query(Registrations).filter(Registrations.regby==data.get('vid')).\
+                        filter(Registrations.registime>=start).filter(Registrations.registime<=end).all()
+                if regs is not None:
+                    responseObject = []
+                    totalsum=0
+                    for reg in regs:
+                        if reg.cat == 1:
+                            w = Workshops.query.filter_by(id = reg.eid).first()
+                            if w is not None:
+                                totalsum+=w.fee
+                                responseObject.append({
+                                    'regid':reg.regid,
+                                    'vid':reg.vid,
+                                    'cat':reg.cat,
+                                    'catn':'Workshop',
+                                    'eid':reg.eid,
+                                    'ename':w.title,
+                                    'fee':w.fee
+                                })
+                        elif reg.cat == 2:
+                            c = Contests.query.filter_by(id = reg.eid).first()
+                            if c is not None:
+                                totalsum+=c.fee
+                                responseObject.append({
+                                    'regid':reg.regid,
+                                    'vid':reg.vid,
+                                    'cat':reg.cat,
+                                    'catn':'Contest',
+                                    'eid':reg.eid,
+                                    'ename':c.title,
+                                    'fee':c.fee
+                                })
+                    responseObject = {
+                            'data': responseObject,
+                            'totalsum': totalsum
+                    }
+                    return jsonify(responseObject)
+                else:
+                    responseObject={
+                        'status': 'fail',
+                        'message':'No registraions done in between these dates'
+                    }
+            else:
+                responseObject={
+                    'status':'fail',
+                    'message':'Invalid Dates'
+                }
+            return jsonify(responseObject)
+        except Exception  as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error Occured'
+            }
+            return jsonify(responseObject)
 
 @events.route('/registration/workshops/<int:id>')
 class events_registration_workshop(Resource):
