@@ -5,87 +5,141 @@ from app import app, db, api
 from app.farer import authorizestaff, authorize
 # from app.mail import other
 from config import Config
+from values import Prices
 from app.models import User, Transactions, OtherPurchases
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 from app.farer import auth_token
+from app.mail import addon_pur
 
 add = api.namespace('addons', description="Addons service")
 
 @add.route('/order/staff')
 class AddonStaff(Resource):
-    @authorizestaff(request, "registration", 3)
-    def post(u, self):
-        return "qq"
+    # @authorizestaff(request, "registration", 2)
+    def get(self):
+        rgs = OtherPurchases.query.all()
+        r = []
+        for i in rgs:
+            print(i.__dict__)
+        return "Hello!"
 
     @api.doc(params = {
         'vid':'VID of the purchasee',
         'pid':'Product ID',
-        'tsize':'(Optional) Size of the T-shirt. Based on the Product ID',
-        'qty':'Quandity of the product',
+        'roll':'(needed for amrita tickets) Amrita Roll Number',
+        'bookid':'Register book ID',
+        'scount':'S count',
+        'mcount':'M count',
+        'lcount':'L count',
+        'xlcount':'XL count',
+        'xxlcount':'XXL count',
+        'qty':'Quandity of the product'
         })
     @authorizestaff(request, "registration", 3)
     def post(u, self):
         try:
             data = request.get_json()
             print("RECIEVING = ", data)
-            self.vid = vid
-            self.pid = pid
-            self.total = 0
-            self.qty = qty
+            pid = data.get('pid')
+            qty = data.get('qty')
+            scount = data.get('scount')
+            mcount = data.get('mcount')
+            lcount = data.get('lcount')
+            xlcount = data.get('xlcount')
+            xxlcount = data.get('xxlcount')
+            message = "Success."
+            print("here1")
+            if pid is None or data.get('vid') is None or data.get('book') is None or data.get('roll') is None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'No proper data'
+                }
             if pid == 1:
                 # Amritapuri: Proshow + Choreonite + Fashionshow
-                self.total = qty*Prices.P1
+                total = qty*Prices.P1
                 if qty >= 20:
-                    self.qty += 1
-                    self.message = "Offer applied. One free ticket added."
-                # Send mail regarding the purchase
+                    qty += int(qty/20)
+                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
             elif pid == 2:
                 # Outstation: Proshow + Choreonite + Fashionshow
-                self.total = qty*Prices.P2
+                total = qty*Prices.P2
                 if qty >= 3:
-                    self.total -= int(qty/3)*100
-                    self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+                    total -= int(qty/3)*100
+                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
             elif pid == 3:
                 # General: Headbangers + Choreonite + Fashionshow
-                self.total = qty*Prices.P3
+                total = qty*Prices.P3
                 if qty >= 3:
-                    self.total -= int(qty/3)*100
-                    self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
+                    total -= int(qty/3)*100
+                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
             elif pid == 4:
                 # Choreonite + Fashionshow
-                self.total = qty*Prices.P4
+                total = qty*Prices.P4
             elif pid == 5:
                 # T-Shirt
-                self.tsize = tsize
-                self.total = qty*Prices.P5
+                qty = scount + mcount + lcount + xlcount + xxlcount
+                total = qty*Prices.P5
+                if qty >= 20:
+                    qty += int(qty/20)
+                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
             elif pid == 6:
-                # Amritapuri: Tickets + T-Shirt
-                self.total = qty*Prices.P6
-                self.tsize = tsize
+                qty = scount + mcount + lcount + xlcount + xxlcount
+                # Amritapuri: All Tickets + T-Shirt
+                total = qty*(Prices.P1 + Prices.P5 - 50)
+                if qty >= 20:
+                    qty += int(qty/20)
+                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
             elif pid == 7:
-                # Outstation: Tickets + T-Shirt
-                self.total = qty*Prices.P7
-                self.tsize = tsize
+                # Outstation: All Tickets + T-Shirt
+                qty = scount + mcount + lcount + xlcount + xxlcount
+                total = qty*(Prices.P2 + Prices.P5 - 50)
+            elif pid == 8:
+                # General: Headbangers + Choreonite + Fashionshow + T-Shirt
+                qty = scount + mcount + lcount + xlcount + xxlcount
+                total = qty*(Prices.P3 + Prices.P5 - 50)
+                if qty >= 3:
+                    total -= int(qty/3)*100
+                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
             op = OtherPurchases(vid=data.get('vid'),
-                                pid=data.get('pid'),
-                                qty=data.get('qty'),
-                                tsize = data.get('tsize'),
+                                pid=pid,
+                                qty=qty,
+                                roll=data.get('roll'),
+                                bookid=data.get('bookid'),
+                                scount=data.get('scount'),
+                                mcount=data.get('mcount'),
+                                lcount=data.get('lcount'),
+                                xlcount=data.get('lcount'),
+                                xxlcount=data.get('lcount'),
+                                total=total,
+                                message=message,
                                 by=u.vid
                                 )
             db.session.add(op)
             db.session.commit()
-            responseObject = {
-                'status':'success',
-                'message': op.message + ' Total transaction amount: Rs. '+ op.total + 'for a total of '+op.qty+' products'
-            }
-            return jsonify(responseObject)
         except Exception as e:
             print(e)
             # error_mail(e)
             responseObject = {
                 'status':'fail',
-                'message':'Exception occured. Please contact web team (nandakishore@vidyut.amrita.edu)'
+                'message':'Exception occured. (Error: '+str(e)+'. Please email or call web team'
             }
             return jsonify(responseObject)
+        try:
+            products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow',
+                        'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
+            title = products[pid-1]
+            purid = op.purid
+            user = User.query.filter_by(vid=op.vid).first()
+            addon_pur(user=user, title=title, purid=purid)
+        except Exception as e:
+            print(e)
+        qty = str(qty)
+        print(qty)
+        total = str(total)
+        responseObject = {
+            'status':'success',
+            'message': str(message) + ' Total transaction amount: Rs. '+ total + ' for a total of '+ qty +' product(s)'
+        }
+        return jsonify(responseObject)

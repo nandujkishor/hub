@@ -1,7 +1,6 @@
 from app import app, db
 import datetime
 # from config import Config
-from values import Prices
 import jwt
 
 class User(db.Model):
@@ -249,6 +248,8 @@ class Staff(db.Model):
 class OtherPurchases(db.Model):
     purid = db.Column(db.Integer, primary_key=True)
     vid = db.Column(db.Integer, db.ForeignKey('user.vid')) #Purchasee
+    roll = db.Column(db.String(20))
+    bookid = db.Column(db.String(20))
     pid = db.Column(db.Integer) # Product ID
     scount = db.Column(db.Integer)
     mcount = db.Column(db.Integer)
@@ -261,47 +262,9 @@ class OtherPurchases(db.Model):
     message = db.Column(db.Text)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now())
 
-    def __init__(self, vid, pid, by, tsize="none", qty=0):
-        self.vid = vid
-        self.pid = pid
-        self.total = 0
-        self.qty = qty
-        if pid == 1:
-            # Amritapuri: Proshow + Choreonite + Fashionshow
-            self.total = qty*Prices.P1
-            if qty >= 20:
-                self.qty += 1
-                self.message = "Offer applied. One free ticket added."
-            # Send mail regarding the purchase
-        elif pid == 2:
-            # Outstation: Proshow + Choreonite + Fashionshow
-            self.total = qty*Prices.P2
-            if qty >= 3:
-                self.total -= int(qty/3)*100
-                self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
-        elif pid == 3:
-            # General: Headbangers + Choreonite + Fashionshow
-            self.total = qty*Prices.P3
-            if qty >= 3:
-                self.total -= int(qty/3)*100
-                self.message = "Offer applied. Rs. " + int(qty/3)*100 + " off."
-        elif pid == 4:
-            # Choreonite + Fashionshow
-            self.total = qty*Prices.P4
-        elif pid == 5:
-            # T-Shirt
-            self.tsize = tsize
-            self.total = qty*Prices.P5
-        elif pid == 6:
-            # Amritapuri: Tickets + T-Shirt
-            self.total = qty*Prices.P6
-            self.tsize = tsize
-        elif pid == 7:
-            # Outstation: Tickets + T-Shirt
-            self.total = qty*Prices.P7
-            self.tsize = tsize
-
 # class FarerLog(db.Model):
+#     logid = db.Column(db.Integer)
 #     vid = db.Column(db.Integer)
 #     action = db.Column(db.Integer)
 #     point = db.Column()
+#     ip = db.Column()
