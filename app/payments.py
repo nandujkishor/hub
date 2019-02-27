@@ -21,7 +21,7 @@ pay = api.namespace('pay', description="Payments management")
 class AESCipher(object):
     def __init__(self):
         self.bs = 16
-        self.cipher = AES.new('WEGSNGOXHEUDEEDD'.decode("utf8"), AES.MODE_CBC, '3564234432724374'.decode("utf8"))
+        self.cipher = AES.new('WEGSNGOXHEUDEEDD', AES.MODE_CBC, '3564234432724374')
 
     def encrypt(self, raw):
         raw = self._pad(raw)
