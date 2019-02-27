@@ -1,4 +1,4 @@
-# Production Configuration
+# Development Configuration
 
 import os
 
@@ -6,10 +6,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     POSTGRES = {
-        'user': 'postgres',
-        'pw': 'vidyut2019*',
-        'db': 'vidyut2019',
-        'host': '10.0.0.139',
+        'user': 'vidyut',
+        'pw': 'vidyut2018*',
+        'db': 'vidyut',
+        'host': 'ambvidyut-dev.ckhmnttmq7jx.ap-south-1.rds.amazonaws.com',
         'port': '5432',
     }
     SQLALCHEMY_DATABASE_URI = 'postgresql://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s' % POSTGRES

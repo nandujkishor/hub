@@ -6,7 +6,7 @@ from app.farer import authorizestaff, authorize
 from config import Config
 from app.models import Workshops, Talks, Contests, Registrations, User, Transactions
 from app.mail import wkreg_mail, ctreg_mail
-# from app.pay import workshopPay
+from app.payments import workshopPay
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -743,6 +743,7 @@ class events_registration(Resource):
     def post(user, self):
         try:
             data = request.get_json()
+            print(data)
             #Workshop Registration
             if data.get('cat') == 1:
                 w = Workshops.query.filter_by(id=data.get('eid')).first()
@@ -754,12 +755,12 @@ class events_registration(Resource):
                                 'message':'No seats remaining'
                             }
                             return jsonify(responseObject)
-                        w.rmseats = Workshop.c.rmseats - 1
+                        w.rmseats = w.rmseats - 1
                         db.session.commit()
-                        tr = Transactions(cat=1, eid=w.id, vid=user.vid)
-                        db.session.add(tr)
-                        db.session.commit()
-                        workshopPay(w, user)
+                        # tr = Transactions(cat=1, eid=w.id, vid=user.vid)
+                        # db.session.add(tr)
+                        # db.session.commit()
+                        return workshopPay(w, user)
                         # Start a 20 minute scheduler to increment the workshop slot
                         # in case the transaction got an issue / is pending.
                         # In all other cases, take the decision on return of endpoint

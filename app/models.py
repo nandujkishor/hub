@@ -228,6 +228,7 @@ class Transactions(db.Model):
         self.inittime = datetime.datetime.now()
         self.status = "ACRD Init"
         self.calls = 0
+        self.amount = amount
         self.refund = False
         # ACRD Init: Default
         self.message = ""

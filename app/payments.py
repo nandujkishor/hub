@@ -8,7 +8,7 @@ import base64
 from Crypto.Cipher import AES
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.models import User, Staff
+from app.models import User, Staff, Transactions, Registrations
 from config import Config
 from app.farer import authorizestaff, authorize
 from werkzeug.utils import secure_filename
@@ -42,14 +42,14 @@ class AESCipher(object):
     def _unpad(self, s):
         return s[:-ord(s[len(s)-1:])]
 
-# def pay_data(amt, tid):
-def pay_data(plaintext):
+def pay_data(amt, tid):
+#def pay_data(plaintext):
     # transactionId: Unique for each transaction
     # amount: Transaction amount (Positive integer only)
     # purpose: Transaction purpose: Conference code
     # currency: Transaction currency
     # checkSum: MD5 over the plaintext
-    # plaintext = "transactionId=VIDYUT"+str(tid)+"|amount="+str(amt)+"|purpose="+Config.PURPOSE+"|currency=inr"
+    plaintext = "transactionId=VIDYUT"+str(tid)+"|amount="+str(amt)+"|purpose="+Config.PURPOSE+"|currency=inr"
     result = hashlib.md5(plaintext.encode())
     result = result.hexdigest()
     print("md5",result)
@@ -67,6 +67,8 @@ def pay_data(plaintext):
 
 def workshopPay(workshop, user):
     transaction = Transactions(vid=user.vid, cat=1, eid=workshop.id, amount=workshop.fee)
+    print(transaction.amount)
+    print(workshop.fee)
     db.session.add(transaction)
     db.session.commit()
     return pay_data(transaction.amount, transaction.trid)
@@ -106,9 +108,10 @@ class pay_receiver(Resource):
             # print(statusdesc)
             if (t.status.lower() != 'SUCCESS'):
                 print("Success")
+                r = Registrations(vid=t.vid, cat=t.cat, eid=t.eid, typ=1, trid=t.trid)
                 responseObject = {
                     'status':'success',
-                    'message':'payment successful'
+                    'message':'payment successful. Reg ID:'+str(r.regid)
                 }
                 return jsonify(responseObject)
             else:
