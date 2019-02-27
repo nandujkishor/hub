@@ -14,14 +14,14 @@ from app.farer import authorizestaff, authorize
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
-
+from base64 import b16encode, b16decode
 pay = api.namespace('pay', description="Payments management")
 
 
 class AESCipher(object):
     def __init__(self):
         self.bs = 16
-        self.cipher = AES.new(b64decode('WEGSNGOXHEUDEEDD'), AES.MODE_CBC, b64decode('3564234432724374'))
+        self.cipher = AES.new(b16decode('WEGSNGOXHEUDEEDD'), AES.MODE_CBC, b'3564234432724374')
 
     def encrypt(self, raw):
         raw = self._pad(raw)
