@@ -6,7 +6,7 @@ from app.farer import authorizestaff, authorize
 from config import Config
 from app.models import Workshops, Talks, Contests, Registrations, User, Transactions
 from app.mail import wkreg_mail, ctreg_mail
-from app.payments import workshopPay
+# from app.payments import workshopPay
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
