@@ -65,7 +65,7 @@ def workshopPay(workshop, user):
 def paystatuschecker():
     return 1
 
-@pay.route('/receive')
+@pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
     def get(self):
         return pay_data("transactionId=ORDER1545904238000TK|amount=10|purpose=SOME|currency=inr|bankrefno=""|status=FAILED|statusDesc=User pressed cancel button|checkSum=d8dfb6b280e664b95b2c0a215661a2ec")
