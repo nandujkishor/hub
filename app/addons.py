@@ -31,8 +31,8 @@ class MyOrder(Resource):
                 'scount':i.scount,
                 'mcount':i.mcount,
                 'lcount':i.lcount,
-                'xlcount':i.lcount,
-                'xxlcount':i.lcount,
+                'xlcount':i.xlcount,
+                'xxlcount':i.xxlcount,
                 'qty':i.qty,
                 'total':i.total,
                 'purtime':i.purtime
@@ -58,8 +58,8 @@ class AddonStaff(Resource):
                 'scount':i.scount,
                 'mcount':i.mcount,
                 'lcount':i.lcount,
-                'xlcount':i.lcount,
-                'xxlcount':i.lcount,
+                'xlcount':i.xlcount,
+                'xxlcount':i.xxlcount,
                 'qty':i.qty,
                 'total':i.total,
                 'purtime':i.purtime
@@ -151,8 +151,8 @@ class AddonStaff(Resource):
                                 scount=data.get('scount'),
                                 mcount=data.get('mcount'),
                                 lcount=data.get('lcount'),
-                                xlcount=data.get('lcount'),
-                                xxlcount=data.get('lcount'),
+                                xlcount=data.get('xlcount'),
+                                xxlcount=data.get('xxlcount'),
                                 total=total,
                                 message=message,
                                 by=u.vid

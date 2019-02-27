@@ -6,6 +6,7 @@ from app.farer import authorizestaff, authorize
 from config import Config
 from app.models import Workshops, Talks, Contests, Registrations, User, Transactions
 from app.mail import wkreg_mail, ctreg_mail
+# from app.pay import workshopPay
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -747,17 +748,28 @@ class events_registration(Resource):
                 w = Workshops.query.filter_by(id=data.get('eid')).first()
                 if w is not None:
                     try:
+                        if w.rmseats is 0:
+                            responseObject = {
+                                'status':'fail',
+                                'message':'No seats remaining'
+                            }
+                            return jsonify(responseObject)
                         w.rmseats = Workshop.c.rmseats - 1
                         db.session.commit()
                         tr = Transactions(cat=1, eid=w.id, vid=user.vid)
                         db.session.add(tr)
                         db.session.commit()
+                        workshopPay(w, user)
                         # Start a 20 minute scheduler to increment the workshop slot
                         # in case the transaction got an issue / is pending.
                         # In all other cases, take the decision on return of endpoint
                     except Exception as e:
                         print(e)
-                        return "No seats remaining"
+                        responseObject = {
+                            'status':'fail',
+                            'message':'No seats remaining'
+                        }
+                        return jsonify(responseObject)
                     # seats = Registrations.query.filter_by(cat=1, eid=data.get('eid')).count()
                     # if seats < w.seats:
                     #     r = Registrations(vid=resp, cat=1, eid=data.get('eid'))

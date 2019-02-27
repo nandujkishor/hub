@@ -203,7 +203,7 @@ class Registrations(db.Model):
     cat = db.Column(db.Integer)
     eid = db.Column(db.Integer)
     typ = db.Column(db.Integer) # Mode of transaction 1:online 2:volunteer
-    trid = db.Column(db.Integer) # if processed through online medium
+    trid = db.Column(db.Integer, db.ForeignKey('transactions.trid')) # if processed through online medium
     regby = db.Column(db.Integer, db.ForeignKey('user.vid')) # volunteer, for mode 2
     registime = db.Column(db.DateTime, default=datetime.datetime.now)
     # 0 if not paid, 1 if paid.
@@ -212,13 +212,20 @@ class Transactions(db.Model):
     trid = db.Column(db.Integer, primary_key=True)
     # Acts as transaction ID
     vid = db.Column(db.Integer)
-    inittime = db.Column(db.DateTime, default=datetime.datetime.now)
-    status = db.Column(db.String(100), default="Pending")
-    outtime = db.Column(db.DateTime, default=datetime.datetime.now)
+    inittime = db.Column(db.DateTime, default=datetime.datetime.now, nullable=False)
+    status = db.Column(db.String(100), nullable=False)
     message = db.Column(db.Text)
     cat = db.Column(db.Integer)
     eid = db.Column(db.Integer)
     amount = db.Column(db.Integer)
+    refund = db.Column(db.Boolean)
+
+    def __init__(self, vid, cat, eid, amount):
+        self.vid = vid
+        self.inittime = datetime.datetime.now()
+        self.status = "ACRD Init"
+        # ACRD Init: Default
+        self.message = ""
 
 class EventDLog(db.Model):
     # Logs Event dashboard changes

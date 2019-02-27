@@ -27,6 +27,13 @@ class Config(object):
     DEVELOPMENT = True
     DEBUG = True
     MAINTENANCE = False
+    JSON_SORT_KEYS = False
+
+    # ACRD
+    ACRDEND = 'https://payments.acrd.org.in/pay/makethirdpartypayment'
+    PURPOSE = 'VIDYUT19TEST'
+    PROBURL = 'https://payments.acrd.org.in/pay/doubleverifythirdparty'
+    PAYCODE = 'VIDYUT19TEST'
 
 class TestingConfig(Config):
     TESTING = True

@@ -42,6 +42,47 @@ class AESCipher(object):
     def _unpad(self, s):
         return s[:-ord(s[len(s)-1:])]
 
+def pay_data(amt, tid):
+    # transactionId: Unique for each transaction
+    # amount: Transaction amount (Positive integer only)
+    # purpose: Transaction purpose: Conference code
+    # currency: Transaction currency
+    # checkSum: MD5 over the plaintext
+    plaintext = "transactionId=VIDYUT"+tid+"|amount="+amt+"|purpose="+Config.PURPOSE"|currency=inr"
+    result = hashlib.md5(plaintext.encode())
+    result = result.hexdigest()
+    print("md5",result)
+    pwc = plaintext + "|checkSum=" + result
+    print("before aes",pwc)
+    cipher = AESCipher(key)
+    encd = cipher.encrypt(pwc)
+    print("after aes", encd)
+    payload = {
+        'status':'success',
+        'encdata':encd,
+        'code':Config.PAYCODE
+    }
+    return jsonify(payload)
+
+def workshopPay(workshop, user):
+    transaction = Transactions(vid=user.vid, cat=1, eid=workshop.id, )
+
+@pay.route('/send')
+class toACRD(Resource):
+    @authorize
+    # Sends the data required for posting to ACRD: encdata and 
+    def get():
+      plaintext = "transactionId=VIDYUTTEST10|amount="+amt+"|purpose="+Config.PURPOSE"|currency=inr"
+#     result = hashlib.md5(plaintext.encode())
+#     result = result.hexdigest()
+#     print("md5",result)
+#     pwc = plaintext + "|checkSum=" + result
+#     print("before aes",pwc)
+#     cipher = AESCipher(key)
+#     encd = cipher.encrypt(pwc)
+#     print("after aes", encd)
+#     return encd
+
 @pay.route('/receive')
 class pay_receiver():
     @authorize
