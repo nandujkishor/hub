@@ -106,9 +106,11 @@ class pay_receiver(Resource):
             # print(bankref)
             # print(status)
             # print(statusdesc)
-            if (t.status.lower() != 'SUCCESS'):
+            if (t.status.upper() == 'SUCCESS'):
                 print("Success")
                 r = Registrations(vid=t.vid, cat=t.cat, eid=t.eid, typ=1, trid=t.trid)
+                db.session.add(r)
+                db.session.commit()
                 responseObject = {
                     'status':'success',
                     'message':'payment successful. Reg ID:'+str(r.regid)
