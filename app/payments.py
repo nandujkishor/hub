@@ -53,7 +53,7 @@ def pay_data(amt, tid):
     print("md5",result)
     pwc = plaintext + "|checkSum=" + result
     print("before aes",pwc)
-    cipher = AESCipher(key)
+    cipher = AESCipher()
     encd = cipher.encrypt(pwc)
     print("after aes", encd)
     payload = {
