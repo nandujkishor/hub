@@ -15,4 +15,4 @@ api = Api(app,
     doc=False
     )
 
-from app import routes, farer, events, models, reg, addons
+from app import routes, farer, events, models, reg, addons, payments

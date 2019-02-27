@@ -34,6 +34,8 @@ class Config(object):
     PURPOSE = 'VIDYUT19TEST'
     PROBURL = 'https://payments.acrd.org.in/pay/doubleverifythirdparty'
     PAYCODE = 'VIDYUT19TEST'
+    ACRDKEY = 'WEGSNGOXHEUDEEDD'
+    ACRDIV = '3564234432724374'
 
 class TestingConfig(Config):
     TESTING = True

@@ -17,8 +17,8 @@ from flask_restplus import Resource, Api
 
 pay = api.namespace('pay', description="Payments management")
 
-key = "WEGSNGOXHEUDEEDD"
-iv = "3564234432724374"
+key = Config.ACRDKEY
+iv = Config.ACRDIV
 
 class AESCipher(object):
     def __init__(self, key):
@@ -42,13 +42,14 @@ class AESCipher(object):
     def _unpad(self, s):
         return s[:-ord(s[len(s)-1:])]
 
-def pay_data(amt, tid):
+# def pay_data(amt, tid):
+def pay_data(plaintext):
     # transactionId: Unique for each transaction
     # amount: Transaction amount (Positive integer only)
     # purpose: Transaction purpose: Conference code
     # currency: Transaction currency
     # checkSum: MD5 over the plaintext
-    plaintext = "transactionId=VIDYUT"+tid+"|amount="+amt+"|purpose="+Config.PURPOSE"|currency=inr"
+    # plaintext = "transactionId=VIDYUT"+str(tid)+"|amount="+str(amt)+"|purpose="+Config.PURPOSE+"|currency=inr"
     result = hashlib.md5(plaintext.encode())
     result = result.hexdigest()
     print("md5",result)
@@ -65,39 +66,74 @@ def pay_data(amt, tid):
     return jsonify(payload)
 
 def workshopPay(workshop, user):
-    transaction = Transactions(vid=user.vid, cat=1, eid=workshop.id, )
+    transaction = Transactions(vid=user.vid, cat=1, eid=workshop.id, amount=workshop.fee)
+    db.session.add(transaction)
+    db.session.commit()
+    return pay_data(transaction.amount, transaction.trid)
 
-@pay.route('/send')
-class toACRD(Resource):
-    @authorize
-    # Sends the data required for posting to ACRD: encdata and 
-    def get():
-      plaintext = "transactionId=VIDYUTTEST10|amount="+amt+"|purpose="+Config.PURPOSE"|currency=inr"
-#     result = hashlib.md5(plaintext.encode())
-#     result = result.hexdigest()
-#     print("md5",result)
-#     pwc = plaintext + "|checkSum=" + result
-#     print("before aes",pwc)
-#     cipher = AESCipher(key)
-#     encd = cipher.encrypt(pwc)
-#     print("after aes", encd)
-#     return encd
+def paystatuschecker():
+    return 1
 
 @pay.route('/receive')
-class pay_receiver():
-    @authorize
-    def post():
-        # return "Inside authorize"
-        # payload = {
-        #     'code': request.form.get('code'),
-        #     'data': request.form.get('data')
-        # }
+class pay_receiver(Resource):
+    def get(self):
+        return pay_data("transactionId=ORDER1545904238000TK|amount=10|purpose=SOME|currency=inr|bankrefno=""|status=FAILED|statusDesc=User pressed cancel button|checkSum=d8dfb6b280e664b95b2c0a215661a2ec")
+
+    # @authorize
+    def post(self):
         try:
-            if request.method == 'POST':
-                return request.form.get('data')
+            d = request.get_json()
+            data = d.get('data')
+            code = d.get('code')
+            cipher = AESCipher(key)
+            plaintext = cipher.decrypt(data)
+            print(plaintext)
+            d = plaintext.split('|')
+            print(d)
+            trid = d[0].split('=')[1]
+            trid = trid[6:]
+            print(trid)
+            t = Transactions.query.filter_by(trid=trid).first()
+            if t is None:
+                print("Invalid transaction ID - manage this!")
+                # Send an email
+            t.bankref = d[4].split('=')[1]
+            t.status = d[5].split('=')[1]
+            t.statusdesc = d[6].split('=')[1]
+            t.reply = plaintext
+            # print(bankref)
+            # print(status)
+            # print(statusdesc)
+            if (t.status.lower() != 'SUCCESS'):
+                print("Success")
+                responseObject = {
+                    'status':'success',
+                    'message':'payment successful'
+                }
+                return jsonify(responseObject)
+            else:
+                responseObject = {
+                    'status':t.status.lower(),
+                    'message':t.reply
+                }
+                return jsonify(responseObject)
+
         except Exception as e:
-            return "Exception occured : " + str(e)
-        return ("Check localhost")
+            responseObject = {
+                'status':'fail',
+                'message':'Exception occured : '+str(e)
+            }
+            return jsonify(responseObject)
+
+# @pay.route('/prob')
+# def probbing(Resource):
+#     # F you ACRD
+#     def get(self):
+#         payload = {
+
+#         }
+#         f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=)
+
 
 # @pay.route('/testing')
 # def payment():

@@ -214,18 +214,28 @@ class Transactions(db.Model):
     vid = db.Column(db.Integer)
     inittime = db.Column(db.DateTime, default=datetime.datetime.now, nullable=False)
     status = db.Column(db.String(100), nullable=False)
+    statusdesc = db.Column(db.Text)
     message = db.Column(db.Text)
     cat = db.Column(db.Integer)
     eid = db.Column(db.Integer)
     amount = db.Column(db.Integer)
-    refund = db.Column(db.Boolean)
+    bankref = db.Column(db.String(40))
+    calls = db.Column(db.Integer)
+    reply = db.Column(db.Text)
 
     def __init__(self, vid, cat, eid, amount):
         self.vid = vid
         self.inittime = datetime.datetime.now()
         self.status = "ACRD Init"
+        self.calls = 0
+        self.refund = False
         # ACRD Init: Default
         self.message = ""
+
+# class Refunds(db.Model):
+#     trid = db.Column(db.Integer, primary_key=True)
+#     processed = db.Column(db.Integer, default=False)
+#     reason = db.Column(db.Text)
 
 class EventDLog(db.Model):
     # Logs Event dashboard changes
