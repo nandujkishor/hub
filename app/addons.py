@@ -91,7 +91,7 @@ class AddonStaff(Resource):
             xlcount = data.get('xlcount')
             xxlcount = data.get('xxlcount')
             message = "Success."
-            if pid is None or data.get('vid') is None or data.get('book') is None or data.get('roll') is None:
+            if pid is None or data.get('vid') is None or data.get('bookid') is None or data.get('roll') is None:
                 responseObject = {
                     'status':'fail',
                     'message':'No proper data'
