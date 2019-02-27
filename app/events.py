@@ -768,7 +768,7 @@ class events_registration(Resource):
                         print(e)
                         responseObject = {
                             'status':'fail',
-                            'message':'No seats remaining'
+                            'message':'No seats remaining.' + str(e)
                         }
                         return jsonify(responseObject)
                     # seats = Registrations.query.filter_by(cat=1, eid=data.get('eid')).count()
