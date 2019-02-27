@@ -17,13 +17,11 @@ from flask_restplus import Resource, Api
 
 pay = api.namespace('pay', description="Payments management")
 
-key = Config.ACRDKEY
-iv = Config.ACRDIV
 
 class AESCipher(object):
-    def __init__(self, key):
+    def __init__(self):
         self.bs = 16
-        self.cipher = AES.new(key, AES.MODE_CBC, iv)
+        self.cipher = AES.new('WEGSNGOXHEUDEEDD'.decode("utf8"), AES.MODE_CBC, '3564234432724374'.decode("utf8"))
 
     def encrypt(self, raw):
         raw = self._pad(raw)
@@ -87,7 +85,7 @@ class pay_receiver(Resource):
             d = request.get_json()
             data = d.get('data')
             code = d.get('code')
-            cipher = AESCipher(key)
+            cipher = AESCipher()
             plaintext = cipher.decrypt(data)
             print(plaintext)
             d = plaintext.split('|')
