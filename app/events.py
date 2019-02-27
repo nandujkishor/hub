@@ -760,7 +760,7 @@ class events_registration(Resource):
                         # tr = Transactions(cat=1, eid=w.id, vid=user.vid)
                         # db.session.add(tr)
                         # db.session.commit()
-                        return workshopPay(w, user)
+                        # return workshopPay(w, user)
                         # Start a 20 minute scheduler to increment the workshop slot
                         # in case the transaction got an issue / is pending.
                         # In all other cases, take the decision on return of endpoint
@@ -768,9 +768,17 @@ class events_registration(Resource):
                         print(e)
                         responseObject = {
                             'status':'fail',
-                            'message':'No seats remaining.' + str(e)
+                            'message':'No seats remaining.'
                         }
                         return jsonify(responseObject)
+                    try:
+                        return workshopPay(w, user)
+                    except Exception as e:
+                        print(e)
+                        responseObject = {
+                            'status':'fail',
+                            'message': str(e)
+                        }
                     # seats = Registrations.query.filter_by(cat=1, eid=data.get('eid')).count()
                     # if seats < w.seats:
                     #     r = Registrations(vid=resp, cat=1, eid=data.get('eid'))
