@@ -484,6 +484,7 @@ class userslistd(Resource):
                 'email':u.email,
                 'fname':u.fname,
                 'lname':u.lname,
+                'phno':u.phno,
                 'ppic':u.ppic,
                 'detailscomp':u.detailscomp,
                 'educomp':u.educomp,
