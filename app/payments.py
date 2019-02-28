@@ -33,8 +33,8 @@ def decrypt(data):
 	ct_bytes = str(ct_bytes,'utf-8')
 	return ct_bytes
 
-# def pay_data(amt, tid):
-def pay_data(plaintext):
+def pay_data(amt, tid):
+# def pay_data(plaintext):
     # transactionId: Unique for each transaction
     # amount: Transaction amount (Positive integer only)
     # purpose: Transaction purpose: Conference code
