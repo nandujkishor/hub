@@ -188,37 +188,64 @@ class AddonStaff(Resource):
 
 @add.route('/order/stats')
 class AddonStaffCount(Resource):
-    @authorizestaff(request, "sales", 3)
+    @authorizestaff(request, "registration", 3)
     def get(u, self):
-        amt = db.session.query(func.sum(OtherPurchases.total)).scalar()
-        scount = db.session.query(func.sum(OtherPurchases.scount)).scalar()
-        mcount = db.session.query(func.sum(OtherPurchases.mcount)).scalar()
-        lcount = db.session.query(func.sum(OtherPurchases.lcount)).scalar()
-        xlcount = db.session.query(func.sum(OtherPurchases.xlcount)).scalar()
-        xxlcount = db.session.query(func.sum(OtherPurchases.xxlcount)).scalar()
-        pid1 = len(OtherPurchases.query.filter_by(pid=1).all())
-        pid2 = len(OtherPurchases.query.filter_by(pid=2).all())
-        pid3 = len(OtherPurchases.query.filter_by(pid=3).all())
-        pid4 = len(OtherPurchases.query.filter_by(pid=4).all())
-        pid5 = len(OtherPurchases.query.filter_by(pid=5).all())
-        pid6 = len(OtherPurchases.query.filter_by(pid=6).all())
-        pid7 = len(OtherPurchases.query.filter_by(pid=7).all())
-        pid8 = len(OtherPurchases.query.filter_by(pid=8).all())
-        responseObject = {
-            'status':'success',
-            'count':amt,
-            'scount':scount,
-            'mcount':mcount,
-            'lcount':lcount,
-            'xlcount':xlcount,
-            'xxlcount':xxlcount,
-            'pid1':pid1,
-            'pid2':pid2,
-            'pid3':pid3,
-            'pid4':pid4,
-            'pid5':pid5,
-            'pid6':pid6,
-            'pid7':pid7,
-            'pid8':pid8
-        }
-        return jsonify(responseObject)
+        try:
+            amt = db.session.query(func.sum(OtherPurchases.total)).scalar()
+            scount = db.session.query(func.sum(OtherPurchases.scount)).scalar()
+            mcount = db.session.query(func.sum(OtherPurchases.mcount)).scalar()
+            lcount = db.session.query(func.sum(OtherPurchases.lcount)).scalar()
+            xlcount = db.session.query(func.sum(OtherPurchases.xlcount)).scalar()
+            xxlcount = db.session.query(func.sum(OtherPurchases.xxlcount)).scalar()
+            pid1 = len(OtherPurchases.query.filter_by(pid=1).all())
+            pid2 = len(OtherPurchases.query.filter_by(pid=2).all())
+            pid3 = len(OtherPurchases.query.filter_by(pid=3).all())
+            pid4 = len(OtherPurchases.query.filter_by(pid=4).all())
+            pid5 = len(OtherPurchases.query.filter_by(pid=5).all())
+            pid6 = len(OtherPurchases.query.filter_by(pid=6).all())
+            pid7 = len(OtherPurchases.query.filter_by(pid=7).all())
+            pid8 = len(OtherPurchases.query.filter_by(pid=8).all())
+            tshirt = scount+mcount+lcount+xlcount+xxlcount
+
+            proshow=0
+            headbangers=0
+            choreonite=0
+
+            total = OtherPurchases.query.all()
+            for each in total:
+                if each.pid == 3 or each.pid == 8:
+                    headbangers += each.qty
+                if each.pid == 1 or each.pid == 2 or each.pid == 6 or each.pid == 7:
+                    proshow += each.qty
+                if each.pid == 4:
+                    choreonite += choreonite.qty
+
+            proshow += headbangers
+            choreonite += proshow
+            fashionshow = choreonite
+
+            responseObject = {
+                'status':'success',
+                'count':amt,
+                'scount':scount,
+                'mcount':mcount,
+                'lcount':lcount,
+                'xlcount':xlcount,
+                'xxlcount':xxlcount,
+                'pid1':pid1,
+                'pid2':pid2,
+                'pid3':pid3,
+                'pid4':pid4,
+                'pid5':pid5,
+                'pid6':pid6,
+                'pid7':pid7,
+                'pid8':pid8,
+                'headbangers':headbangers,
+                'proshow':proshow,
+                'choreonite':choreonite,
+                'fashionshow':fashionshow,
+                'tshirt':tshirt,
+            }
+            return jsonify(responseObject)
+        except Exception as e:
+            print(e)
