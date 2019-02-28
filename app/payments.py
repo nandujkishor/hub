@@ -176,6 +176,16 @@ def trsuccess(t):
                                 )
         return response
 
+def probber():
+    payload = {
+        'encdata':pay_data(t.trid, t.amount)
+        'code':
+    }
+    f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=payload)
+    j = f.json()
+    print(j)
+    return response_data(j.get('data'))
+
 @pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
     def get(self):
@@ -202,18 +212,21 @@ def probbing(Resource):
     @api.doc(params={
         'trid':'Transaction ID',
     })
-    @authorizestaff(request)
+    @authorizestaff(request, 4)
     def get(u, self):
         data = request.json()
         t = Transactions.query.filter_by(trid=data.get('trid')).first()
-        payload = {
-            'encdata':pay_data(t.trid, t.amount)
-            'code':
-        }
-        f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=payload)
-        j = f.json()
-        print(j)
-        return response_data(j.get('data'))
+        return probber(t)
+
+@pay.route('/prob/all')
+def massprobbing(Resource):
+    @authorizestaff(request, 4)
+    def get(u, self):
+        tlist = Transactions.query.filter_by(status="PROCESSING").all()
+        res = []
+        for t in tlist:
+            res.append(probbeer(t))
+        return jsonify(res)
 
 # @pay.route('/testing')
 # def payment():
