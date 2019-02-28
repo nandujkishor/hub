@@ -56,6 +56,46 @@ def pay_data(amt, tid):
     }
     return jsonify(payload)
 
+def response_data(data):
+    # data: Encoded data
+    plaintext = decrypt(data)
+    print(plaintext)
+    d = plaintext.split('|')
+    print(d)
+    send_spam("Pay2: "+str(d)+" as plaintext with split")
+    trid = d[0].split('=')[1]
+    trid = trid[6:]
+    print(trid)
+    t = Transactions.query.filter_by(trid=trid).first()
+    if t is None:
+        print("Invalid transaction ID - manage this!")
+        send_spam("Error: Invalid transaction ID")
+        return "H"
+    t.bankref = d[4].split('=')[1]
+    t.status = d[5].split('=')[1]
+    t.statusdesc = d[6].split('=')[1]
+    t.reply = plaintext
+    # print(bankref)
+    # print(status)
+    # print(statusdesc)
+    if (t.status.upper() == 'SUCCESS'):
+        print("Success")
+        send_spam("Pay success")
+        resp = trsuccess(t)
+        responseObject = {
+            'status':'success',
+            'message':'payment successful',
+            'addition':resp
+        }
+        return jsonify(responseObject)
+    else:
+        responseObject = {
+            'status':t.status.lower(),
+            'message':t.reply
+        }
+        return jsonify(responseObject)
+    return "1"
+
 def workshopPay(workshop, user):
     transaction = Transactions(vid=user.vid, cat=1, eid=workshop.id, amount=workshop.fee)
     print(transaction.amount)
@@ -147,47 +187,7 @@ class pay_receiver(Resource):
             d = request.get_json()
             data = d.get('data')
             # code = d.get('code')
-            print("ehllwo")
-            print(data)
-            send_spam("Pay1: "+str(data)+" received from Switch.")
-            plaintext = decrypt(data)
-            print(plaintext)
-            d = plaintext.split('|')
-            print(d)
-            send_spam("Pay2: "+str(d)+" as plaintext with split")
-            trid = d[0].split('=')[1]
-            trid = trid[6:]
-            print(trid)
-            t = Transactions.query.filter_by(trid=trid).first()
-            if t is None:
-                print("Invalid transaction ID - manage this!")
-                send_spam("Error: Invalid transaction ID")
-                return "H"
-            t.bankref = d[4].split('=')[1]
-            t.status = d[5].split('=')[1]
-            t.statusdesc = d[6].split('=')[1]
-            t.reply = plaintext
-            # print(bankref)
-            # print(status)
-            # print(statusdesc)
-            if (t.status.upper() == 'SUCCESS'):
-                print("Success")
-                send_spam("Pay success")
-                resp = trsuccess(t)
-                responseObject = {
-                    'status':'success',
-                    'message':'payment successful',
-                    'addition':resp
-                }
-                return jsonify(responseObject)
-            else:
-                responseObject = {
-                    'status':t.status.lower(),
-                    'message':t.reply
-                }
-                return jsonify(responseObject)
-            return "1"
-
+            return response_data(data)
         except Exception as e:
             print(e)
             responseObject = {
@@ -211,6 +211,9 @@ def probbing(Resource):
             'code':
         }
         f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=payload)
+        j = f.json()
+        print(j)
+        return response_data(j.get('data'))
 
 # @pay.route('/testing')
 # def payment():
