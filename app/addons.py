@@ -66,14 +66,14 @@ def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, 
     total = 0
     message = "Success"
     try:
-        addonprice(pid=pid,
-                scount=scount,
-                mcount=mcount,
-                lcount=lcount,
-                xlcount=xlcount,
-                xxlcount=xxlcount,
-                message=message,
-                qty=qty)
+        total = addonprice(pid=pid,
+                    scount=scount,
+                    mcount=mcount,
+                    lcount=lcount,
+                    xlcount=xlcount,
+                    xxlcount=xxlcount,
+                    message=message,
+                    qty=qty)
         print(message)
         op = OtherPurchases(vid=purchasee.vid,
                             pid=pid,
@@ -102,7 +102,7 @@ def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, 
             'message':'Exception occured. (Error: '+str(e)+'. Please email or call web team'
         }
         return jsonify(responseObject)
-    try:        
+    try:
         title = products[pid-1]
         purid = op.purid
         addon_pur(user=purchasee, title=title, purid=purid, count=qty)
