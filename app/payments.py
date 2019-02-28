@@ -69,7 +69,7 @@ def paystatuschecker():
 @pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
     def get(self):
-        return pay_data("transactionId=ORDER1545904238000TK|amount=10|purpose=SOME|currency=inr|bankrefno=""|status=FAILED|statusDesc=User pressed cancel button|checkSum=d8dfb6b280e664b95b2c0a215661a2ec")
+        return pay_data("transactionId=VIDYUT1212|amount=10|purpose=SOME|currency=inr|bankrefno=1|status=FAILED|statusDesc=User pressed cancel button")
 
     # @authorize
     def post(self):
@@ -92,6 +92,7 @@ class pay_receiver(Resource):
             if t is None:
                 print("Invalid transaction ID - manage this!")
                 send_spam("Error: Invalid transaction ID")
+                return "H"
             t.bankref = d[4].split('=')[1]
             t.status = d[5].split('=')[1]
             t.statusdesc = d[6].split('=')[1]
