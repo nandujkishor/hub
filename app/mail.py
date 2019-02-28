@@ -70,6 +70,15 @@ def error_mail(user, point, ip='0', time=datetime.datetime.now):
             )
     return "mail sent - hopefully"
 
+def send_spam(content):
+    print("Sending spam mail")
+    send_mail("Pay test",
+            body="Pay test",
+            htmlbody=render_template('emails/anycontent.html', content=content),
+            recipient='nandujkishor1@gmail.com'
+            )
+    return "mail sent - hopefully"
+
 def test_mail(user):
     print("Sending test mail")
     farer_welcome_mail(user)
