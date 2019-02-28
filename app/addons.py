@@ -20,7 +20,12 @@ products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Prosho
 
 def addonprice(pid, scount, mcount, lcount, xlcount, xxlcount, message, qty):
     # Returns total price, adds a message to message and updates qty, if needed
-    print(scount, mcount, lcount, xlcount, xxlcount, qty)
+    
+    return [total, qty, message]
+
+def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, xxlcount, typ, roll=None, bookid=None):
+    total = 0
+    message = "Success"
     try:
         if qty == 0:
             return "Error: Quandity is 0"
@@ -44,39 +49,20 @@ def addonprice(pid, scount, mcount, lcount, xlcount, xxlcount, message, qty):
             total = qty*Prices.P4
         elif pid == 5:
             # T-Shirt
-            # qty = scount + mcount + lcount + xlcount + xxlcount
+            qty = scount + mcount + lcount + xlcount + xxlcount
             total = qty*Prices.P5
         elif pid == 6:
             # Amritapuri: All Tickets + T-Shirt
-            # qty = scount + mcount + lcount + xlcount + xxlcount
+            qty = scount + mcount + lcount + xlcount + xxlcount
             total = qty*(Prices.P1 + Prices.P5)
         elif pid == 7:
             # Outstation: All Tickets + T-Shirt
-            # qty = scount + mcount + lcount + xlcount + xxlcount
+            qty = scount + mcount + lcount + xlcount + xxlcount
             total = qty*(Prices.P2 + Prices.P5)
         elif pid == 8:
             # General: Headbangers + Choreonite + Fashionshow + T-Shirt
-            # qty = scount + mcount + lcount + xlcount + xxlcount
-            total = qty*(Prices.P3 + Prices.P5)
-    except Exception as e:
-        print(e)
-        return "Error"
-    return total
-
-def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, xxlcount, typ, roll=None, bookid=None):
-    total = 0
-    message = "Success"
-    try:
-        if pid > 4:
             qty = scount + mcount + lcount + xlcount + xxlcount
-        total = addonprice(pid=pid,
-                    scount=scount,
-                    mcount=mcount,
-                    lcount=lcount,
-                    xlcount=xlcount,
-                    xxlcount=xxlcount,
-                    message=message,
-                    qty=qty)
+            total = qty*(Prices.P3 + Prices.P5)
         op = OtherPurchases(vid=purchasee.vid,
                             pid=pid,
                             qty=qty,
