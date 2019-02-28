@@ -20,6 +20,7 @@ products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Prosho
 
 def addonprice(pid, scount, mcount, lcount, xlcount, xxlcount, message, qty):
     # Returns total price, adds a message to message and updates qty, if needed
+    print(scount, mcount, lcount, xlcount, xxlcount, qty)
     try:
         if qty == 0:
             return "Error: Quandity is 0"
@@ -43,20 +44,20 @@ def addonprice(pid, scount, mcount, lcount, xlcount, xxlcount, message, qty):
             total = qty*Prices.P4
         elif pid == 5:
             # T-Shirt
-            qty = scount + mcount + lcount + xlcount + xxlcount
+            # qty = scount + mcount + lcount + xlcount + xxlcount
             total = qty*Prices.P5
         elif pid == 6:
             # Amritapuri: All Tickets + T-Shirt
-            qty = scount + mcount + lcount + xlcount + xxlcount
-            total = qty*(Prices.P1 + Prices.P5 - 50)
+            # qty = scount + mcount + lcount + xlcount + xxlcount
+            total = qty*(Prices.P1 + Prices.P5)
         elif pid == 7:
             # Outstation: All Tickets + T-Shirt
-            qty = scount + mcount + lcount + xlcount + xxlcount
-            total = qty*(Prices.P2 + Prices.P5 - 50)
+            # qty = scount + mcount + lcount + xlcount + xxlcount
+            total = qty*(Prices.P2 + Prices.P5)
         elif pid == 8:
             # General: Headbangers + Choreonite + Fashionshow + T-Shirt
-            qty = scount + mcount + lcount + xlcount + xxlcount
-            total = qty*(Prices.P3 + Prices.P5 - 50)
+            # qty = scount + mcount + lcount + xlcount + xxlcount
+            total = qty*(Prices.P3 + Prices.P5)
     except Exception as e:
         print(e)
         return "Error"
@@ -66,6 +67,8 @@ def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, 
     total = 0
     message = "Success"
     try:
+        if pid > 4:
+            qty = scount + mcount + lcount + xlcount + xxlcount
         total = addonprice(pid=pid,
                     scount=scount,
                     mcount=mcount,
@@ -74,7 +77,6 @@ def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, 
                     xxlcount=xxlcount,
                     message=message,
                     qty=qty)
-        print(message)
         op = OtherPurchases(vid=purchasee.vid,
                             pid=pid,
                             qty=qty,
@@ -207,7 +209,7 @@ class AddonStaff(Resource):
             xlcount = data.get('xlcount')
             xxlcount = data.get('xxlcount')
             message = "Success."
-            if pid is None or data.get('vid') is None or data.get('bookid') is None or data.get('roll') is None:
+            if pid is None or data.get('vid') is None or data.get('bookid') is None:
                 responseObject = {
                     'status':'fail',
                     'message':'No proper data'
@@ -219,7 +221,7 @@ class AddonStaff(Resource):
                                     purchasee=purchasee,
                                     qty=qty,
                                     scount=scount,
-                                    mcount=scount,
+                                    mcount=mcount,
                                     lcount=lcount,
                                     xlcount=xlcount,
                                     xxlcount=xxlcount,
