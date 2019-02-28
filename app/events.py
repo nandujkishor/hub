@@ -772,6 +772,12 @@ class events_registration(Resource):
                         }
                         return jsonify(responseObject)
                     try:
+                        if w.fee == 0 or w.fee is None:
+                            responseObject = {
+                                'status':'success',
+                                'message':'Successfully registered for the workshop'
+                            }
+                            return jsonify(responseObject)
                         return workshopPay(w, user)
                     except Exception as e:
                         print(e)
@@ -779,20 +785,6 @@ class events_registration(Resource):
                             'status':'fail',
                             'message': str(e)
                         }
-                    # seats = Registrations.query.filter_by(cat=1, eid=data.get('eid')).count()
-                    # if seats < w.seats:
-                    #     r = Registrations(vid=resp, cat=1, eid=data.get('eid'))
-                    #     db.session.add(r)
-                    #     db.session.commit()
-                    #     responseObject={
-                    #         'status':'success',
-                    #         'message':'Registration Success'
-                    #     }
-                    # else:
-                    #     responseObject={
-                    #         'status':'failure',
-                    #         'message':'No seats'
-                    #     }
                 else:
                     responseObject = {
                         'status':'failure',
