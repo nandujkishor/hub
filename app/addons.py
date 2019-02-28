@@ -62,7 +62,7 @@ def addonprice(pid, scount, mcount, lcount, xlcount, xxlcount, message, qty):
         return "Error"
     return total
 
-def addon_purchase(staff, purchasee, qty, scount, mcount, lcount, xlcount, xxlcount, typ, roll=None, bookid=None):
+def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, xxlcount, typ, roll=None, bookid=None):
     total = 0
     message = "Success"
     try:
@@ -215,6 +215,7 @@ class AddonStaff(Resource):
                 return jsonify(responseObject)
             purchasee = User.query.filter_by(vid=data.get('vid')).first()
             response = addon_purchase(staff=u,
+                                    pid=pid,
                                     purchasee=purchasee,
                                     qty=qty,
                                     scount=scount,

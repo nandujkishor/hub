@@ -274,6 +274,7 @@ class OtherPurchases(db.Model):
     qty = db.Column(db.Integer)
     total = db.Column(db.Integer)
     by = db.Column(db.Integer)
+    typ = db.Column(db.Integer)
     message = db.Column(db.Text)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now)
 

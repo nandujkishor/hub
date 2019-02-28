@@ -27,6 +27,7 @@ def encrypt(data):
 	ct_bytes = cipher.encrypt(pad(data, AES.block_size))
 	ct = b64encode(ct_bytes).decode('utf-8')
 	return ct
+
 def decrypt(data):
 	data = b64decode(data)
 	cipher = AES.new(key, AES.MODE_CBC, iv)
@@ -44,7 +45,7 @@ def pay_data(amt, tid):
     plaintext = "transactionId=VIDYUT"+str(tid)+"|amount="+str(amt)+"|purpose="+Config.PURPOSE+"|currency=inr"
     result = hashlib.md5(plaintext.encode())
     result = result.hexdigest()
-    print("md5",result)
+    print("md5", result)
     pwc = plaintext + "|checkSum=" + result
     print("before aes",pwc)
     encd = encrypt(pwc)
