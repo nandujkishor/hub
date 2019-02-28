@@ -178,8 +178,8 @@ def trsuccess(t):
 
 def probber():
     payload = {
-        'encdata':pay_data(t.trid, t.amount)
-        'code':
+        'encdata':pay_data(t.trid, t.amount),
+        'code':Config.PAYCODE
     }
     f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=payload)
     j = f.json()
@@ -208,7 +208,7 @@ class pay_receiver(Resource):
             return jsonify(responseObject)
 
 @pay.route('/prob')
-def probbing(Resource):
+class probbing(Resource):
     # F you ACRD
     @api.doc(params={
         'trid':'Transaction ID',
@@ -220,7 +220,7 @@ def probbing(Resource):
         return probber(t)
 
 @pay.route('/prob/all')
-def massprobbing(Resource):
+class massprobbing(Resource):
     @authorizestaff(request, 4)
     def get(u, self):
         tlist = Transactions.query.filter_by(status="PROCESSING").all()
