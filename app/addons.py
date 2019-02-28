@@ -343,7 +343,7 @@ class AddonStaffCount(Resource):
                 if each.pid == 1 or each.pid == 2 or each.pid == 6 or each.pid == 7:
                     proshow += each.qty
                 if each.pid == 4:
-                    choreonite += choreonite.qty
+                    choreonite += each.qty
 
             proshow += headbangers
             choreonite += proshow
