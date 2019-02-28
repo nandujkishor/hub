@@ -40,7 +40,7 @@ def pay_data(amt, tid):
     # purpose: Transaction purpose: Conference code
     # currency: Transaction currency
     # checkSum: MD5 over the plaintext
-    # plaintext = "transactionId=VIDYUT"+str(tid)+"|amount="+str(amt)+"|purpose="+Config.PURPOSE+"|currency=inr"
+    plaintext = "transactionId=VIDYUT"+str(tid)+"|amount="+str(amt)+"|purpose="+Config.PURPOSE+"|currency=inr"
     result = hashlib.md5(plaintext.encode())
     result = result.hexdigest()
     print("md5",result)
