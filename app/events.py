@@ -25,7 +25,7 @@ class events_workshops(Resource):
     # Accessible to all users
     def get(self):
         try:
-            workshops = Workshops.query.all()
+            workshops = Workshops.query.order_by('id').all()
             responseObject = []
             for workshop in workshops:
                 responseObject.append({
@@ -271,7 +271,7 @@ class events_contests(Resource):
     # Send list of all contests
     def get(self):
         try:
-            contests = Contests.query.all()
+            contests = Contests.query.order_by('id').all()
             responseObject = []
             for contest in contests:
                 responseObject.append({

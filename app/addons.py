@@ -20,7 +20,7 @@ add = api.namespace('addons', description="Addons service")
 class MyOrder(Resource):
     @authorize(request)
     def get(u, self):
-        rgs = OtherPurchases.query.filter_by(vid=u.vid).all()
+        rgs = OtherPurchases.query.filter_by(vid=u.vid).order_by(OtherPurchases.purid.desc()).all()
         products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow',
                         'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
         for i in rgs:
@@ -43,7 +43,7 @@ class MyOrder(Resource):
 class AddonStaff(Resource):
     @authorizestaff(request, "sales", 2)
     def get(u, self):
-        rgs = OtherPurchases.query.all()
+        rgs = OtherPurchases.query.order_by(OtherPurchases.purid.desc()).all()
         r = []
         products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow',
                         'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
