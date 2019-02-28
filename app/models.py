@@ -213,25 +213,26 @@ class Transactions(db.Model):
     # Acts as transaction ID
     vid = db.Column(db.Integer)
     inittime = db.Column(db.DateTime, default=datetime.datetime.now, nullable=False)
-    status = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(100), nullable=False, default="ACRD")
     statusdesc = db.Column(db.Text)
     message = db.Column(db.Text)
     cat = db.Column(db.Integer)
     eid = db.Column(db.Integer)
+    typ = db.Column(db.Integer) # Mode of transaction 1:online 2:volunteer
     amount = db.Column(db.Integer)
     bankref = db.Column(db.String(40))
-    calls = db.Column(db.Integer)
+    calls = db.Column(db.Integer, default=0)
     reply = db.Column(db.Text)
 
-    def __init__(self, vid, cat, eid, amount):
-        self.vid = vid
-        self.inittime = datetime.datetime.now()
-        self.status = "ACRD Init"
-        self.calls = 0
-        self.amount = amount
-        self.refund = False
-        # ACRD Init: Default
-        self.message = ""
+class AddonTransactions(db.Model):
+    trid = db.Column(db.Integer, db.ForeignKey('transactions.trid'), primary_key=True)
+    scount = db.Column(db.Integer)
+    mcount = db.Column(db.Integer)
+    lcount = db.Column(db.Integer)
+    xlcount = db.Column(db.Integer)
+    xxlcount = db.Column(db.Integer)
+    qty = db.Column(db.Integer)
+    total = db.Column(db.Integer)
 
 # class Refunds(db.Model):
 #     trid = db.Column(db.Integer, primary_key=True)

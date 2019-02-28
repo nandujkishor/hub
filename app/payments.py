@@ -9,9 +9,10 @@ from base64 import b64encode, b64decode
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.mail import send_spam
-from app.models import User, Staff, Transactions, Registrations
+from app.models import User, Staff, Transactions, Registrations, AddonTransactions
 from config import Config
 from app.farer import authorizestaff, authorize
+from app.addons import addonprice, addon_purchase
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -30,7 +31,7 @@ def decrypt(data):
 	data = b64decode(data)
 	cipher = AES.new(key, AES.MODE_CBC, iv)
 	ct_bytes = cipher.decrypt(data)
-	ct_bytes = str(ct_bytes,'utf-8')
+	ct_bytes = str(unpad(ct_bytes, AES.block_size),'utf-8')
 	return ct_bytes
 
 def pay_data(amt, tid):
@@ -63,8 +64,77 @@ def workshopPay(workshop, user):
     db.session.commit()
     return pay_data(transaction.amount, transaction.trid)
 
-def paystatuschecker():
-    return 1
+def addonPay(user, pid, scount, mcount, lcount, xlcount, xxlcount, qty):
+    # Create a transaction
+    # Create a Addon transaction
+    message = "Success"
+    amount = addonprice(pid=pid,
+                scount=scount,
+                mcount=mcount,
+                lcount=lcount,
+                xlcount=xlcount,
+                xxlcount=xxlcount,
+                message=message,
+                qty=qty)
+    print(message)
+    transaction = Transactions(vid=user.vid, cat=3, eid=pid, amount=amount)
+    db.session.add(transaction)
+    db.session.commit()
+    traddon = AddonTransactions(trid=transaction.trid,
+                                scount=scount,
+                                mcount=mcount,
+                                lcount=lcount,
+                                xlcount=xlcount,
+                                xxlcount=xxlcount,
+                                qty=qty
+                                )
+    db.session.add(traddon)
+    db.session.commit()
+    return pay_data(transaction.amount, transaction.trid)
+
+def trsuccess(t):
+    if t.cat is 1 or t.cat is 2:
+        # Workshop
+        try:
+            r = Registrations(vid=t.vid, cat=t.cat, eid=t.eid, typ=1, trid=t.trid)
+            db.session.add(r)
+            db.session.commit()
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured. '+str(e)
+            }
+            return jsonify(responseObject)
+        try:
+            if t.cat is 1:
+                # send email
+                p = 1
+            elif t.cat is 2:
+                # Send mail
+                p = 2
+        except Exception as e:
+            print(e)
+        responseObject = {
+            'status':'success',
+            'message':'Successfully registered. But error in sending mail: '+str(e)
+        }
+        return jsonify(responseObject)
+
+    elif t.cat is 3:
+        # Addon purchase
+        purchasee = User.query.filter_by(vid=t.vid).first()
+        ta = AddonTransactions.query.filter_by(trid=t.trid).first()
+        response = addon_purchase(purchasee=purchasee,
+                                qty=ta.qty,
+                                scount=ta.scount,
+                                mcount=ta.scount,
+                                lcount=ta.lcount,
+                                xlcount=ta.xlcount,
+                                xxlcount=ta.xxlcount,
+                                typ=1
+                                )
+        return response
 
 @pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
@@ -103,12 +173,11 @@ class pay_receiver(Resource):
             if (t.status.upper() == 'SUCCESS'):
                 print("Success")
                 send_spam("Pay success")
-                r = Registrations(vid=t.vid, cat=t.cat, eid=t.eid, typ=1, trid=t.trid)
-                db.session.add(r)
-                db.session.commit()
+                resp = trsuccess(t)
                 responseObject = {
                     'status':'success',
-                    'message':'payment successful. Reg ID:'+str(r.regid)
+                    'message':'payment successful',
+                    'addition':resp
                 }
                 return jsonify(responseObject)
             else:
@@ -127,15 +196,21 @@ class pay_receiver(Resource):
             }
             return jsonify(responseObject)
 
-# @pay.route('/prob')
-# def probbing(Resource):
-#     # F you ACRD
-#     def get(self):
-#         payload = {
-
-#         }
-#         f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=)
-
+@pay.route('/prob')
+def probbing(Resource):
+    # F you ACRD
+    @api.doc(params={
+        'trid':'Transaction ID',
+    })
+    @authorizestaff(request)
+    def get(u, self):
+        data = request.json()
+        t = Transactions.query.filter_by(trid=data.get('trid')).first()
+        payload = {
+            'encdata':pay_data(t.trid, t.amount)
+            'code':
+        }
+        f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=payload)
 
 # @pay.route('/testing')
 # def payment():

@@ -16,6 +16,122 @@ from sqlalchemy.sql import func
 
 add = api.namespace('addons', description="Addons service")
 
+products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow', 'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
+
+def addonprice(pid, scount, mcount, lcount, xlcount, xxlcount, message, qty):
+    # Returns total price, adds a message to message and updates qty, if needed
+    try:
+        if qty == 0:
+            return "Error: Quandity is 0"
+        if pid == 1:
+            # Amritapuri: Proshow + Choreonite + Fashionshow
+            total = qty*Prices.P1
+            if qty >= 20:
+                qty += int(qty/20)
+                message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
+        elif pid == 2:
+            # Outstation: Proshow + Choreonite + Fashionshow
+            total = qty*Prices.P2
+            if qty >= 3:
+                total -= int(qty/3)*100
+                message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
+        elif pid == 3:
+            # General: Headbangers + Choreonite + Fashionshow
+            total = qty*Prices.P3
+        elif pid == 4:
+            # Choreonite + Fashionshow
+            total = qty*Prices.P4
+        elif pid == 5:
+            # T-Shirt
+            qty = scount + mcount + lcount + xlcount + xxlcount
+            total = qty*Prices.P5
+        elif pid == 6:
+            # Amritapuri: All Tickets + T-Shirt
+            qty = scount + mcount + lcount + xlcount + xxlcount
+            total = qty*(Prices.P1 + Prices.P5 - 50)
+        elif pid == 7:
+            # Outstation: All Tickets + T-Shirt
+            qty = scount + mcount + lcount + xlcount + xxlcount
+            total = qty*(Prices.P2 + Prices.P5 - 50)
+        elif pid == 8:
+            # General: Headbangers + Choreonite + Fashionshow + T-Shirt
+            qty = scount + mcount + lcount + xlcount + xxlcount
+            total = qty*(Prices.P3 + Prices.P5 - 50)
+    except Exception as e:
+        print(e)
+        return "Error"
+    return total
+
+def addon_purchase(staff, purchasee, qty, scount, mcount, lcount, xlcount, xxlcount, typ, roll=None, bookid=None):
+    total = 0
+    message = "Success"
+    try:
+        addonprice(pid=pid,
+                scount=scount,
+                mcount=mcount,
+                lcount=lcount,
+                xlcount=xlcount,
+                xxlcount=xxlcount,
+                message=message,
+                qty=qty)
+        print(message)
+        op = OtherPurchases(vid=purchasee.vid,
+                            pid=pid,
+                            qty=qty,
+                            roll=roll,
+                            bookid=bookid,
+                            scount=scount,
+                            mcount=mcount,
+                            lcount=lcount,
+                            xlcount=xlcount,
+                            xxlcount=xxlcount,
+                            total=total,
+                            message=message,
+                            typ=typ
+                            )
+        if staff is not None:
+            op.by = staff.vid
+        db.session.add(op)
+        db.session.commit()
+        print(op.purtime)
+    except Exception as e:
+        print(e)
+        # error_mail(e)
+        responseObject = {
+            'status':'fail',
+            'message':'Exception occured. (Error: '+str(e)+'. Please email or call web team'
+        }
+        return jsonify(responseObject)
+    try:        
+        title = products[pid-1]
+        purid = op.purid
+        addon_pur(user=purchasee, title=title, purid=purid, count=qty)
+    except Exception as e:
+        print(e)
+    qty = str(qty)
+    print(qty)
+    total = str(total)
+    responseObject = {
+        'status':'success',
+        'message': str(message) + ' Total transaction amount: Rs. '+ total + ' for a total of '+ qty +' product(s)'
+    }
+    return jsonify(responseObject)
+
+@add.route('/order/new')
+class NewOrder(Resource):
+    @api.doc(params={
+        'pid':'Purchase ID',
+        'scount':'S Shirt count',
+        'mcount':'M Shirt count',
+        'lcount':'L Shirt count',
+        'xlcount':'XL Shirt count',
+        'xxlcount':'XXL Shirt count',
+        'qty':'qty'
+    })
+    @authorize(request)
+    def get(u, self):
+        addonPay()
+
 @add.route('/order/my')
 class MyOrder(Resource):
     @authorize(request)
@@ -97,94 +213,114 @@ class AddonStaff(Resource):
                     'message':'No proper data'
                 }
                 return jsonify(responseObject)
-            if pid == 1:
-                # Amritapuri: Proshow + Choreonite + Fashionshow
-                total = qty*Prices.P1
-                if qty >= 20:
-                    qty += int(qty/20)
-                    message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
-            elif pid == 2:
-                # Outstation: Proshow + Choreonite + Fashionshow
-                total = qty*Prices.P2
-                if qty >= 3:
-                    total -= int(qty/3)*100
-                    message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
-            elif pid == 3:
-                # General: Headbangers + Choreonite + Fashionshow
-                total = qty*Prices.P3
-                # if qty >= 3:
-                #     total -= int(qty/3)*100
-                #     message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
-            elif pid == 4:
-                # Choreonite + Fashionshow
-                total = qty*Prices.P4
-            elif pid == 5:
-                # T-Shirt
-                qty = scount + mcount + lcount + xlcount + xxlcount
-                total = qty*Prices.P5
-            elif pid == 6:
-                qty = scount + mcount + lcount + xlcount + xxlcount
-                # Amritapuri: All Tickets + T-Shirt
-                total = qty*(Prices.P1 + Prices.P5 - 50)
-            elif pid == 7:
-                # Outstation: All Tickets + T-Shirt
-                qty = scount + mcount + lcount + xlcount + xxlcount
-                total = qty*(Prices.P2 + Prices.P5 - 50)
-            elif pid == 8:
-                # General: Headbangers + Choreonite + Fashionshow + T-Shirt
-                qty = scount + mcount + lcount + xlcount + xxlcount
-                total = qty*(Prices.P3 + Prices.P5 - 50)
-                # if qty >= 3:
-                #     total -= int(qty/3)*100
-                #     message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
-            if qty == 0:
-                responseObject = {
-                    'status':'fail',
-                    'message':'No products added.'
-                }
-                return jsonify(responseObject)
-            op = OtherPurchases(vid=data.get('vid'),
-                                pid=pid,
-                                qty=qty,
-                                roll=data.get('roll'),
-                                bookid=data.get('bookid'),
-                                scount=data.get('scount'),
-                                mcount=data.get('mcount'),
-                                lcount=data.get('lcount'),
-                                xlcount=data.get('xlcount'),
-                                xxlcount=data.get('xxlcount'),
-                                total=total,
-                                message=message,
-                                by=u.vid
-                                )
-            db.session.add(op)
-            db.session.commit()
-            print(op.purtime)
+            purchasee = User.query.filter_by(vid=data.get('vid')).first()
+            response = addon_purchase(staff=u,
+                                    purchasee=purchasee,
+                                    qty=qty,
+                                    scount=scount,
+                                    mcount=scount,
+                                    lcount=lcount,
+                                    xlcount=xlcount,
+                                    xxlcount=xxlcount,
+                                    roll=data.get('roll'),
+                                    bookid=data.get('bookid'),
+                                    typ=2
+                                    )
+            return response
         except Exception as e:
-            print(e)
-            # error_mail(e)
             responseObject = {
                 'status':'fail',
-                'message':'Exception occured. (Error: '+str(e)+'. Please email or call web team'
+                'message':'Error occured. (Error: '+str(e)+')'
             }
             return jsonify(responseObject)
-        try:
-            products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow',
-                        'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
-            title = products[pid-1]
-            purid = op.purid
-            user = User.query.filter_by(vid=op.vid).first()
-            addon_pur(user=user, title=title, purid=purid, count=qty)
-        except Exception as e:
-            print(e)
-        qty = str(qty)
-        print(qty)
-        total = str(total)
-        responseObject = {
-            'status':'success',
-            'message': str(message) + ' Total transaction amount: Rs. '+ total + ' for a total of '+ qty +' product(s)'
-        }
-        return jsonify(responseObject)
+        #     if pid == 1:
+        #         # Amritapuri: Proshow + Choreonite + Fashionshow
+        #         total = qty*Prices.P1
+        #         if qty >= 20:
+        #             qty += int(qty/20)
+        #             message = "Offer applied. "+ str(int(qty/20)) +" free ticket(s) added."
+        #     elif pid == 2:
+        #         # Outstation: Proshow + Choreonite + Fashionshow
+        #         total = qty*Prices.P2
+        #         if qty >= 3:
+        #             total -= int(qty/3)*100
+        #             message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
+        #     elif pid == 3:
+        #         # General: Headbangers + Choreonite + Fashionshow
+        #         total = qty*Prices.P3
+        #         # if qty >= 3:
+        #         #     total -= int(qty/3)*100
+        #         #     message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
+        #     elif pid == 4:
+        #         # Choreonite + Fashionshow
+        #         total = qty*Prices.P4
+        #     elif pid == 5:
+        #         # T-Shirt
+        #         qty = scount + mcount + lcount + xlcount + xxlcount
+        #         total = qty*Prices.P5
+        #     elif pid == 6:
+        #         qty = scount + mcount + lcount + xlcount + xxlcount
+        #         # Amritapuri: All Tickets + T-Shirt
+        #         total = qty*(Prices.P1 + Prices.P5 - 50)
+        #     elif pid == 7:
+        #         # Outstation: All Tickets + T-Shirt
+        #         qty = scount + mcount + lcount + xlcount + xxlcount
+        #         total = qty*(Prices.P2 + Prices.P5 - 50)
+        #     elif pid == 8:
+        #         # General: Headbangers + Choreonite + Fashionshow + T-Shirt
+        #         qty = scount + mcount + lcount + xlcount + xxlcount
+        #         total = qty*(Prices.P3 + Prices.P5 - 50)
+        #         # if qty >= 3:
+        #         #     total -= int(qty/3)*100
+        #         #     message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
+        #     if qty == 0:
+        #         responseObject = {
+        #             'status':'fail',
+        #             'message':'No products added.'
+        #         }
+        #         return jsonify(responseObject)
+        #     op = OtherPurchases(vid=data.get('vid'),
+        #                         pid=pid,
+        #                         qty=qty,
+        #                         roll=data.get('roll'),
+        #                         bookid=data.get('bookid'),
+        #                         scount=data.get('scount'),
+        #                         mcount=data.get('mcount'),
+        #                         lcount=data.get('lcount'),
+        #                         xlcount=data.get('xlcount'),
+        #                         xxlcount=data.get('xxlcount'),
+        #                         total=total,
+        #                         message=message,
+        #                         by=u.vid
+        #                         )
+        #     db.session.add(op)
+        #     db.session.commit()
+        #     print(op.purtime)
+        # except Exception as e:
+        #     print(e)
+        #     # error_mail(e)
+        #     responseObject = {
+        #         'status':'fail',
+        #         'message':'Exception occured. (Error: '+str(e)+'. Please email or call web team'
+        #     }
+        #     return jsonify(responseObject)
+        # try:
+        #     products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow',
+        #                 'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
+        #     title = products[pid-1]
+        #     purid = op.purid
+        #     user = User.query.filter_by(vid=op.vid).first()
+        #     addon_pur(user=user, title=title, purid=purid, count=qty)
+        # except Exception as e:
+        #     print(e)
+        # qty = str(qty)
+        # print(qty)
+        # total = str(total)
+        # responseObject = {
+        #     'status':'success',
+        #     'message': str(message) + ' Total transaction amount: Rs. '+ total + ' for a total of '+ qty +' product(s)'
+        # }
+        # return jsonify(responseObject)
 
 @add.route('/order/stats')
 class AddonStaffCount(Resource):
@@ -197,13 +333,22 @@ class AddonStaffCount(Resource):
         xlcount = db.session.query(func.sum(OtherPurchases.xlcount)).scalar()
         xxlcount = db.session.query(func.sum(OtherPurchases.xxlcount)).scalar()
         pid1 = len(OtherPurchases.query.filter_by(pid=1).all())
+        # pid = db.session.query(func.sum(OtherPurchases.qty)).group_by(OtherPurchases.pid).all()
+        # print(pid)
         pid2 = len(OtherPurchases.query.filter_by(pid=2).all())
+        # pid2 = db.session.query(func.sum(OtherPurchases.qty).filter_by(pid=2)).scalar()
         pid3 = len(OtherPurchases.query.filter_by(pid=3).all())
+        # pid3 = db.session.query(func.sum(OtherPurchases.qty).filter_by(pid=3)).scalar()
         pid4 = len(OtherPurchases.query.filter_by(pid=4).all())
+        # pid4 = db.session.query(func.sum(OtherPurchases.qty).filter_by(pid=4)).scalar()
         pid5 = len(OtherPurchases.query.filter_by(pid=5).all())
+        # pid5 = db.session.query(func.sum(OtherPurchases.qty).filter_by(pid=5)).scalar()
         pid6 = len(OtherPurchases.query.filter_by(pid=6).all())
+        # pid6 = db.session.query(func.sum(OtherPurchases.qty).filter_by(pid=6)).scalar()
         pid7 = len(OtherPurchases.query.filter_by(pid=7).all())
+        # pid7 = db.session.query(func.sum(OtherPurchases.qty).filter_by(pid=7)).scalar()
         pid8 = len(OtherPurchases.query.filter_by(pid=8).all())
+        # pid8 = db.session.query(func.sum(OtherPurchases.qty).filter_by(pid=8)).scalar()
         responseObject = {
             'status':'success',
             'count':amt,
