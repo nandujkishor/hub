@@ -189,6 +189,7 @@ def probber():
 @pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
     def get(self):
+        # Random thing for test: Only call after modification of pay_data
         return pay_data("transactionId=VIDYUT1212|amount=10|purpose=SOME|currency=inr|bankrefno=1|status=FAILED|statusDesc=User pressed cancel button")
 
     # @authorize

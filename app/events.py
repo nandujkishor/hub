@@ -736,7 +736,7 @@ class events_registration(Resource):
     @api.doc(params={
         'cat':'Event Catagory',
         'eid':'Event ID',
-        'tid':'Team ID'
+        'tid':'Team ID (Only for joining a team for a team competition)'
     })
     @authorize(request)
     # This route is for registrations through payment gateway
@@ -811,15 +811,19 @@ class events_registration(Resource):
                             'message':'Registration Success'
                         }
                     elif data.get('tid') is None:
-                        print("team id gen")
-                        tid = werkzeug.security.pbkdf2_hex(resp,resp ,iterations=50000, keylen=5, hashfunc=None)
-                        print(tid)
-                        r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=tid)
+                        print("Team id generation")
+                        r = Registrations(vid=resp, cat=2, eid=data.get('eid'))
                         db.session.add(r)
                         db.session.commit()
+                        tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
+                        # SHA:256 hashing
+                        print(tid)
+                        r.tid = tid
+                        db.session.commit()
+                        # Send email with Team ID
                         responseObject={
                             'status':'success',
-                            'message':'Registration Success'
+                            'message':'Registration Success. Registration ID: '+str(tid)
                         }
                     else:
                         team = Registrations.query.filter_by(cat=2, eid=data.get('eid'), tid=data.get('tid')).count()
