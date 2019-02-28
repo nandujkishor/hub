@@ -4,6 +4,6 @@ class Prices(object):
     P2 = 700
     P3 = 900
     P4 = 100
-    P5 = 300
+    P5 = 250
     P6 = 750
     P7 = 950
