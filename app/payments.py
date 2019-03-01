@@ -53,11 +53,11 @@ def pay_data(amt, tid):
     encd = encrypt(pwc)
     print("after aes", encd)
     payload = {
-        'status':'success',
+        # 'status':'success',
         'encdata':encd,
         'code':Config.PAYCODE
     }
-    return jsonify(payload)
+    return payload
 
 def response_data(data):
     # data: Encoded data
@@ -139,7 +139,7 @@ def addonPay(user, pid, qty):
                                 )
     db.session.add(traddon)
     db.session.commit()
-    return pay_data(transaction.amount, transaction.trid)
+    return jsonify(pay_data(transaction.amount, transaction.trid))
 
 def trsuccess(t):
     if t.cat is 1 or t.cat is 2:
@@ -182,17 +182,29 @@ def trsuccess(t):
         return response
 
 def probber(t):
-    payload = {
-        'encdata':str(pay_data(tid=t.trid, amt=t.amount)),
-        'code':Config.PAYCODE
-    }
-    f = requests.post('https://payments.acrd.org.in/pay/doubleverifythirdparty', params=payload)
+    payload = pay_data(tid=t.trid, amt=t.amount)
+    print("Probber payload")
+    print(payload)
+    try:
+        f = requests.post('https://payments.acrd.org.in/pay/doubleverifythirdparty', data=payload)
+    except Exception as e:
+        print(e)
+        return 0
     # print("Hello")
-    j = f.json()
-    if j.get('response') is not False:
-        return j
-    return "1"
-    # return response_data(j)
+    j = f.text
+    print("Text", j)
+    try:
+        k = f.json()
+        print("JSON", k)
+        return response_data(j.get('encdata'))
+    except Exception as e:
+        print("No text ", e)
+    # if j.get('response') is False:
+    #     return j
+    # # return "1"
+    # return response_data(j.get('encdata'))
+    # print(jsonify(j))
+    return j
 
 @pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
