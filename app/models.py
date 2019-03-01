@@ -213,7 +213,7 @@ class Transactions(db.Model):
     # Acts as transaction ID
     vid = db.Column(db.Integer)
     inittime = db.Column(db.DateTime, default=datetime.datetime.now, nullable=False)
-    status = db.Column(db.String(100), nullable=False, default="ACRD")
+    status = db.Column(db.String(100), nullable=False, default="acrd")
     statusdesc = db.Column(db.Text)
     message = db.Column(db.Text)
     cat = db.Column(db.Integer)
