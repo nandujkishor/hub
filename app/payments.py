@@ -61,42 +61,75 @@ def pay_data(amt, tid):
 
 def response_data(data):
     # data: Encoded data
-    plaintext = decrypt(data)
-    print(plaintext)
-    d = plaintext.split('|')
-    print(d)
-    send_spam("Pay2: "+str(d)+" as plaintext with split")
-    trid = d[0].split('=')[1]
-    trid = trid[6:]
-    print(trid)
-    t = Transactions.query.filter_by(trid=trid).first()
-    if t is None:
-        print("Invalid transaction ID - manage this!")
-        send_spam("Error: Invalid transaction ID")
-        return "H"
-    t.bankref = d[4].split('=')[1]
-    t.status = d[5].split('=')[1]
-    t.statusdesc = d[6].split('=')[1]
-    t.reply = plaintext
-    # print(bankref)
-    # print(status)
-    # print(statusdesc)
-    if (t.status.lower() == 'success'):
-        print("Success")
-        send_spam("Pay success")
-        resp = trsuccess(t)
-        responseObject = {
-            'status':'success',
-            'message':'payment successful',
-            'addition':resp
-        }
-        return jsonify(responseObject)
-    else:
-        responseObject = {
-            'status':t.status.lower(),
-            'message':t.reply
-        }
-        return jsonify(responseObject)
+	try:
+    	plaintext = decrypt(data)
+    	print(plaintext)
+    	d = plaintext.split('|')
+    	print(d)
+	except Exception as e:
+		print(e)
+		responseObject = {
+			'status':'fail',
+			'message':'Decryption error: '+str(e)
+		}
+		return jsonify(responseObject)
+	try:
+		send_spam("Pay2: "+str(d)+" as plaintext with split")
+	except Exception as e:
+		print("Mail error", e)
+		# Mail not sent. Not a critical issue.
+	try:
+	    trid = d[0].split('=')[1]
+	    trid = trid[6:]
+	    print(trid)
+	except Exception as e:
+		print(e)
+		responseObject = {
+			'status':'fail',
+			'message':'Database error: '+str(e)
+		}
+		return jsonify(responseObject)
+	try:
+    	t = Transactions.query.filter_by(trid=trid).first()
+	    if t is None:
+	        print("Invalid transaction ID - manage this!")
+	        send_spam("Error: Invalid transaction ID")
+			responseObject = {
+				'status':'fail',
+				'message':'Invalid transaction ID'
+			}
+	        return jsonify(responseObject)
+	try:
+	    t.bankref = d[4].split('=')[1]
+	    t.status = d[5].split('=')[1]
+	    t.statusdesc = d[6].split('=')[1]
+	    t.reply = plaintext
+	    # print(bankref)
+	    # print(status)
+	    # print(statusdesc)
+	    if (t.status.lower() == 'success'):
+	        print("Success")
+	        send_spam("Pay success")
+	        resp = trsuccess(t)
+	        responseObject = {
+	            'status':'success',
+	            'message':'payment successful',
+	            'addition':resp
+	        }
+	        return jsonify(responseObject)
+	    else:
+	        responseObject = {
+	            'status':t.status.lower(),
+	            'message':t.reply
+	        }
+	        return jsonify(responseObject)
+	except Exception as e:
+		print(e)
+		responseObject = {
+			'status':'fail',
+			'message':'Exception occured: '+str(e)
+		}
+		return jsonify(responseObject)
     return "1"
 
 def workshopPay(workshop, user):
