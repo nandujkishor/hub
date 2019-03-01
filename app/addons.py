@@ -111,6 +111,7 @@ class NewOrder(Resource):
     @authorize(request)
     def post(u, self):
         data = request.get_json()
+        print("Sending to addonpay", data)
         return addonPay(user=u,
                 pid=data.get('pid'),
                 qty=data.get('qty')

@@ -11,6 +11,7 @@ from app import app, db, api
 from app.mail import send_spam
 from app.models import User, Staff, Transactions, Registrations, AddonTransactions
 from config import Config
+from values import Prices
 from app.farer import authorizestaff, authorize
 # from app.addons import addon_purchase
 from werkzeug.utils import secure_filename
@@ -111,6 +112,7 @@ def addonPay(user, pid, qty):
     # Create a Addon transaction
     message = "Success"
     if pid == 2:
+        print("Yeah 2")
         # Outstation: Proshow + Choreonite + Fashionshow
         total = qty*Prices.P2
         if qty >= 3:
@@ -125,15 +127,10 @@ def addonPay(user, pid, qty):
             'message':'No such product'
         }
         return jsonify(responseObject)
-    transaction = Transactions(vid=user.vid, cat=3, eid=pid, amount=amount)
+    transaction = Transactions(vid=user.vid, cat=3, eid=pid, amount=total)
     db.session.add(transaction)
     db.session.commit()
     traddon = AddonTransactions(trid=transaction.trid,
-                                scount=scount,
-                                mcount=mcount,
-                                lcount=lcount,
-                                xlcount=xlcount,
-                                xxlcount=xxlcount,
                                 qty=qty
                                 )
     db.session.add(traddon)
