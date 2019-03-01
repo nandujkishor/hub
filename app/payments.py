@@ -3,6 +3,7 @@ import qrcode
 import datetime
 import hashlib
 import sys
+import requests
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
@@ -121,6 +122,9 @@ def addonPay(user, pid, qty):
     elif pid == 3:
         # General: Headbangers + Choreonite + Fashionshow
         total = qty*Prices.P3
+    elif pid == 100:
+        # Testing case
+        total = qty*Prices.P100
     else:
         responseObject = {
             'status':'fail',
@@ -155,9 +159,6 @@ def trsuccess(t):
             if t.cat is 1:
                 # send email
                 p = 1
-            elif t.cat is 2:
-                # Send mail
-                p = 2
         except Exception as e:
             print(e)
         responseObject = {
@@ -173,11 +174,6 @@ def trsuccess(t):
         op = OtherPurchases(vid=t.vid,
                             pid=t.eid,
                             qty=ta.qty,
-                            scount=scount,
-                            mcount=mcount,
-                            lcount=lcount,
-                            xlcount=xlcount,
-                            xxlcount=xxlcount,
                             total=total,
                             typ=1
                             )
@@ -185,15 +181,18 @@ def trsuccess(t):
         db.session.commit()
         return response
 
-def probber():
+def probber(t):
     payload = {
-        'encdata':pay_data(t.trid, t.amount),
+        'encdata':str(pay_data(tid=t.trid, amt=t.amount)),
         'code':Config.PAYCODE
     }
-    f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=payload)
+    f = requests.post('https://payments.acrd.org.in/pay/doubleverifythirdparty', params=payload)
+    # print("Hello")
     j = f.json()
-    print(j)
-    return response_data(j.get('data'))
+    if j.get('response') is not False:
+        return j
+    return "1"
+    # return response_data(j)
 
 @pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
@@ -230,12 +229,14 @@ class probbing(Resource):
 
 @pay.route('/prob/all')
 class massprobbing(Resource):
-    @authorizestaff(request, 4)
-    def get(u, self):
+    # @authorizestaff(request, 4)
+    def get(self):
         tlist = Transactions.query.filter_by(status="processing").all()
-        tlist.append(Transactions.query.filter_by(status="acrd").all())
+        tlist.extend(Transactions.query.filter_by(status="acrd").all())
         res = []
+        print(tlist)
         for t in tlist:
+            print(t)
             res.append(probber(t))
         return jsonify(res)
 
