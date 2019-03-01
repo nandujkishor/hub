@@ -45,9 +45,18 @@ def wkreg_mail(user, workshop, regid, wdept):
 
 def ctreg_mail(user, contest, regid, cdept):
     print("Sending contest mail")
-    send_mail("Contest: "+ contest.title + " during Vidyut'19 - registration successful", 
+    send_mail("Contest: "+ contest.title + " during Vidyut'19 - registration successful",
             body="Your Vidyut ID is " + str(user.vid),
             htmlbody=render_template('emails/contest-reg.html', user=user, contest=contest, regid=regid, wdept=cdept),
+            recipient=user.email
+            )
+    return "mail sent - hopefully"
+
+def ctregteamleader_mail(user, contest, registration, cdept):
+    print("Sending contest mail")
+    send_mail("Contest: "+ contest.title + " during Vidyut'19 - registration successful (team leader)",
+            body="Your Vidyut ID is " + str(user.vid),
+            htmlbody=render_template('emails/contest-reg.html', user=user, contest=contest, registration=registration, wdept=cdept),
             recipient=user.email
             )
     return "mail sent - hopefully"

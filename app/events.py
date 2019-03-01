@@ -15,6 +15,8 @@ from datetime import date
 
 events = api.namespace('events', description="Events management")
 
+dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
+
 @events.route('/workshops')
 class events_workshops(Resource):
 
@@ -774,7 +776,7 @@ class events_registration(Resource):
                     try:
                         if w.fee == 0 or w.fee is None:
                             responseObject = {
-                                'status':'success',
+                                'status':'registered',
                                 'message':'Successfully registered for the workshop'
                             }
                             return jsonify(responseObject)
@@ -798,6 +800,7 @@ class events_registration(Resource):
                         r = Registrations(vid=resp, cat=2, eid=data.get('eid'))
                         db.session.add(r)
                         db.session.commit()
+                        print("Single member team registration successful")
                         responseObject={
                             'status':'success',
                             'message':'Registration Success'
@@ -809,10 +812,11 @@ class events_registration(Resource):
                         db.session.commit()
                         tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
                         # SHA:256 hashing
-                        print(tid)
+                        print("Team ID", tid)
                         r.tid = tid
                         db.session.commit()
                         # Send email with Team ID
+                        ctregteamleader_mail(user=user, contest=c, registration=r, cdept=dept[c.department-1])
                         responseObject={
                             'status':'success',
                             'message':'Registration Success. Registration ID: '+str(tid)
