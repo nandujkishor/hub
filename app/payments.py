@@ -79,7 +79,7 @@ def response_data(data):
     # print(bankref)
     # print(status)
     # print(statusdesc)
-    if (t.status.upper() == 'SUCCESS'):
+    if (t.status.lower() == 'success'):
         print("Success")
         send_spam("Pay success")
         resp = trsuccess(t)
@@ -109,15 +109,28 @@ def addonPay(user, pid, scount, mcount, lcount, xlcount, xxlcount, qty):
     # Create a transaction
     # Create a Addon transaction
     message = "Success"
-    amount = addonprice(pid=pid,
-                scount=scount,
-                mcount=mcount,
-                lcount=lcount,
-                xlcount=xlcount,
-                xxlcount=xxlcount,
-                message=message,
-                qty=qty)
-    print(message)
+    if pid == 2:
+        # Outstation: Proshow + Choreonite + Fashionshow
+        total = qty*Prices.P2
+        if qty >= 3:
+            total -= int(qty/3)*100
+            message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
+    elif pid == 3:
+        # General: Headbangers + Choreonite + Fashionshow
+        total = qty*Prices.P3
+    elif pid == 4:
+        # Choreonite + Fashionshow
+        total = qty*Prices.P4
+    elif pid == 7:
+        # Outstation: All Tickets + T-Shirt
+        qty = scount + mcount + lcount + xlcount + xxlcount
+        total = qty*(Prices.P2 + Prices.P5)
+    else:
+        responseObject = {
+            'status':'fail',
+            'message':'No such product'
+        }
+        return "Error"
     transaction = Transactions(vid=user.vid, cat=3, eid=pid, amount=amount)
     db.session.add(transaction)
     db.session.commit()
@@ -224,10 +237,11 @@ class probbing(Resource):
 class massprobbing(Resource):
     @authorizestaff(request, 4)
     def get(u, self):
-        tlist = Transactions.query.filter_by(status="PROCESSING").all()
+        tlist = Transactions.query.filter_by(status="processing").all()
+        tlist.append(Transactions.query.filter_by(status="acrd").all())
         res = []
         for t in tlist:
-            res.append(probbeer(t))
+            res.append(probber(t))
         return jsonify(res)
 
 # @pay.route('/testing')
