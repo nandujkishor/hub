@@ -5,7 +5,7 @@ from app import app, db, api
 from app.farer import authorizestaff, authorize
 from config import Config
 from app.models import Workshops, Talks, Contests, Registrations, User, Transactions
-from app.mail import wkreg_mail, ctreg_mail
+from app.mail import wkreg_mail, ctreg_mail, ctregteamleader_mail
 from app.payments import workshopPay
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -743,8 +743,16 @@ class events_registration(Resource):
     @authorize(request)
     # This route is for registrations through payment gateway
     def post(user, self):
+        data = request.get_json()
+        r = Registrations.query.filter_by(cat=data.get('cat'), eid=data.get('eid'), vid=user.vid).first()
+        print(r)
+        if r is not None:
+            responseObject = {
+                'status':'fail',
+                'message':'User already registered'
+            }
+            return jsonify(responseObject)
         try:
-            data = request.get_json()
             print(data)
             #Workshop Registration
             if data.get('cat') == 1:
@@ -797,7 +805,7 @@ class events_registration(Resource):
                 c = Contests.query.filter_by(id=data.get('eid')).first()
                 if c is not None:
                     if c.team_limit is 1:
-                        r = Registrations(vid=resp, cat=2, eid=data.get('eid'))
+                        r = Registrations(vid=user.id, cat=2, eid=data.get('eid'))
                         db.session.add(r)
                         db.session.commit()
                         print("Single member team registration successful")
@@ -807,7 +815,7 @@ class events_registration(Resource):
                         }
                     elif data.get('tid') is None:
                         print("Team id generation")
-                        r = Registrations(vid=resp, cat=2, eid=data.get('eid'))
+                        r = Registrations(vid=user.vid, cat=2, eid=data.get('eid'))
                         db.session.add(r)
                         db.session.commit()
                         tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
@@ -824,10 +832,10 @@ class events_registration(Resource):
                     else:
                         team = Registrations.query.filter_by(cat=2, eid=data.get('eid'), tid=data.get('tid')).count()
                         if count < c.team_limit:
-                            r = Registrations(vid=resp, cat=2, eid=data.get('eid'), tid=form.data.get('eid'))
+                            r = Registrations(vid=u.vid, cat=2, eid=data.get('eid'), tid=form.data.get('eid'))
                             db.session.add(r)
                             db.session.commit()
-                            responseObject={
+                            responseObject = {
                                 'status':'success',
                                 'message':'Registration Success'
                             }

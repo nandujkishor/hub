@@ -56,7 +56,7 @@ def ctregteamleader_mail(user, contest, registration, cdept):
     print("Sending contest mail")
     send_mail("Contest: "+ contest.title + " during Vidyut'19 - registration successful (team leader)",
             body="Your Vidyut ID is " + str(user.vid),
-            htmlbody=render_template('emails/contest-reg.html', user=user, contest=contest, registration=registration, wdept=cdept),
+            htmlbody=render_template('emails/contest-team-reg.html', user=user, contest=contest, registration=registration, wdept=cdept),
             recipient=user.email
             )
     return "mail sent - hopefully"
