@@ -13,6 +13,7 @@ from flask_restplus import Resource, Api
 from app.farer import auth_token
 from app.mail import addon_pur
 from sqlalchemy.sql import func
+from sqlalchemy import or_
 
 add = api.namespace('addons', description="Addons service")
 
@@ -331,20 +332,9 @@ class AddonStaffCount(Resource):
             pid7 = len(OtherPurchases.query.filter_by(pid=7).all())
             pid8 = len(OtherPurchases.query.filter_by(pid=8).all())
             tshirt = scount+mcount+lcount+xlcount+xxlcount
-
-            proshow=0
-            headbangers=0
-            choreonite=0
-
-            total = OtherPurchases.query.all()
-            for each in total:
-                if each.pid == 3 or each.pid == 8:
-                    headbangers += each.qty
-                if each.pid == 1 or each.pid == 2 or each.pid == 6 or each.pid == 7:
-                    proshow += each.qty
-                if each.pid == 4:
-                    choreonite += each.qty
-
+            headbangers = db.session.query(func.sum(OtherPurchases.qty)).filter(or_(OtherPurchases.pid == 3,OtherPurchases.pid == 8)).scalar()
+            proshow = db.session.query(func.sum(OtherPurchases.qty)).filter(or_(OtherPurchases.pid == 1,OtherPurchases.pid == 2,OtherPurchases.pid == 6,OtherPurchases.pid == 7)).scalar()
+            choreonite = db.session.query(func.sum(OtherPurchases.qty)).filter(OtherPurchases.pid == 4).scalar()
             proshow += headbangers
             choreonite += proshow
             fashionshow = choreonite
