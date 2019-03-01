@@ -12,7 +12,7 @@ from app.mail import send_spam
 from app.models import User, Staff, Transactions, Registrations, AddonTransactions
 from config import Config
 from app.farer import authorizestaff, authorize
-from app.addons import addonprice, addon_purchase
+# from app.addons import addon_purchase
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -105,7 +105,8 @@ def workshopPay(workshop, user):
     db.session.commit()
     return pay_data(transaction.amount, transaction.trid)
 
-def addonPay(user, pid, scount, mcount, lcount, xlcount, xxlcount, qty):
+def addonPay(user, pid, qty):
+    # Online purchase method
     # Create a transaction
     # Create a Addon transaction
     message = "Success"
@@ -118,19 +119,12 @@ def addonPay(user, pid, scount, mcount, lcount, xlcount, xxlcount, qty):
     elif pid == 3:
         # General: Headbangers + Choreonite + Fashionshow
         total = qty*Prices.P3
-    elif pid == 4:
-        # Choreonite + Fashionshow
-        total = qty*Prices.P4
-    elif pid == 7:
-        # Outstation: All Tickets + T-Shirt
-        qty = scount + mcount + lcount + xlcount + xxlcount
-        total = qty*(Prices.P2 + Prices.P5)
     else:
         responseObject = {
             'status':'fail',
             'message':'No such product'
         }
-        return "Error"
+        return jsonify(responseObject)
     transaction = Transactions(vid=user.vid, cat=3, eid=pid, amount=amount)
     db.session.add(transaction)
     db.session.commit()
@@ -179,15 +173,19 @@ def trsuccess(t):
         # Addon purchase
         purchasee = User.query.filter_by(vid=t.vid).first()
         ta = AddonTransactions.query.filter_by(trid=t.trid).first()
-        response = addon_purchase(purchasee=purchasee,
-                                qty=ta.qty,
-                                scount=ta.scount,
-                                mcount=ta.scount,
-                                lcount=ta.lcount,
-                                xlcount=ta.xlcount,
-                                xxlcount=ta.xxlcount,
-                                typ=1
-                                )
+        op = OtherPurchases(vid=t.vid,
+                            pid=t.eid,
+                            qty=ta.qty,
+                            scount=scount,
+                            mcount=mcount,
+                            lcount=lcount,
+                            xlcount=xlcount,
+                            xxlcount=xxlcount,
+                            total=total,
+                            typ=1
+                            )
+        db.session.add(op)
+        db.session.commit()
         return response
 
 def probber():

@@ -12,17 +12,13 @@ from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 from app.farer import auth_token
 from app.mail import addon_pur
+from app.payments import addonPay
 from sqlalchemy.sql import func
 from sqlalchemy import or_
 
 add = api.namespace('addons', description="Addons service")
 
 products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow', 'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
-
-def addonprice(pid, scount, mcount, lcount, xlcount, xxlcount, message, qty):
-    # Returns total price, adds a message to message and updates qty, if needed
-    
-    return [total, qty, message]
 
 def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, xxlcount, typ, roll=None, bookid=None):
     total = 0
@@ -109,17 +105,16 @@ def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, 
 @add.route('/order/new')
 class NewOrder(Resource):
     @api.doc(params={
-        'pid':'Purchase ID',
-        'scount':'S Shirt count',
-        'mcount':'M Shirt count',
-        'lcount':'L Shirt count',
-        'xlcount':'XL Shirt count',
-        'xxlcount':'XXL Shirt count',
+        'pid':'Product ID',
         'qty':'qty'
     })
     @authorize(request)
-    def get(u, self):
-        addonPay()
+    def post(u, self):
+        data = request.get_json()
+        return addonPay(user=u,
+                pid=data.get('pid'),
+                qty=data.get('qty')
+                )
 
 @add.route('/order/my')
 class MyOrder(Resource):
