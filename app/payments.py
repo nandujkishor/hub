@@ -3,6 +3,7 @@ import qrcode
 import datetime
 import hashlib
 import sys
+import requests
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
@@ -11,8 +12,9 @@ from app import app, db, api
 from app.mail import send_spam
 from app.models import User, Staff, Transactions, Registrations, AddonTransactions
 from config import Config
+from values import Prices
 from app.farer import authorizestaff, authorize
-from app.addons import addonprice, addon_purchase
+# from app.addons import addon_purchase
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
@@ -105,11 +107,13 @@ def workshopPay(workshop, user):
     db.session.commit()
     return pay_data(transaction.amount, transaction.trid)
 
-def addonPay(user, pid, scount, mcount, lcount, xlcount, xxlcount, qty):
+def addonPay(user, pid, qty):
+    # Online purchase method
     # Create a transaction
     # Create a Addon transaction
     message = "Success"
     if pid == 2:
+        print("Yeah 2")
         # Outstation: Proshow + Choreonite + Fashionshow
         total = qty*Prices.P2
         if qty >= 3:
@@ -118,28 +122,19 @@ def addonPay(user, pid, scount, mcount, lcount, xlcount, xxlcount, qty):
     elif pid == 3:
         # General: Headbangers + Choreonite + Fashionshow
         total = qty*Prices.P3
-    elif pid == 4:
-        # Choreonite + Fashionshow
-        total = qty*Prices.P4
-    elif pid == 7:
-        # Outstation: All Tickets + T-Shirt
-        qty = scount + mcount + lcount + xlcount + xxlcount
-        total = qty*(Prices.P2 + Prices.P5)
+    elif pid == 100:
+        # Testing case
+        total = qty*Prices.P100
     else:
         responseObject = {
             'status':'fail',
             'message':'No such product'
         }
-        return "Error"
-    transaction = Transactions(vid=user.vid, cat=3, eid=pid, amount=amount)
+        return jsonify(responseObject)
+    transaction = Transactions(vid=user.vid, cat=3, eid=pid, amount=total)
     db.session.add(transaction)
     db.session.commit()
     traddon = AddonTransactions(trid=transaction.trid,
-                                scount=scount,
-                                mcount=mcount,
-                                lcount=lcount,
-                                xlcount=xlcount,
-                                xxlcount=xxlcount,
                                 qty=qty
                                 )
     db.session.add(traddon)
@@ -164,9 +159,6 @@ def trsuccess(t):
             if t.cat is 1:
                 # send email
                 p = 1
-            elif t.cat is 2:
-                # Send mail
-                p = 2
         except Exception as e:
             print(e)
         responseObject = {
@@ -179,26 +171,28 @@ def trsuccess(t):
         # Addon purchase
         purchasee = User.query.filter_by(vid=t.vid).first()
         ta = AddonTransactions.query.filter_by(trid=t.trid).first()
-        response = addon_purchase(purchasee=purchasee,
-                                qty=ta.qty,
-                                scount=ta.scount,
-                                mcount=ta.scount,
-                                lcount=ta.lcount,
-                                xlcount=ta.xlcount,
-                                xxlcount=ta.xxlcount,
-                                typ=1
-                                )
+        op = OtherPurchases(vid=t.vid,
+                            pid=t.eid,
+                            qty=ta.qty,
+                            total=total,
+                            typ=1
+                            )
+        db.session.add(op)
+        db.session.commit()
         return response
 
-def probber():
+def probber(t):
     payload = {
-        'encdata':pay_data(t.trid, t.amount),
+        'encdata':str(pay_data(tid=t.trid, amt=t.amount)),
         'code':Config.PAYCODE
     }
-    f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=payload)
+    f = requests.post('https://payments.acrd.org.in/pay/doubleverifythirdparty', params=payload)
+    # print("Hello")
     j = f.json()
-    print(j)
-    return response_data(j.get('data'))
+    if j.get('response') is not False:
+        return j
+    return "1"
+    # return response_data(j)
 
 @pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
@@ -235,12 +229,14 @@ class probbing(Resource):
 
 @pay.route('/prob/all')
 class massprobbing(Resource):
-    @authorizestaff(request, 4)
-    def get(u, self):
+    # @authorizestaff(request, 4)
+    def get(self):
         tlist = Transactions.query.filter_by(status="processing").all()
-        tlist.append(Transactions.query.filter_by(status="acrd").all())
+        tlist.extend(Transactions.query.filter_by(status="acrd").all())
         res = []
+        print(tlist)
         for t in tlist:
+            print(t)
             res.append(probber(t))
         return jsonify(res)
 
