@@ -333,8 +333,14 @@ class AddonStaffCount(Resource):
             pid8 = len(OtherPurchases.query.filter_by(pid=8).all())
             tshirt = scount+mcount+lcount+xlcount+xxlcount
             headbangers = db.session.query(func.sum(OtherPurchases.qty)).filter(or_(OtherPurchases.pid == 3,OtherPurchases.pid == 8)).scalar()
+            if headbangers is None:
+                headbangers = 0
             proshow = db.session.query(func.sum(OtherPurchases.qty)).filter(or_(OtherPurchases.pid == 1,OtherPurchases.pid == 2,OtherPurchases.pid == 6,OtherPurchases.pid == 7)).scalar()
+            if proshow is None:
+                proshow = 0
             choreonite = db.session.query(func.sum(OtherPurchases.qty)).filter(OtherPurchases.pid == 4).scalar()
+            if choreonite is None:
+                choreonite = 0
             proshow += headbangers
             choreonite += proshow
             fashionshow = choreonite
