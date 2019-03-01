@@ -191,13 +191,16 @@ def trsuccess(t):
             if t.cat is 1:
                 # send email
                 p = 1
+            elif t.cat is 2:
+                # Send email
+                p = 2
         except Exception as e:
             print(e)
-        responseObject = {
-            'status':'success',
-            'message':'Successfully registered. But error in sending mail: '+str(e)
-        }
-        return jsonify(responseObject)
+            responseObject = {
+                'status':'success',
+                'message':'Successfully registered. But error in sending mail: '+str(e)
+            }
+            return jsonify(responseObject)
 
     elif t.cat is 3:
         # Addon purchase
@@ -211,7 +214,11 @@ def trsuccess(t):
                             )
         db.session.add(op)
         db.session.commit()
-        return response
+        responseObject = {
+            'status':'success'
+            'message':'transaction successful'
+        }
+        return jsonify(responseObject)
 
 def probber(t):
     payload = pay_data(tid=t.trid, amt=t.amount)
