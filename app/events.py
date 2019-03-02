@@ -717,18 +717,17 @@ class events_registration(Resource):
                     e = Workshops.query.filter_by(id=r.eid).first()
                 elif r.cat == 2:
                     e = Contests.query.filter_by(id=r.eid).first()
-                if e is None:
-                    continue
-                responseObject.append({
-                    'regid':r.regid,
-                    'vid':r.vid,
-                    'regby':r.regby,
-                    'typ':r.typ,
-                    'registime':r.registime,
-                    'cat':r.cat,
-                    'eid':r.eid,
-                    'title':e.title
-                })
+                if e is not None:
+                    responseObject.append({
+                        'regid':r.regid,
+                        'vid':r.vid,
+                        'regby':r.regby,
+                        'typ':r.typ,
+                        'registime':r.registime,
+                        'cat':r.cat,
+                        'eid':r.eid,
+                        'title':e.title
+                    })
             return jsonify(responseObject)
         except Exception as e:
             print(e)
