@@ -215,7 +215,7 @@ def trsuccess(t):
         db.session.add(op)
         db.session.commit()
         responseObject = {
-            'status':'success'
+            'status':'success',
             'message':'transaction successful'
         }
         return jsonify(responseObject)

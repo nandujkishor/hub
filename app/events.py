@@ -707,24 +707,27 @@ class events_talks_indv(Resource):
 class events_registration(Resource):
 
     @authorize(request)
-    # Endpoint for getting user registered events
+    # Endpoint for getting all registered events
     def get(user, self):
         try:
-            wor = Workshops.query.join(Registrations, Registrations.eid==Workshops.id).filter(Registrations.cat==1, Registrations.vid==user.vid).all()
-            print(wor)
+            reg = Registrations.query.all()
             responseObject = []
-            for w in wor:
+            for r in reg:
+                if r.cat == 1:
+                    e = Workshops.query.filter_by(id=r.eid).first()
+                elif r.cat == 2:
+                    e = Contests.query.filter_by(id=r.eid).first()
+                if e is None:
+                    continue
                 responseObject.append({
-                    'cat':1,
-                    'eid':w.id,
-                    'title':w.title,
-                })
-            con = Contests.query.join(Registrations, Registrations.eid==Contests.id).filter(Registrations.cat==2, Registrations.vid==user.vid).all()
-            for c in con:
-                responseObject.append({
-                    'cat':2,
-                    'eid':c.id,
-                    'title':c.title,
+                    'regid':r.regid,
+                    'vid':r.vid,
+                    'regby':r.regby,
+                    'typ':r.typ,
+                    'registime':r.registime,
+                    'cat':r.cat,
+                    'eid':r.eid,
+                    'title':e.title
                 })
             return jsonify(responseObject)
         except Exception as e:
