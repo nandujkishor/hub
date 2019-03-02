@@ -93,7 +93,7 @@ def response_data(data):
         t = Transactions.query.filter_by(trid=trid).first()
         if t is None:
             print("Invalid transaction ID - manage this!")
-            send_spam("Error: Invalid transaction ID")
+            # send_spam("Error: Invalid transaction ID")
             responseObject = {
                 'status':'fail',
                 'message':'Invalid transaction ID'
@@ -108,7 +108,7 @@ def response_data(data):
         # print(statusdesc)
         if (t.status.lower() == 'success'):
             print("Success")
-            send_spam("Pay success")
+            # send_spam("Pay success")
             resp = trsuccess(t)
             responseObject = {
                 'status':'success',
