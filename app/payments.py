@@ -3,6 +3,7 @@ import qrcode
 import datetime
 import hashlib
 import sys
+import requests
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
@@ -52,49 +53,81 @@ def pay_data(amt, tid):
     encd = encrypt(pwc)
     print("after aes", encd)
     payload = {
-        'status':'success',
+        # 'status':'success',
         'encdata':encd,
         'code':Config.PAYCODE
     }
-    return jsonify(payload)
+    return payload
 
 def response_data(data):
     # data: Encoded data
-    plaintext = decrypt(data)
-    print(plaintext)
-    d = plaintext.split('|')
-    print(d)
-    send_spam("Pay2: "+str(d)+" as plaintext with split")
-    trid = d[0].split('=')[1]
-    trid = trid[6:]
-    print(trid)
-    t = Transactions.query.filter_by(trid=trid).first()
-    if t is None:
-        print("Invalid transaction ID - manage this!")
-        send_spam("Error: Invalid transaction ID")
-        return "H"
-    t.bankref = d[4].split('=')[1]
-    t.status = d[5].split('=')[1]
-    t.statusdesc = d[6].split('=')[1]
-    t.reply = plaintext
-    # print(bankref)
-    # print(status)
-    # print(statusdesc)
-    if (t.status.lower() == 'success'):
-        print("Success")
-        send_spam("Pay success")
-        resp = trsuccess(t)
+    try:
+        plaintext = decrypt(data)
+        print(plaintext)
+        d = plaintext.split('|')
+        print(d)
+    except Exception as e:
+        print(e)
         responseObject = {
-            'status':'success',
-            'message':'payment successful',
-            'addition':resp
+			'status':'fail',
+			'message':'Decryption error: '+str(e)
+		}
+        return jsonify(responseObject)
+    try:
+        send_spam("Pay2: "+str(d)+" as plaintext with split")
+    except Exception as e:
+        print("Mail error", e)
+        # Mail not sent. Not a critical issue.
+    try:
+        trid = d[0].split('=')[1]
+        trid = trid[6:]
+        print(trid)
+    except Exception as e:
+        print(e)
+        responseObject = {
+            'status':'fail',
+            'message':'Database error: '+str(e)
         }
         return jsonify(responseObject)
-    else:
+    try:
+        t = Transactions.query.filter_by(trid=trid).first()
+        if t is None:
+            print("Invalid transaction ID - manage this!")
+            send_spam("Error: Invalid transaction ID")
+            responseObject = {
+                'status':'fail',
+                'message':'Invalid transaction ID'
+            }
+            return jsonify(responseObject)
+        t.bankref = d[4].split('=')[1]
+        t.status = d[5].split('=')[1]
+        t.statusdesc = d[6].split('=')[1]
+        t.reply = plaintext
+        # print(bankref)
+        # print(status)
+        # print(statusdesc)
+        if (t.status.lower() == 'success'):
+            print("Success")
+            send_spam("Pay success")
+            resp = trsuccess(t)
+            responseObject = {
+                'status':'success',
+                'message':'payment successful',
+                'addition':resp
+            }
+            return jsonify(responseObject)
+        else:
+            responseObject = {
+	            'status':t.status.lower(),
+	            'message':t.reply
+	        }
+            return jsonify(responseObject)
+    except Exception as e:
+        print(e)
         responseObject = {
-            'status':t.status.lower(),
-            'message':t.reply
-        }
+			'status':'fail',
+			'message':'Exception occured: '+str(e)
+		}
         return jsonify(responseObject)
     return "1"
 
@@ -121,6 +154,9 @@ def addonPay(user, pid, qty):
     elif pid == 3:
         # General: Headbangers + Choreonite + Fashionshow
         total = qty*Prices.P3
+    elif pid == 100:
+        # Testing case
+        total = qty*Prices.P100
     else:
         responseObject = {
             'status':'fail',
@@ -135,7 +171,7 @@ def addonPay(user, pid, qty):
                                 )
     db.session.add(traddon)
     db.session.commit()
-    return pay_data(transaction.amount, transaction.trid)
+    return jsonify(pay_data(transaction.amount, transaction.trid))
 
 def trsuccess(t):
     if t.cat is 1 or t.cat is 2:
@@ -156,15 +192,15 @@ def trsuccess(t):
                 # send email
                 p = 1
             elif t.cat is 2:
-                # Send mail
+                # Send email
                 p = 2
         except Exception as e:
             print(e)
-        responseObject = {
-            'status':'success',
-            'message':'Successfully registered. But error in sending mail: '+str(e)
-        }
-        return jsonify(responseObject)
+            responseObject = {
+                'status':'success',
+                'message':'Successfully registered. But error in sending mail: '+str(e)
+            }
+            return jsonify(responseObject)
 
     elif t.cat is 3:
         # Addon purchase
@@ -173,27 +209,41 @@ def trsuccess(t):
         op = OtherPurchases(vid=t.vid,
                             pid=t.eid,
                             qty=ta.qty,
-                            scount=scount,
-                            mcount=mcount,
-                            lcount=lcount,
-                            xlcount=xlcount,
-                            xxlcount=xxlcount,
                             total=total,
                             typ=1
                             )
         db.session.add(op)
         db.session.commit()
-        return response
+        responseObject = {
+            'status':'success'
+            'message':'transaction successful'
+        }
+        return jsonify(responseObject)
 
-def probber():
-    payload = {
-        'encdata':pay_data(t.trid, t.amount),
-        'code':Config.PAYCODE
-    }
-    f = request.get('https://payments.acrd.org.in/pay/doubleverifythirdparty', json=payload)
-    j = f.json()
-    print(j)
-    return response_data(j.get('data'))
+def probber(t):
+    payload = pay_data(tid=t.trid, amt=t.amount)
+    print("Probber payload")
+    print(payload)
+    try:
+        f = requests.post('https://payments.acrd.org.in/pay/doubleverifythirdparty', data=payload)
+    except Exception as e:
+        print(e)
+        return 0
+    # print("Hello")
+    j = f.text
+    print("Text", j)
+    try:
+        k = f.json()
+        print("JSON", k)
+        return response_data(j.get('encdata'))
+    except Exception as e:
+        print("No text ", e)
+    # if j.get('response') is False:
+    #     return j
+    # # return "1"
+    # return response_data(j.get('encdata'))
+    # print(jsonify(j))
+    return j
 
 @pay.route('/receive', methods=['GET', 'POST'])
 class pay_receiver(Resource):
@@ -230,12 +280,14 @@ class probbing(Resource):
 
 @pay.route('/prob/all')
 class massprobbing(Resource):
-    @authorizestaff(request, 4)
-    def get(u, self):
+    # @authorizestaff(request, 4)
+    def get(self):
         tlist = Transactions.query.filter_by(status="processing").all()
-        tlist.append(Transactions.query.filter_by(status="acrd").all())
+        tlist.extend(Transactions.query.filter_by(status="acrd").all())
         res = []
+        print(tlist)
         for t in tlist:
+            print(t)
             res.append(probber(t))
         return jsonify(res)
 
