@@ -4,13 +4,14 @@ import datetime
 import hashlib
 import sys
 import requests
+import json
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.mail import send_spam
-from app.models import User, Staff, Transactions, Registrations, AddonTransactions
+from app.models import User, Staff, Transactions, Registrations, AddonTransactions, OtherPurchases
 from config import Config
 from values import Prices
 from app.farer import authorizestaff, authorize
@@ -209,7 +210,7 @@ def trsuccess(t):
         op = OtherPurchases(vid=t.vid,
                             pid=t.eid,
                             qty=ta.qty,
-                            total=total,
+                            total=ta.total,
                             typ=1
                             )
         db.session.add(op)
@@ -218,6 +219,7 @@ def trsuccess(t):
             'status':'success',
             'message':'transaction successful'
         }
+        print(" reached here 1")
         return jsonify(responseObject)
 
 def probber(t):
@@ -231,11 +233,13 @@ def probber(t):
         return 0
     # print("Hello")
     j = f.text
+    if not j:
+        return 'empty response'
     print("Text", j)
     try:
-        k = f.json()
+        k = json.loads(j)
         print("JSON", k)
-        return response_data(j.get('encdata'))
+        return response_data(k["data"])
     except Exception as e:
         print("No text ", e)
     # if j.get('response') is False:
