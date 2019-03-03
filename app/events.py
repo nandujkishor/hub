@@ -883,7 +883,43 @@ class registration_all(Resource):
                         'registime':r.registime,
                         'cat':r.cat,
                         'eid':r.eid,
-                        'title':e.title
+                        'title':e.title,
+                        'fee':e.fee
+                    })
+            return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'failure',
+                'Message':'Exception occured. '
+            }
+        return jsonify(responseObject)
+
+@events.route('/registration/stats')
+class registration_stats(Resource):
+
+    # Endpoint for getting registrartion sts
+    @authorizestaff(request,"registration",3)
+    def get(user, self):
+        try:
+            reg = Registrations.query.filter_by()
+            responseObject = []
+            for r in reg:
+                if r.cat == 1:
+                    e = Workshops.query.filter_by(id=r.eid).first()
+                elif r.cat == 2:
+                    e = Contests.query.filter_by(id=r.eid).first()
+                if e is not None:
+                    responseObject.append({
+                        'regid':r.regid,
+                        'vid':r.vid,
+                        'regby':r.regby,
+                        'typ':r.typ,
+                        'registime':r.registime,
+                        'cat':r.cat,
+                        'eid':r.eid,
+                        'title':e.title,
+                        'fee':e.fee
                     })
             return jsonify(responseObject)
         except Exception as e:
@@ -1085,7 +1121,7 @@ class registration_through_staff(Resource):
 @events.route('/registration/check')
 class events_registration_check(Resource):
 
-    # End point for getting total registrations made by a user
+    # End point for getting total registrations made by a volunteer
     @api.doc(params={
         'vid':'Vidyut ID',
         'start':'Start Date',
