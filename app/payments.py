@@ -93,7 +93,7 @@ def response_data(data):
         t = Transactions.query.filter_by(trid=trid).first()
         if t is None:
             print("Invalid transaction ID - manage this!")
-            send_spam("Error: Invalid transaction ID")
+            # send_spam("Error: Invalid transaction ID")
             responseObject = {
                 'status':'fail',
                 'message':'Invalid transaction ID'
@@ -215,7 +215,7 @@ def trsuccess(t):
         db.session.add(op)
         db.session.commit()
         responseObject = {
-            'status':'success'
+            'status':'success',
             'message':'transaction successful'
         }
         return jsonify(responseObject)
