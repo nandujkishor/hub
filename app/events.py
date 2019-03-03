@@ -12,6 +12,7 @@ from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 from app.farer import auth_token
 from datetime import date
+from sqlalchemy.sql import func
 
 events = api.namespace('events', description="Events management")
 
@@ -902,25 +903,51 @@ class registration_stats(Resource):
     @authorizestaff(request,"registration",3)
     def get(user, self):
         try:
-            reg = Registrations.query.filter_by()
-            responseObject = []
+            # reg = Registrations.query.filter_by()
+            # responseObject = []
+            # for r in reg:
+            #     if r.cat == 1:
+            #         e = Workshops.query.filter_by(id=r.eid).first()
+            #     elif r.cat == 2:
+            #         e = Contests.query.filter_by(id=r.eid).first()
+            #     if e is not None:
+            #         responseObject.append({
+            #             'regid':r.regid,
+            #             'vid':r.vid,
+            #             'regby':r.regby,
+            #             'typ':r.typ,
+            #             'registime':r.registime,
+            #             'cat':r.cat,
+            #             'eid':r.eid,
+            #             'title':e.title,
+            #             'fee':e.fee
+            #         })
+            reg = Registrations.query.filter_by(cat=1)
+            totalwcost = 0
+            totalw = 0
             for r in reg:
-                if r.cat == 1:
-                    e = Workshops.query.filter_by(id=r.eid).first()
-                elif r.cat == 2:
-                    e = Contests.query.filter_by(id=r.eid).first()
+                e = Workshops.query.filter_by(id = r.eid).first()
                 if e is not None:
-                    responseObject.append({
-                        'regid':r.regid,
-                        'vid':r.vid,
-                        'regby':r.regby,
-                        'typ':r.typ,
-                        'registime':r.registime,
-                        'cat':r.cat,
-                        'eid':r.eid,
-                        'title':e.title,
-                        'fee':e.fee
-                    })
+                    totalwcost += e.fee
+                    totalw +=1
+
+            reg = Registrations.query.filter_by(cat=2)
+            totalccost = 0
+            totalc = 0
+            for r in reg:
+                e = Contests.query.filter_by(id = r.eid).first()
+                if e is not None:
+                    totalc +=1
+                    totalccost += e.fee
+
+            total = totalwcost + totalccost
+            responseObject = {
+                'total':total,
+                'totalc':totalc,
+                'totalw':totalw,
+                'totalccost':totalccost,
+                'totalwcost':totalwcost
+            }
             return jsonify(responseObject)
         except Exception as e:
             print(e)
