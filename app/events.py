@@ -903,42 +903,19 @@ class registration_stats(Resource):
     @authorizestaff(request,"registration",3)
     def get(user, self):
         try:
-            # reg = Registrations.query.filter_by()
-            # responseObject = []
-            # for r in reg:
-            #     if r.cat == 1:
-            #         e = Workshops.query.filter_by(id=r.eid).first()
-            #     elif r.cat == 2:
-            #         e = Contests.query.filter_by(id=r.eid).first()
-            #     if e is not None:
-            #         responseObject.append({
-            #             'regid':r.regid,
-            #             'vid':r.vid,
-            #             'regby':r.regby,
-            #             'typ':r.typ,
-            #             'registime':r.registime,
-            #             'cat':r.cat,
-            #             'eid':r.eid,
-            #             'title':e.title,
-            #             'fee':e.fee
-            #         })
             reg = Registrations.query.filter_by(cat=1)
             totalwcost = 0
             totalw = 0
             for r in reg:
-                e = Workshops.query.filter_by(id = r.eid).first()
-                if e is not None:
-                    totalwcost += e.fee
-                    totalw +=1
+                totalwcost += r.amount
+                totalw +=1
 
             reg = Registrations.query.filter_by(cat=2)
             totalccost = 0
             totalc = 0
             for r in reg:
-                e = Contests.query.filter_by(id = r.eid).first()
-                if e is not None:
-                    totalc +=1
-                    totalccost += e.fee
+                totalccost += r.amount
+                totalc +=1
 
             total = totalwcost + totalccost
             responseObject = {
@@ -976,7 +953,7 @@ class events_registration(Resource):
                         'registime':r.registime,
                         'eid':r.eid,
                         'title':e.title,
-                        'fee':e.fee
+                        'fee':r.amount
                     })
             return jsonify(responseObject)
         except Exception as e:
@@ -1005,7 +982,7 @@ class events_registration(Resource):
                         'registime':r.registime,
                         'eid':r.eid,
                         'title':e.title,
-                        'fee':e.fee
+                        'fee':r.amount
                     })
             return jsonify(responseObject)
         except Exception as e:
@@ -1068,7 +1045,8 @@ class registration_through_staff(Resource):
                                     cat=data.get('cat'),
                                     eid=data.get('eid'),
                                     typ=2,
-                                    regby=user.vid
+                                    regby=user.vid,
+                                    amount=w.fee
                                     )
                     db.session.add(r)
                     db.session.commit()
@@ -1111,7 +1089,8 @@ class registration_through_staff(Resource):
                                     cat=data.get('cat'),
                                     eid=data.get('eid'),
                                     typ=2,
-                                    regby=user.vid
+                                    regby=user.vid,
+                                    amount=c.fee
                                     )
                     db.session.add(r)
                     db.session.commit()
@@ -1184,7 +1163,7 @@ class events_registration_check(Resource):
                                     'catn':'Workshop',
                                     'eid':reg.eid,
                                     'ename':w.title,
-                                    'fee':w.fee
+                                    'fee':reg.amount
                                 })
                         elif reg.cat == 2:
                             c = Contests.query.filter_by(id = reg.eid).first()
@@ -1197,7 +1176,7 @@ class events_registration_check(Resource):
                                     'catn':'Contest',
                                     'eid':reg.eid,
                                     'ename':c.title,
-                                    'fee':c.fee
+                                    'fee':reg.amount
                                 })
                     responseObject = {
                             'data': responseObject,
