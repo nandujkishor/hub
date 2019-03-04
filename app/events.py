@@ -1060,6 +1060,7 @@ class registration_through_staff(Resource):
             return(responseObject)
         if data.get('cat') is 1:
             w = Workshops.query.filter_by(id=data.get('eid')).first()
+            r = None
             if w is not None:
                 try:
                     w.rmseats = w.rmseats - 1
@@ -1083,6 +1084,8 @@ class registration_through_staff(Resource):
                     user = User.query.filter_by(vid=r.vid).first()
                     dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
                     wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
+                    r.mail = True;
+                    db.session.commit();
                     responseObject = {
                         'status':'success',
                         'message':'User successfully registered'
@@ -1101,6 +1104,7 @@ class registration_through_staff(Resource):
             return jsonify(responseObject)
         elif data.get('cat') is 2:
             c = Contests.query.filter_by(id=data.get('eid')).first()
+            r = None
             if c is not None:
                 try:
                     r = Registrations(vid=data.get('vid'),
@@ -1122,6 +1126,8 @@ class registration_through_staff(Resource):
                 try:
                     dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
                     ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
+                    r.mail = True;
+                    db.session.commit()
                     responseObject = {
                         'status':'success',
                         'message':'User successfully registered'

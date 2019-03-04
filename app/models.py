@@ -205,6 +205,8 @@ class Registrations(db.Model):
     typ = db.Column(db.Integer) # Mode of transaction 1:online 2:volunteer
     trid = db.Column(db.Integer, db.ForeignKey('transactions.trid')) # if processed through online medium
     regby = db.Column(db.Integer, db.ForeignKey('user.vid')) # volunteer, for mode 2
+    amount = db.Column(db.Integer)
+    mail = db.Column(db.Boolean, default=False)
     registime = db.Column(db.DateTime, default=datetime.datetime.now)
     # 0 if not paid, 1 if paid.
 
@@ -276,6 +278,7 @@ class OtherPurchases(db.Model):
     by = db.Column(db.Integer)
     typ = db.Column(db.Integer)
     message = db.Column(db.Text)
+    mail = db.Column(db.Boolean, default = False)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now)
 
 # class FarerLog(db.Model):
