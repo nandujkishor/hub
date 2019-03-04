@@ -177,6 +177,7 @@ def addonPay(user, pid, qty):
     return jsonify(pay_data(transaction.amount, transaction.trid))
 
 def trsuccess(t):
+    u = User.query.filter_by(vid=t.vid).first()
     if t.cat is 1 or t.cat is 2:
         r = None
         try:
@@ -216,15 +217,15 @@ def trsuccess(t):
             dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
             if t.cat is 1:
                 w = Workshops.query.filter_by(id=t.eid).first()
-                wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
+                wkreg_mail(user=u, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
                 r.mail = True;
                 db.session.commit()
             elif t.cat is 2:
                 c = Contests.query.filter_by(id=t.eid).first()
                 if c.team_limit == 1:
-                    ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
+                    ctreg_mail(user=u, contest=c, regid=r.regid, cdept=dept[c.department - 1])
                 else:
-                    ctregteamleader_mail(user=user,contest=c,registration=r,cdept=dept[c.department - 1])
+                    ctregteamleader_mail(user=u,contest=c,registration=r,cdept=dept[c.department - 1])
                 r.mail = True;
                 db.session.commit()
             responseObject = {
