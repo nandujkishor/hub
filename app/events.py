@@ -806,6 +806,23 @@ class events_registration(Resource):
                 return jsonify(responseObject)
             elif data.get('cat') == 2:
                 c = Contests.query.filter_by(id=data.get('eid')).first()
+                if data.get('tid') is not None:
+                    reg = Registrations.query.filter_by(tid=data.get('tid'))
+                    if len(reg) == 0:
+                        responseObject = {
+                            'status':'fail',
+                            'message':'Invalid Team ID'
+                        }
+                        return jsonify(responseObject)
+                    elif len(reg) == c.team_limit:
+                        responseObject = {
+                            'status':'fail',
+                            'message':'Team is Full'
+                        }
+                        return jsonify(responseObject)
+                    new_mem = Registrations(vid=user.vid, eid=c.id, typ = 1, amount = 0)
+                    db.session.commit()
+
                 if c is not None:
                     try:
                         tr = Transactions(cat=2, eid=c.id, vid=user.vid,amount=c.fee, typ=1)
@@ -817,7 +834,7 @@ class events_registration(Resource):
                             'status':'fail',
                             'message': str(e)
                         }
-                        return responseObject;
+                        return jsonify(responseObject)
                     # if c.team_limit is 1:
                     #     r = Registrations(vid=user.id, cat=2, eid=data.get('eid'))
                     #     db.session.add(r)
@@ -1106,6 +1123,8 @@ class registration_through_staff(Resource):
                     db.session.add(r)
                     db.session.commit()
                     print("Successful")
+                    r.tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
+                    db.session.commit()
                 except Exception as e:
                     print(e)
                     responseObject = {
@@ -1115,7 +1134,10 @@ class registration_through_staff(Resource):
                     return jsonify(responseObject)
                 try:
                     dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
-                    ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
+                    if c.team_limit == 1:
+                        ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
+                    else:
+                        ctregteamleader_mail(user=user, contest=c, registration=r, cdept=dept[c.department - 1] )
                     r.mail = True;
                     db.session.commit()
                     responseObject = {

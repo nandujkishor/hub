@@ -5,12 +5,13 @@ import hashlib
 import sys
 import requests
 import json
+import werkzeug.security
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.mail import send_spam, wkreg_mail, ctreg_mail, addon_pur
+from app.mail import send_spam, wkreg_mail, ctreg_mail, addon_pur,ctregteamleader_mail
 from app.models import User, Staff, Transactions, Registrations, AddonTransactions, OtherPurchases, Workshops, Contests
 from config import Config
 from values import Prices
@@ -184,6 +185,12 @@ def trsuccess(t):
                 r = Registrations(vid=t.vid, cat=t.cat, eid=t.eid, typ=1, trid=t.trid, amount=t.amount)
                 db.session.add(r)
                 db.session.commit()
+                if (t.cat == 2):
+                    eve = Contests.query.filter_by(id=t.eid)
+                    if eve.team_limit > 1:
+                        r.tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
+                        db.session.commit()
+
             else:
                 t.refund = True
                 db.session.commit()
@@ -205,23 +212,26 @@ def trsuccess(t):
             }
             return jsonify(responseObject)
         try:
-        	user = User.query.filter_by(vid=t.vid).first()
-        	dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
-        	if t.cat is 1:
-        		w = Workshops.query.filter_by(id=t.eid).first()
-        		wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
-        		r.mail = True;
-        		db.session.commit()
-        	elif t.cat is 2:
-        		c = Contests.query.filter_by(id=t.eid).first()
-        		ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
-        		r.mail = True;
-        		db.session.commit()
-        	responseObject = {
-        	'status':'success',
-        	'message':'Successfully registered'
-        	}
-        	return jsonify(responseObject)
+            user = User.query.filter_by(vid=t.vid).first()
+            dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
+            if t.cat is 1:
+                w = Workshops.query.filter_by(id=t.eid).first()
+                wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
+                r.mail = True;
+                db.session.commit()
+            elif t.cat is 2:
+                c = Contests.query.filter_by(id=t.eid).first()
+                if c.team_limit == 1:
+                    ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
+                else:
+                    ctregteamleader_mail(user=user,contest=c,registration=r,cdept=dept[c.department - 1])
+                r.mail = True;
+                db.session.commit()
+            responseObject = {
+                'status':'success',
+                'message':'Successfully registered'
+            }
+            return jsonify(responseObject)
         except Exception as e:
         	print(e)
         responseObject = {
