@@ -109,11 +109,13 @@ def response_data(data):
             db.session.commit()
         if (t.status == 'success'):
             print("Success")
-            resp = trsuccess(t)
+            resp = trsuccess(t).get_json()
+            print("TESTING")
+            print("RESP ", resp)
             responseObject = {
                 'status':'success',
                 'message':'payment successful',
-                'addition':resp.data.get('message')
+                'addition':resp.get('message')
             }
             return jsonify(responseObject)
         else:
@@ -220,16 +222,19 @@ def trsuccess(t):
         # Addon purchase
         purchasee = User.query.filter_by(vid=t.vid).first()
         try:
+            print("TRYING TO ADD")
             ta = AddonTransactions.query.filter_by(trid=t.trid).first()
             op = OtherPurchases(vid=t.vid,
                                 pid=t.eid,
                                 qty=ta.qty,
-                                total=t.total,
+                                total=t.amount,
                                 typ=1
                                 )
             db.session.add(op)
             db.session.commit()
-        except e as Exception:
+            print("ADDED TO DB")
+        except Exception as e:
+            print("Exception ", e)
             responseObject = {
                 'status':'fail',
                 'message':'Not added to db'
@@ -237,15 +242,22 @@ def trsuccess(t):
             return jsonify(responseObject);
         try:
             products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow', 'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
-            title = products[op.pid-1]
+            print("PID = ", op.pid)
+            if op.pid == 100:
+                title = "TESTING"
+            else:
+                title = products[op.pid-1]
             addon_pur(user=purchasee, title=title, purid=op.purid, count=op.qty)
+            op.mail = True;
+            db.session.commit()
             responseObject = {
                 'status':'success',
                 'message':'transaction successful'
             }
             print(" reached here 1")
             return jsonify(responseObject)
-        except e as Exception:
+        except Exception as e:
+            print("Exception ", e)
             responseObject = {
                 'status':'success',
                 'message':'Transaction successful. Mail not sent'
@@ -264,6 +276,8 @@ def probber(t):
     # print("Hello")
     j = f.text
     if not j:
+        t.status = 'fail'
+        db.session.commit()
         return 'empty response'
     print("Text", j)
     try:
@@ -321,8 +335,9 @@ class massprobbing(Resource):
         print(tlist)
         for t in tlist:
             print(t)
-            res.append(probber(t))
-        return jsonify(res)
+            probber(t)
+
+        return "Probing completed"
 
 # @pay.route('/testing')
 # def payment():
