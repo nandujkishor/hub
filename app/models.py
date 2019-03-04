@@ -206,6 +206,7 @@ class Registrations(db.Model):
     trid = db.Column(db.Integer, db.ForeignKey('transactions.trid')) # if processed through online medium
     regby = db.Column(db.Integer, db.ForeignKey('user.vid')) # volunteer, for mode 2
     amount = db.Column(db.Integer)
+    tid = db.Column(db.Integer)
     mail = db.Column(db.Boolean, default=False)
     registime = db.Column(db.DateTime, default=datetime.datetime.now)
     # 0 if not paid, 1 if paid.
