@@ -807,7 +807,7 @@ class events_registration(Resource):
             elif data.get('cat') == 2:
                 c = Contests.query.filter_by(id=data.get('eid')).first()
                 if (data.get('tid')) is not None and (c is not None):
-                    reg = Registrations.query.filter_by(tid=data.get('tid'))
+                    reg = Registrations.query.filter_by(tid=data.get('tid')).all()
                     if len(reg) == 0:
                         responseObject = {
                             'status':'fail',
@@ -820,10 +820,11 @@ class events_registration(Resource):
                             'message':'Team is Full'
                         }
                         return jsonify(responseObject)
-                    new_mem = Registrations(vid=user.vid, eid=c.id, typ = 1, amount = 0)
+                    new_mem = Registrations(vid=user.vid, eid=c.id, typ = 1, amount = 0,tid=data.get('tid'),cat=2)
+                    db.session.add(new_mem)
                     db.session.commit()
-                    ctregteammember_mail(user=user, contest=c, registration=r, cdept=dept[c.department - 1] )
-                    r.mail = True;
+                    ctregteammember_mail(user=user, contest=c, registration=new_mem, cdept=dept[c.department - 1] )
+                    new_mem.mail = True;
                     db.session.commit()
                     responseObject = {
                         'status':'success',
@@ -831,6 +832,7 @@ class events_registration(Resource):
                     }
                     return jsonify(responseObject)
                 if c is not None:
+
                     try:
                         tr = Transactions(cat=2, eid=c.id, vid=user.vid,amount=c.fee, typ=1)
                         db.session.add(tr)
