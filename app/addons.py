@@ -23,6 +23,7 @@ products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Prosho
 def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, xxlcount, typ, roll=None, bookid=None):
     total = 0
     message = "Success"
+    op =None
     try:
         if qty == 0:
             return "Error: Quandity is 0"
@@ -91,6 +92,8 @@ def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, 
         title = products[pid-1]
         purid = op.purid
         addon_pur(user=purchasee, title=title, purid=purid, count=qty)
+        op.mail = True
+        db.session.commit()
     except Exception as e:
         print(e)
     qty = str(qty)
