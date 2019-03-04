@@ -61,6 +61,15 @@ def ctregteamleader_mail(user, contest, registration, cdept):
             )
     return "mail sent - hopefully"
 
+def ctregteammember_mail(user, contest, registration, cdept):
+    print("Sending contest mail")
+    send_mail("Successfully joined team for Contest: "+ contest.title + " during Vidyut'19",
+            body="Your Vidyut ID is " + str(user.vid),
+            htmlbody=render_template('emails/contest-team-reg-member.html', user=user, contest=contest, registration=registration, wdept=cdept),
+            recipient=user.email
+            )
+    return "mail sent - hopefully"
+
 def addon_pur(user, title, purid, count):
     print("Sending addon purchase mail to " + user.fname)
     send_mail("Addon: "+ title + " purchase successful - Vidyut'19",
