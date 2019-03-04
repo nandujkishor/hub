@@ -227,6 +227,8 @@ def trsuccess(t):
             op = OtherPurchases(vid=t.vid,
                                 pid=t.eid,
                                 qty=ta.qty,
+                                message='online_success',
+                                bookid='ONLINE',
                                 total=t.amount,
                                 typ=1
                                 )
