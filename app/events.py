@@ -136,9 +136,19 @@ class events_workshops_indv(Resource):
     def get(self, id):
         try:
             auth_t = auth_token(request)
-            if auth_t:
-                resp = User.decode_auth_token(auth_t)
             workshop = Workshops.query.filter_by(id=id).first()
+            reg = False
+            try:
+                auth_t = auth_token(request)
+                if auth_t:
+                    resp = User.decode_auth_token(auth_t)
+                    if not isinstance(resp, str):
+                        user = User.query.filter_by(vid=resp).first()
+                        r = Registrations.query.filter_by(vid=user.vid, cat=1, eid=id).first()
+                        if r is not None:
+                            reg = True
+            except Exception as e:
+                print("Exception: ", str(e))
             if workshop is not None:
                 responseObject = {
                     'id': workshop.id,
@@ -160,7 +170,8 @@ class events_workshops_indv(Resource):
                     'd2dur':workshop.d2dur,
                     'd3dur':workshop.d3dur,
                     'prereq':workshop.prereq,
-                    'rmseats':workshop.rmseats
+                    'rmseats':workshop.rmseats,
+                    'registered':reg
                 }
             else:
                 responseObject ={
@@ -385,6 +396,20 @@ class events_contests_indv(Resource):
         try:
             contest = Contests.query.filter_by(id=id).first()
             if contest is not None:
+                reg = False
+                try:
+                    auth_t = auth_token(request)
+                    if auth_t:
+                        resp = User.decode_auth_token(auth_t)
+                        if not isinstance(resp, str):
+                            user = User.query.filter_by(vid=resp).first()
+                            print(user)
+                            r = Registrations.query.filter_by(vid=user.vid, cat=2, eid=id).first()
+                            print(r)
+                            if r is not None:
+                                reg = True
+                except Exception as e:
+                    print("Exception: ", str(e))
                 responseObject = {
                     'id': contest.id,
                     'title':contest.title,
@@ -405,20 +430,8 @@ class events_contests_indv(Resource):
                     'support':contest.support,
                     'rules':contest.rules,
                     'prereq':contest.prereq,
+                    'registered':reg
                 }
-                try:
-                    auth_t = auth_token(request)
-                    if auth_t:
-                        resp = User.decode_auth_token(auth_t)
-                        if not isinstance(resp, str):
-                            user = User.query.filter_by(vid=resp).first()
-                            r = Registrations.query.filter_by(vid=user.vid, cat=2, eid=id).first()
-                            if r is None:
-                                responseObject['registered'] = False
-                            else:
-                                responseObject['registered'] = True
-                except Exception as e:
-                    print(e)
             else:
                 responseObject ={
                     'status':'fail',
