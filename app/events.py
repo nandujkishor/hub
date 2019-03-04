@@ -5,7 +5,7 @@ from app import app, db, api
 from app.farer import authorizestaff, authorize
 from config import Config
 from app.models import Workshops, Talks, Contests, Registrations, User, Transactions
-from app.mail import wkreg_mail, ctreg_mail, ctregteamleader_mail
+from app.mail import wkreg_mail, ctreg_mail, ctregteamleader_mail, ctregteammember_mail
 from app.payments import workshopPay
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -822,6 +822,9 @@ class events_registration(Resource):
                         return jsonify(responseObject)
                     new_mem = Registrations(vid=user.vid, eid=c.id, typ = 1, amount = 0)
                     db.session.commit()
+                    ctregteammember_mail(user=user, contest=c, registration=r, cdept=dept[c.department - 1] )
+                    r.mail = True;
+                    db.session.commit()
                     responseObject = {
                         'status':'success',
                         'message':'Joined Team'
@@ -1044,6 +1047,7 @@ class registration_through_staff(Resource):
     @authorizestaff(request, "registration", 3)
     def post(user, self):
         data = request.get_json()
+        u = User.query.filter_by(vid=data.get('vid')).first();
         if data.get('vid') is None or data.get('cat') is None or data.get('eid') is None:
             responseObject = {
                 'status':'fail',
@@ -1093,7 +1097,7 @@ class registration_through_staff(Resource):
                 try:
                     user = User.query.filter_by(vid=r.vid).first()
                     dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
-                    wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
+                    wkreg_mail(user=u, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
                     r.mail = True;
                     db.session.commit();
                     responseObject = {
@@ -1139,9 +1143,9 @@ class registration_through_staff(Resource):
                 try:
                     dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
                     if c.team_limit == 1:
-                        ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
+                        ctreg_mail(user=u, contest=c, regid=r.regid, cdept=dept[c.department - 1])
                     else:
-                        ctregteamleader_mail(user=user, contest=c, registration=r, cdept=dept[c.department - 1] )
+                        ctregteamleader_mail(user=u, contest=c, registration=r, cdept=dept[c.department - 1] )
                     r.mail = True;
                     db.session.commit()
                     responseObject = {
