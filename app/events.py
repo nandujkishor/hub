@@ -770,10 +770,10 @@ class events_registration(Resource):
                             return jsonify(responseObject)
                         w.rmseats = w.rmseats - 1
                         db.session.commit()
-                        # tr = Transactions(cat=1, eid=w.id, vid=user.vid)
-                        # db.session.add(tr)
-                        # db.session.commit()
-                        # return workshopPay(w, user)
+                        tr = Transactions(cat=1, eid=w.id, vid=user.vid,amount=w.fee, typ=1)
+                        db.session.add(tr)
+                        db.session.commit()
+                        return workshopPay(w, user,tr)
                         # Start a 20 minute scheduler to increment the workshop slot
                         # in case the transaction got an issue / is pending.
                         # In all other cases, take the decision on return of endpoint
@@ -784,20 +784,20 @@ class events_registration(Resource):
                             'message':'No seats remaining.'
                         }
                         return jsonify(responseObject)
-                    try:
-                        if w.fee == 0 or w.fee is None:
-                            responseObject = {
-                                'status':'registered',
-                                'message':'Successfully registered for the workshop'
-                            }
-                            return jsonify(responseObject)
-                        return workshopPay(w, user)
-                    except Exception as e:
-                        print(e)
-                        responseObject = {
-                            'status':'fail',
-                            'message': str(e)
-                        }
+                    # try:
+                    #     if w.fee == 0 or w.fee is None:
+                    #         responseObject = {
+                    #             'status':'registered',
+                    #             'message':'Successfully registered for the workshop'
+                    #         }
+                    #         return jsonify(responseObject)
+                    #     return workshopPay(w, user)
+                    # except Exception as e:
+                    #     print(e)
+                    #     responseObject = {
+                    #         'status':'fail',
+                    #         'message': str(e)
+                    #     }
                 else:
                     responseObject = {
                         'status':'failure',
@@ -807,46 +807,57 @@ class events_registration(Resource):
             elif data.get('cat') == 2:
                 c = Contests.query.filter_by(id=data.get('eid')).first()
                 if c is not None:
-                    if c.team_limit is 1:
-                        r = Registrations(vid=user.id, cat=2, eid=data.get('eid'))
-                        db.session.add(r)
+                    try:
+                        tr = Transactions(cat=2, eid=c.id, vid=user.vid,amount=c.fee, typ=1)
+                        db.session.add(tr)
                         db.session.commit()
-                        print("Single member team registration successful")
+                        return workshopPay(c, user,tr)
+                    except Exception as e:
                         responseObject={
-                            'status':'success',
-                            'message':'Registration Success'
+                            'status':'fail',
+                            'message': str(e)
                         }
-                    elif data.get('tid') is None:
-                        print("Team id generation")
-                        r = Registrations(vid=user.vid, cat=2, eid=data.get('eid'))
-                        db.session.add(r)
-                        db.session.commit()
-                        tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
-                        # SHA:256 hashing
-                        print("Team ID", tid)
-                        r.tid = tid
-                        db.session.commit()
-                        # Send email with Team ID
-                        ctregteamleader_mail(user=user, contest=c, registration=r, cdept=dept[c.department-1])
-                        responseObject={
-                            'status':'success',
-                            'message':'Registration Success. Registration ID: '+str(tid)
-                        }
-                    else:
-                        team = Registrations.query.filter_by(cat=2, eid=data.get('eid'), tid=data.get('tid')).count()
-                        if count < c.team_limit:
-                            r = Registrations(vid=u.vid, cat=2, eid=data.get('eid'), tid=form.data.get('eid'))
-                            db.session.add(r)
-                            db.session.commit()
-                            responseObject = {
-                                'status':'success',
-                                'message':'Registration Success'
-                            }
-                        else:
-                            responseObject={
-                                'status':'failure',
-                                'message':'Team is full'
-                            }
+                        return responseObject;
+                    # if c.team_limit is 1:
+                    #     r = Registrations(vid=user.id, cat=2, eid=data.get('eid'))
+                    #     db.session.add(r)
+                    #     db.session.commit()
+                    #     print("Single member team registration successful")
+                    #     responseObject={
+                    #         'status':'success',
+                    #         'message':'Registration Success'
+                    #     }
+                    # elif data.get('tid') is None:
+                    #     print("Team id generation")
+                    #     r = Registrations(vid=user.vid, cat=2, eid=data.get('eid'))
+                    #     db.session.add(r)
+                    #     db.session.commit()
+                    #     tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
+                    #     # SHA:256 hashing
+                    #     print("Team ID", tid)
+                    #     r.tid = tid
+                    #     db.session.commit()
+                    #     # Send email with Team ID
+                    #     ctregteamleader_mail(user=user, contest=c, registration=r, cdept=dept[c.department-1])
+                    #     responseObject={
+                    #         'status':'success',
+                    #         'message':'Registration Success. Registration ID: '+str(tid)
+                    #     }
+                    # else:
+                    #     team = Registrations.query.filter_by(cat=2, eid=data.get('eid'), tid=data.get('tid')).count()
+                    #     if count < c.team_limit:
+                    #         r = Registrations(vid=u.vid, cat=2, eid=data.get('eid'), tid=form.data.get('eid'))
+                    #         db.session.add(r)
+                    #         db.session.commit()
+                    #         responseObject = {
+                    #             'status':'success',
+                    #             'message':'Registration Success'
+                    #         }
+                    #     else:
+                    #         responseObject={
+                    #             'status':'failure',
+                    #             'message':'Team is full'
+                    #         }
                 else:
                     responseObject = {
                         'status':'failure',

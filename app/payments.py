@@ -132,12 +132,10 @@ def response_data(data):
         return jsonify(responseObject)
     return "1"
 
-def workshopPay(workshop, user):
-    transaction = Transactions(vid=user.vid, cat=1, eid=workshop.id, amount=workshop.fee)
+def workshopPay(workshop, user,transaction):
+    # transaction = Transactions(vid=user.vid, cat=1, eid=workshop.id, amount=workshop.fee)
     print(transaction.amount)
     print(workshop.fee)
-    db.session.add(transaction)
-    db.session.commit()
     return pay_data(transaction.amount, transaction.trid)
 
 def addonPay(user, pid, qty):
