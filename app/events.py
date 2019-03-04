@@ -806,7 +806,7 @@ class events_registration(Resource):
                 return jsonify(responseObject)
             elif data.get('cat') == 2:
                 c = Contests.query.filter_by(id=data.get('eid')).first()
-                if data.get('tid') is not None:
+                if (data.get('tid')) is not None and (c is not None):
                     reg = Registrations.query.filter_by(tid=data.get('tid'))
                     if len(reg) == 0:
                         responseObject = {
@@ -822,7 +822,11 @@ class events_registration(Resource):
                         return jsonify(responseObject)
                     new_mem = Registrations(vid=user.vid, eid=c.id, typ = 1, amount = 0)
                     db.session.commit()
-
+                    responseObject = {
+                        'status':'success',
+                        'message':'Joined Team'
+                    }
+                    return jsonify(responseObject)
                 if c is not None:
                     try:
                         tr = Transactions(cat=2, eid=c.id, vid=user.vid,amount=c.fee, typ=1)
