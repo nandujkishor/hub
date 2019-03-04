@@ -406,6 +406,19 @@ class events_contests_indv(Resource):
                     'rules':contest.rules,
                     'prereq':contest.prereq,
                 }
+                try:
+                    auth_t = auth_token(request)
+                    if auth_t:
+                        resp = User.decode_auth_token(auth_t)
+                        if not isinstance(resp, str):
+                            user = User.query.filter_by(vid=resp).first()
+                            r = Registrations.query.filter_by(vid=user.vid, cat=2, eid=id).first()
+                            if r is None:
+                                responseObject['registered'] = False
+                            else:
+                                responseObject['registered'] = True
+                except Exception as e:
+                    print(e)
             else:
                 responseObject ={
                     'status':'fail',
@@ -832,7 +845,6 @@ class events_registration(Resource):
                     }
                     return jsonify(responseObject)
                 if c is not None:
-
                     try:
                         tr = Transactions(cat=2, eid=c.id, vid=user.vid,amount=c.fee, typ=1)
                         db.session.add(tr)
@@ -970,7 +982,6 @@ class registration_stats(Resource):
                 'Message':'Exception occured. '
             }
         return jsonify(responseObject)
-
 
 @events.route('/registration/workshops')
 class events_registration(Resource):
