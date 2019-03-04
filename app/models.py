@@ -225,6 +225,7 @@ class Transactions(db.Model):
     bankref = db.Column(db.String(40))
     calls = db.Column(db.Integer, default=0)
     reply = db.Column(db.Text)
+    refund = db.Column(db.Boolean,default=False)
 
 class AddonTransactions(db.Model):
     trid = db.Column(db.Integer, db.ForeignKey('transactions.trid'), primary_key=True)
