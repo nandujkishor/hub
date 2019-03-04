@@ -187,9 +187,10 @@ def trsuccess(t):
             else:
                 t.refund = True
                 db.session.commit()
-                work = Workshops.query.filter_by(id=t.eid).first()
-                work.rmseats = work.rmseats + 1;
-                db.session.commit()
+                if(t.cat==1):
+                    work = Workshops.query.filter_by(id=t.eid).first()
+                    work.rmseats = work.rmseats + 1;
+                    db.session.commit()
                 responseObject = {
 					'status':'failed',
 					'message':'Refund'
@@ -212,7 +213,7 @@ def trsuccess(t):
         		r.mail = True;
         		db.session.commit()
         	elif t.cat is 2:
-        		c = Contests.query.filter_by(id=data.get('eid')).first()
+        		c = Contests.query.filter_by(id=t.eid).first()
         		ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
         		r.mail = True;
         		db.session.commit()
