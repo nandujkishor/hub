@@ -107,6 +107,7 @@ def response_data(data):
         # print(bankref)
         # print(status)
         # print(statusdesc)
+        db.session.commit()
         if (t.status.lower() == 'success'):
             print("Success")
             # send_spam("Pay success")
@@ -207,6 +208,7 @@ def trsuccess(t):
         # Addon purchase
         purchasee = User.query.filter_by(vid=t.vid).first()
         ta = AddonTransactions.query.filter_by(trid=t.trid).first()
+        print(t.__dict__, ta.__dict__)
         op = OtherPurchases(vid=t.vid,
                             pid=t.eid,
                             qty=ta.qty,
