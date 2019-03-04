@@ -22,8 +22,8 @@ from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 pay = api.namespace('pay', description="Payments management")
 
-key = b'WEGSNGOXHEUDEEDD'
-iv = b'3564234432724374'
+key = b'&YnI$7LP(!#BEzI*'
+iv = b'8838098342343849'
 
 def encrypt(data):
 	data = str.encode(data)
@@ -187,7 +187,7 @@ def trsuccess(t):
                 db.session.add(r)
                 db.session.commit()
                 if (t.cat == 2):
-                    eve = Contests.query.filter_by(id=t.eid)
+                    eve = Contests.query.filter_by(id=t.eid).first()
                     if eve.team_limit > 1:
                         r.tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
                         db.session.commit()
@@ -366,6 +366,7 @@ class massprobbing(Resource):
         print(tlist)
         for t in tlist:
             print(t)
+            print(t.status)
             probber(t)
 
         return "Probing completed"

@@ -832,7 +832,12 @@ class events_registration(Resource):
                 return jsonify(responseObject)
             elif data.get('cat') == 2:
                 c = Contests.query.filter_by(id=data.get('eid')).first()
-                if (data.get('tid')) is not None and (c is not None):
+                print("TESTING = ", data.get('tid'))
+                check_tid = data.get('tid')
+                if(check_tid == ''):
+                    check_tid = None
+                print("TESTING 2 = ", check_tid)
+                if (check_tid is not None and (c is not None)):
                     reg = Registrations.query.filter_by(tid=data.get('tid')).all()
                     if len(reg) == 0:
                         responseObject = {
