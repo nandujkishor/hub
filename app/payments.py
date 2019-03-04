@@ -107,7 +107,6 @@ def response_data(data):
         # print(bankref)
         # print(status)
         # print(statusdesc)
-        db.session.commit()
         if (t.status.lower() == 'success'):
             print("Success")
             # send_spam("Pay success")
