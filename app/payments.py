@@ -70,7 +70,7 @@ def response_data(data):
     except Exception as e:
         print(e)
         responseObject = {
-			'status':'fail',
+			'status':'failed',
 			'message':'Decryption error: '+str(e)
 		}
         return jsonify(responseObject)
@@ -81,7 +81,7 @@ def response_data(data):
     except Exception as e:
         print(e)
         responseObject = {
-            'status':'fail',
+            'status':'failed',
             'message':'cant get trid'+str(e)
         }
         return jsonify(responseObject)
@@ -90,7 +90,7 @@ def response_data(data):
         if t is None:
             print("Invalid transaction ID - manage this!")
             responseObject = {
-                'status':'fail',
+                'status':'failed',
                 'message':'Invalid transaction ID'
             }
             return jsonify(responseObject)
@@ -103,14 +103,13 @@ def response_data(data):
         # print(status)
         # print(statusdesc)
         db.session.commit()
-        if(t.cat == 1 and t.status=='fail'):
+        if(t.cat == 1 and t.status=='failed'):
             work = Workshops.query.filter_by(id=t.eid).first()
             work.rmseats = work.rmseats + 1;
             db.session.commit()
         if (t.status == 'success'):
             print("Success")
             resp = trsuccess(t).get_json()
-            print("TESTING")
             print("RESP ", resp)
             responseObject = {
                 'status':'success',
@@ -127,7 +126,7 @@ def response_data(data):
     except Exception as e:
         print(e)
         responseObject = {
-			'status':'fail',
+			'status':'failed',
 			'message':'Exception occured: '+str(e)
 		}
         return jsonify(responseObject)
@@ -161,7 +160,7 @@ def addonPay(user, pid, qty):
         total = qty*Prices.P100
     else:
         responseObject = {
-            'status':'fail',
+            'status':'failed',
             'message':'No such product'
         }
         return jsonify(responseObject)
@@ -188,7 +187,7 @@ def trsuccess(t):
         except Exception as e:
             print(e)
             responseObject = {
-                'status':'fail',
+                'status':'failed',
                 'message':'Error occured. '+str(e)
             }
             return jsonify(responseObject)
@@ -238,7 +237,7 @@ def trsuccess(t):
         except Exception as e:
             print("Exception ", e)
             responseObject = {
-                'status':'fail',
+                'status':'failed',
                 'message':'Not added to db'
             }
             return jsonify(responseObject);
@@ -278,7 +277,7 @@ def probber(t):
     # print("Hello")
     j = f.text
     if not j:
-        t.status = 'fail'
+        t.status = 'failed'
         db.session.commit()
         return 'empty response'
     print("Text", j)
@@ -310,7 +309,7 @@ class pay_receiver(Resource):
         except Exception as e:
             print(e)
             responseObject = {
-                'status':'fail',
+                'status':'failed',
                 'message':'Exception occured : '+str(e)
             }
             return jsonify(responseObject)
