@@ -5,13 +5,14 @@ import hashlib
 import sys
 import requests
 import json
+import werkzeug.security
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.mail import send_spam, wkreg_mail, ctreg_mail, addon_pur
-from app.models import User, Staff, Transactions, Registrations, AddonTransactions, OtherPurchases
+from app.mail import send_spam, wkreg_mail, ctreg_mail, addon_pur,ctregteamleader_mail
+from app.models import User, Staff, Transactions, Registrations, AddonTransactions, OtherPurchases, Workshops, Contests
 from config import Config
 from values import Prices
 from app.farer import authorizestaff, authorize
@@ -104,6 +105,7 @@ def response_data(data):
         # print(statusdesc)
         db.session.commit()
         if(t.cat == 1 and t.status=='failed'):
+            print("Going to give back - 1")
             work = Workshops.query.filter_by(id=t.eid).first()
             work.rmseats = work.rmseats + 1;
             db.session.commit()
@@ -175,100 +177,115 @@ def addonPay(user, pid, qty):
     return jsonify(pay_data(transaction.amount, transaction.trid))
 
 def trsuccess(t):
-	if t.cat is 1 or t.cat is 2:
-		r = None
-		try:
-			reg = Registrations.query.filter_by(vid=t.vid,cat=t.cat,eid=t.eid).first()
-			if reg is None:
-				r = Registrations(vid=t.vid, cat=t.cat, eid=t.eid, typ=1, trid=t.trid, amount=t.amount)
-				db.session.add(r)
-				db.session.commit()
-			else:
-				t.refund = True
-				db.session.commit()
-				responseObject = {
+    if t.cat is 1 or t.cat is 2:
+        r = None
+        try:
+            reg = Registrations.query.filter_by(vid=t.vid,cat=t.cat,eid=t.eid).first()
+            if reg is None:
+                r = Registrations(vid=t.vid, cat=t.cat, eid=t.eid, typ=1, trid=t.trid, amount=t.amount)
+                db.session.add(r)
+                db.session.commit()
+                if (t.cat == 2):
+                    eve = Contests.query.filter_by(id=t.eid)
+                    if eve.team_limit > 1:
+                        r.tid = werkzeug.security.pbkdf2_hex(str(r.regid), "F**k" ,iterations=50000, keylen=3)
+                        db.session.commit()
+
+            else:
+                t.refund = True
+                db.session.commit()
+                if(t.cat==1):
+                    work = Workshops.query.filter_by(id=t.eid).first()
+                    work.rmseats = work.rmseats + 1;
+                    db.session.commit()
+                responseObject = {
 					'status':'failed',
 					'message':'Refund'
 				}
-				return jsonify(responseObject)
-		except Exception as e:
-			print(e)
-			responseObject = {
-				'status':'failed',
-				'message':'Error occured. '+str(e)
-			}
-			return jsonify(responseObject)
-		try:
-			user = User.query.filter_by(vid=t.vid).first()
-			dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
-			if t.cat is 1:
-				w = Workshops.query.filter_by(id=t.eid).first()
-				wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
-				r.mail = True;
-				db.session.commit()
-			elif t.cat is 2:
-				c = Contests.query.filter_by(id=data.get('eid')).first()
-				ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
-				r.mail = True;
-				db.session.commit()
-			responseObject = {
-			'status':'success',
-			'message':'Successfully registered'
-			}
-			return jsonify(responseObject)
-		except Exception as e:
-			print(e)
-		responseObject = {
-			'status':'success',
-			'message':'Successfully registered. But error in sending mail: '+str(e)
-		}
-		return jsonify(responseObject)
-	elif t.cat is 3:
-		purchasee = User.query.filter_by(vid=t.vid).first()
-		try:
-			print("TRYING TO ADD")
-			ta = AddonTransactions.query.filter_by(trid=t.trid).first()
-			op = OtherPurchases(vid=t.vid,
+
+                return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            responseObject = {
+            	'status':'failed',
+            	'message':'Error occured. '+str(e)
+            }
+            return jsonify(responseObject)
+        try:
+            user = User.query.filter_by(vid=t.vid).first()
+            dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
+            if t.cat is 1:
+                w = Workshops.query.filter_by(id=t.eid).first()
+                wkreg_mail(user=user, workshop=w, regid=r.regid, wdept=dept[w.department - 1])
+                r.mail = True;
+                db.session.commit()
+            elif t.cat is 2:
+                c = Contests.query.filter_by(id=t.eid).first()
+                if c.team_limit == 1:
+                    ctreg_mail(user=user, contest=c, regid=r.regid, cdept=dept[c.department - 1])
+                else:
+                    ctregteamleader_mail(user=user,contest=c,registration=r,cdept=dept[c.department - 1])
+                r.mail = True;
+                db.session.commit()
+            responseObject = {
+                'status':'success',
+                'message':'Successfully registered'
+            }
+            return jsonify(responseObject)
+        except Exception as e:
+        	print(e)
+        responseObject = {
+        	'status':'success',
+        	'message':'Successfully registered. But error in sending mail: '+str(e)
+        }
+        return jsonify(responseObject)
+    elif t.cat is 3:
+    	purchasee = User.query.filter_by(vid=t.vid).first()
+    	try:
+    		print("TRYING TO ADD")
+    		ta = AddonTransactions.query.filter_by(trid=t.trid).first()
+    		op = OtherPurchases(vid=t.vid,
                                 pid=t.eid,
                                 qty=ta.qty,
                                 message='online_success',
                                 bookid='ONLINE',
                                 total=t.amount,
-                                typ=1
+                                typ=1,
+                                trid=t.trid
                                 )
-			db.session.add(op)
-			db.session.commit()
-			print("ADDED TO DB")
-		except Exception as e:
-			print("Exception ", e)
-			responseObject = {
+    		db.session.add(op)
+    		db.session.commit()
+    		print("ADDED TO DB")
+    	except Exception as e:
+    		print("Exception ", e)
+    		responseObject = {
                 'status':'failed',
                 'message':'Not added to db'
             }
-			return jsonify(responseObject);
-		try:
-			products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow', 'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
-			print("PID = ", op.pid)
-			if op.pid == 100:
-				title = "TESTING"
-			else:
-				title = products[op.pid-1]
-			addon_pur(user=purchasee, title=title, purid=op.purid, count=op.qty)
-			op.mail = True;
-			db.session.commit()
-			responseObject = {
+    		return jsonify(responseObject);
+    	try:
+    		products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow', 'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
+    		print("PID = ", op.pid)
+    		if op.pid == 100:
+    			title = "TESTING"
+    		else:
+    			title = products[op.pid-1]
+    		addon_pur(user=purchasee, title=title, purid=op.purid, count=op.qty)
+    		op.mail = True;
+    		db.session.commit()
+    		responseObject = {
                 'status':'success',
                 'message':'transaction successful'
             }
-			print(" reached here 1")
-			return jsonify(responseObject)
-		except Exception as e:
-			print("Exception ", e)
-			responseObject = {
+    		print(" reached here 1")
+    		return jsonify(responseObject)
+    	except Exception as e:
+    		print("Exception ", e)
+    		responseObject = {
                 'status':'success',
                 'message':'Transaction successful. Mail not sent'
             }
-			return jsonify(responseObject);
+    		return jsonify(responseObject);
 
 def probber(t):
     payload = pay_data(tid=t.trid, amt=t.amount)
@@ -279,11 +296,18 @@ def probber(t):
     except Exception as e:
         print(e)
         return 0
-    # print("Hello")
+    print("Hello")
     j = f.text
+    print("J = ", j)
     if not j:
+        print("INSIDE IF")
         t.status = 'failed'
         db.session.commit()
+        if(t.cat == 1 and t.status=='failed'):
+            print("Going to give back - 2")
+            work = Workshops.query.filter_by(id=t.eid).first()
+            work.rmseats = work.rmseats + 1;
+            db.session.commit()
         return 'empty response'
     print("Text", j)
     try:

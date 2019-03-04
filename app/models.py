@@ -280,6 +280,7 @@ class OtherPurchases(db.Model):
     typ = db.Column(db.Integer)
     message = db.Column(db.Text)
     mail = db.Column(db.Boolean, default = False)
+    trid = db.Column(db.Integer, db.ForeignKey('transactions.trid')) 
     purtime = db.Column(db.DateTime, default=datetime.datetime.now)
 
 # class FarerLog(db.Model):
