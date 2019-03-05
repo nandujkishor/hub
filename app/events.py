@@ -47,7 +47,6 @@ class events_workshops(Resource):
                     'd1dur':workshop.d1dur,
                     'd2dur':workshop.d2dur,
                     'd3dur':workshop.d3dur,
-                    'seats':workshop.seats,
                     'rmseats':workshop.rmseats
                 })
         except Exception as e:
