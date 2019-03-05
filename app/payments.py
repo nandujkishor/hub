@@ -360,8 +360,8 @@ class probbing(Resource):
 class massprobbing(Resource):
     # @authorizestaff(request, 4)
     def get(self):
-        tlist = Transactions.query.filter_by(status="processing").all()
-        tlist.extend(Transactions.query.filter_by(status="acrd").all())
+        tlist = Transactions.query.filter(Transactions.status=="processing").filter(Transactions.trid<303).all()
+        tlist.extend(Transactions.query.filter(Transactions.status=="acrd").filter(Transactions.trid<303).all())
         res = []
         print(tlist)
         for t in tlist:
