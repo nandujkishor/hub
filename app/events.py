@@ -729,6 +729,14 @@ class events_talks_indv(Resource):
             }
         return jsonify(responseObject)
 
+# @events.route('/workshops/stats')
+# class workshops_stats(Resource):
+
+#     @authorizestaff(request, 4)
+#     # Endpoint to get count of registered students
+#     def get(user, self):
+#         try:
+
 @events.route('/registration')
 class events_registration(Resource):
 
