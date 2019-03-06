@@ -18,6 +18,11 @@ events = api.namespace('events', description="Events management")
 
 dept = ['CSE', 'ECE', 'ME', 'Physics', 'Chemisty', 'English', 'Biotech','BUG', 'Comm.', 'Civil', 'EEE', 'Gaming', 'Maths', 'Others']
 
+def maketime(time):
+    if(time is not None):
+        return time.strftime('%H:%M')
+    return time
+
 @events.route('/workshops')
 class events_workshops(Resource):
 
@@ -47,12 +52,12 @@ class events_workshops(Resource):
                     'd1dur':workshop.d1dur,
                     'd2dur':workshop.d2dur,
                     'd3dur':workshop.d3dur,
-                    'd1beg':workshop.d1beg,
-                    'd2beg':workshop.d2beg,
-                    'd3beg':workshop.d3beg,
-                    'd1end':workshop.d1end,
-                    'd2end':workshop.d2end,
-                    'd3end':workshop.d3end,
+                    'd1beg':maketime(workshop.d1beg),
+                    'd2beg':maketime(workshop.d2beg),
+                    'd3beg':maketime(workshop.d3beg),
+                    'd1end':maketime(workshop.d1end),
+                    'd2end':maketime(workshop.d2end),
+                    'd3end':maketime(workshop.d3end),
                     'rmseats':workshop.rmseats
                 })
         except Exception as e:
@@ -174,12 +179,12 @@ class events_workshops_indv(Resource):
                     'd1dur':workshop.d1dur,
                     'd2dur':workshop.d2dur,
                     'd3dur':workshop.d3dur,
-                    'd1beg':workshop.d1beg,
-                    'd2beg':workshop.d2beg,
-                    'd3beg':workshop.d3beg,
-                    'd1end':workshop.d1end,
-                    'd2end':workshop.d2end,
-                    'd3end':workshop.d3end,
+                    'd1beg':maketime(workshop.d1beg),
+                    'd2beg':maketime(workshop.d2beg),
+                    'd3beg':maketime(workshop.d3beg),
+                    'd1end':maketime(workshop.d1end),
+                    'd2end':maketime(workshop.d2end),
+                    'd3end':maketime(workshop.d3end),
                     'prereq':workshop.prereq,
                     'rmseats':workshop.rmseats,
                     'registered':reg
@@ -298,7 +303,9 @@ class events_contests(Resource):
         try:
             contests = Contests.query.order_by('id').all()
             responseObject = []
+                    
             for contest in contests:
+                
                 responseObject.append({
                     'id':contest.id,
                     'title':contest.title,
@@ -312,12 +319,12 @@ class events_contests(Resource):
                     'd1dur':contest.d1dur,
                     'd2dur':contest.d2dur,
                     'd3dur':contest.d3dur,
-                    'd1beg':workshop.d1beg,
-                    'd2beg':workshop.d2beg,
-                    'd3beg':workshop.d3beg,
-                    'd1end':workshop.d1end,
-                    'd2end':workshop.d2end,
-                    'd3end':workshop.d3end,
+                    'd1beg':maketime(contest.d1beg),
+                    'd2beg':maketime(contest.d2beg),
+                    'd3beg':maketime(contest.d3beg),
+                    'd1end':maketime(contest.d1end),
+                    'd2end':maketime(contest.d2end),
+                    'd3end':maketime(contest.d3end),
                     'venue':contest.venue,
                     'team_limit':contest.team_limit,
                     'fee':contest.fee,
@@ -427,6 +434,7 @@ class events_contests_indv(Resource):
                                 reg = True
                 except Exception as e:
                     print("Exception: ", str(e))
+
                 responseObject = {
                     'id': contest.id,
                     'title':contest.title,
@@ -440,12 +448,12 @@ class events_contests_indv(Resource):
                     'd1dur':contest.d1dur,
                     'd2dur':contest.d2dur,
                     'd3dur':contest.d3dur,
-                    'd1beg':workshop.d1beg,
-                    'd2beg':workshop.d2beg,
-                    'd3beg':workshop.d3beg,
-                    'd1end':workshop.d1end,
-                    'd2end':workshop.d2end,
-                    'd3end':workshop.d3end,
+                    'd1beg':maketime(contest.d1beg),
+                    'd2beg':maketime(contest.d2beg),
+                    'd3beg':maketime(contest.d3beg),
+                    'd1end':maketime(contest.d1end),
+                    'd2end':maketime(contest.d2end),
+                    'd3end':maketime(contest.d3end),
                     'team_limit':contest.team_limit,
                     'fee':contest.fee,
                     'venue':contest.venue,
