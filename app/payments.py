@@ -100,14 +100,12 @@ def response_data(data):
         t.status = t.status.lower()
         t.statusdesc = d[6].split('=')[1]
         t.reply = plaintext
-        # print(bankref)
-        # print(status)
-        # print(statusdesc)
-        db.session.commit()
         if(t.cat == 1 and t.status=='failed'):
             print("Going to give back - 1")
             work = Workshops.query.filter_by(id=t.eid).first()
             work.rmseats = work.rmseats + 1;
+            db.session.commit()
+        else:
             db.session.commit()
         if (t.status == 'success'):
             print("Success")
@@ -194,10 +192,11 @@ def trsuccess(t):
 
             else:
                 t.refund = True
-                db.session.commit()
                 if(t.cat==1):
                     work = Workshops.query.filter_by(id=t.eid).first()
                     work.rmseats = work.rmseats + 1;
+                    db.session.commit()
+                else:
                     db.session.commit()
                 responseObject = {
 					'status':'failed',
@@ -303,11 +302,12 @@ def probber(t):
     if not j:
         print("INSIDE IF")
         t.status = 'failed'
-        db.session.commit()
         if(t.cat == 1 and t.status=='failed'):
             print("Going to give back - 2")
             work = Workshops.query.filter_by(id=t.eid).first()
             work.rmseats = work.rmseats + 1;
+            db.session.commit()
+        else:
             db.session.commit()
         return 'empty response'
     print("Text", j)

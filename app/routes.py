@@ -27,6 +27,11 @@ def mailtest(u):
     test_mail(u)
     return "Sent"
 
+@app.route('/send/cho')
+def sendchoreo():
+    sendcho()
+    return "Okay"
+
 # @app.route('/')
 
 @api.route('/college/list/')
