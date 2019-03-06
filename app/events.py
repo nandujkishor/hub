@@ -47,6 +47,12 @@ class events_workshops(Resource):
                     'd1dur':workshop.d1dur,
                     'd2dur':workshop.d2dur,
                     'd3dur':workshop.d3dur,
+                    'd1beg':workshop.d1beg,
+                    'd2beg':workshop.d2beg,
+                    'd3beg':workshop.d3beg,
+                    'd1end':workshop.d1end,
+                    'd2end':workshop.d2end,
+                    'd3end':workshop.d3end,
                     'rmseats':workshop.rmseats
                 })
         except Exception as e:
@@ -300,6 +306,12 @@ class events_contests(Resource):
                     'd1dur':contest.d1dur,
                     'd2dur':contest.d2dur,
                     'd3dur':contest.d3dur,
+                    'd1beg':workshop.d1beg,
+                    'd2beg':workshop.d2beg,
+                    'd3beg':workshop.d3beg,
+                    'd1end':workshop.d1end,
+                    'd2end':workshop.d2end,
+                    'd3end':workshop.d3end,
                     'venue':contest.venue,
                     'team_limit':contest.team_limit,
                     'fee':contest.fee,
