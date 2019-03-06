@@ -447,8 +447,9 @@ class farer_u_edu(Resource):
 class userslistd(Resource):
     # Params: Standard with Auth header
     # Access only for 4 and above
-    def get(self):
-        users = User.query.all()
+    @authorizestaff(request, 4)
+    def get(u, self):
+        users = User.query.order_by('vid').all()
         usej = []
         for u in users:
             usej.append({
@@ -475,8 +476,9 @@ class userslistd(Resource):
 @farer.route('/user/list/short')
 class userslistd(Resource):
     # Params: Standard with Auth header
-    def get(self):
-        users = User.query.all()
+    @authorizestaff(request, 4)
+    def get(u, self):
+        users = User.query.order_by(User.vid.desc()).all()
         usej = []
         for u in users:
             usej.append({
