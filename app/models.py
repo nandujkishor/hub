@@ -296,3 +296,18 @@ class OtherPurchases(db.Model):
 #     action = db.Column(db.Integer)
 #     point = db.Column()
 #     ip = db.Column()
+
+class Notifications(db.Model):
+    nid = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.Text)
+    img = db.Column(db.Text)
+    typ = db.Column(db.Integer)
+    by = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    time = db.Column(db.DateTime, default=datetime.datetime.now)
+    # 1 for individual, 2 for group (workshops), 3 for group (contests), 4 ..., 0 for general
+
+class NotifUser(db.Model):
+    nid = db.Column(db.Integer, db.ForeignKey('notifications.nid'), primary_key=True)
+    vid = db.Column(db.Integer, db.ForeignKey('user.vid'), primary_key=True)
+    read = db.Column(db.Boolean, default=False)
+    readtime = db.Column(db.DateTime)

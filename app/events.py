@@ -756,7 +756,7 @@ class events_registration(Resource):
     # Endpoint for getting registered events
     def get(user, self):
         try:
-            reg = Registrations.query.filter_by(id=user.vid)
+            reg = Registrations.query.filter_by(id=user.vid).all()
             responseObject = []
             for r in reg:
                 if r.cat == 1:
@@ -954,7 +954,7 @@ class registration_all(Resource):
     @authorizestaff(request,"registration",3)
     def get(user, self):
         try:
-            reg = Registrations.query.filter_by()
+            reg = Registrations.query.order_by(Registrations.regid.desc()).all()
             responseObject = []
             for r in reg:
                 if r.cat == 1:
@@ -1219,6 +1219,37 @@ class registration_through_staff(Resource):
             'status':'fail',
             'message':'Some exception occured. Contact web team (Error code: w31as432t)'
         }
+        return jsonify(responseObject)
+
+@events.route('/registration/count')
+class events_reg_count(Resource):
+
+    @authorizestaff(request, 4)
+    def get(u, self):
+        cr = db.session.execute('select contests.title, count(vid), sum(amount) from contests, registrations where registrations.cat = 2 and registrations.eid = contests.id group by contests.title order by count(vid) desc').fetchall()
+        wr = db.session.execute('select workshops.title, count(vid), sum(amount) from workshops, registrations where registrations.cat = 1 and registrations.eid = workshops.id group by workshops.title order by count(vid) desc').fetchall()
+        wresp = []
+        cresp = []
+        for i in wr:
+            wresp.append({
+                'title':i[0],
+                'count':i[1],
+                'amount':i[2]
+            })
+        for i in cr:
+            cresp.append({
+                'title':i[0],
+                'count':i[1],
+                'amount':i[2]
+            })
+        responseObject = {
+            'status':'success',
+            'wdata':wresp,
+            'cdata':cresp
+        }
+        # wreg = Workshops.query.join(Registrations, Workshops.id==Registrations.eid).filter_by(cat=1).all()
+        # # print(jsonify(wreg))
+        # print(wreg())
         return jsonify(responseObject)
 
 @events.route('/registration/check')
