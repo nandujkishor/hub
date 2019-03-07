@@ -108,3 +108,11 @@ def sendcho():
             recipient='annjoejose96@gmail.com'
             )
     print("Mal sent")
+
+def sendfas():
+    send_mail("Successful registration for Choreonight at Vidyut",
+            body="Congratulations on your selection to Incandescence!",
+            htmlbody=render_template('emails/norender/fashion.html'),
+            recipient='mkgsnair@gmail.com'
+            )
+    print("Mal sent")
