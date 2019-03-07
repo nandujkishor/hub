@@ -476,7 +476,7 @@ class userslistd(Resource):
 @farer.route('/user/list/short')
 class userslistd(Resource):
     # Params: Standard with Auth header
-    @authorizestaff(request, 4)
+    @authorizestaff(request, "all", 4)
     def get(u, self):
         users = User.query.order_by(User.vid.desc()).all()
         usej = []
