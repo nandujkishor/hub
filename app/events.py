@@ -1250,22 +1250,28 @@ class events_reg_count(Resource):
         wr = db.session.execute('select workshops.title, count(vid), sum(amount) from workshops, registrations where registrations.cat = 1 and registrations.eid = workshops.id group by workshops.title order by count(vid) desc').fetchall()
         wresp = []
         cresp = []
+        wamt = 0
+        camt = 0
         for i in wr:
             wresp.append({
                 'title':i[0],
                 'count':i[1],
                 'amount':i[2]
             })
+            wamt += i[2]
         for i in cr:
             cresp.append({
                 'title':i[0],
                 'count':i[1],
                 'amount':i[2]
             })
+            camt += i[2]
         responseObject = {
             'status':'success',
             'wdata':wresp,
-            'cdata':cresp
+            'cdata':cresp,
+            'wamt':wamt,
+            'camt':camt
         }
         # wreg = Workshops.query.join(Registrations, Workshops.id==Registrations.eid).filter_by(cat=1).all()
         # # print(jsonify(wreg))
