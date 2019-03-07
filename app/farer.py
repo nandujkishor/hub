@@ -87,8 +87,6 @@ def authorizestaff(request, team="all", level=4):
                             }
                             return jsonify(responseObject)
                         
-                        print("Here")
-                        
                         if u.super():
                             return func(u, *args, **kwargs)
                         
