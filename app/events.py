@@ -1245,7 +1245,7 @@ class registration_through_staff(Resource):
 class events_reg_count(Resource):
 
     # @authorizestaff(request, 4)
-    def get(u, self):
+    def get(self):
         cr = db.session.execute('select contests.title, count(vid), sum(amount) from contests, registrations where registrations.cat = 2 and registrations.eid = contests.id group by contests.title order by count(vid) desc').fetchall()
         wr = db.session.execute('select workshops.title, count(vid), sum(amount) from workshops, registrations where registrations.cat = 1 and registrations.eid = workshops.id group by workshops.title order by count(vid) desc').fetchall()
         wresp = []
