@@ -1,7 +1,7 @@
 class Prices(object):
     # All prices in INR. For other purchases
     P1 = 600
-    P2 = 700
+    P2 = 500 #700
     P3 = 900
     P4 = 100
     P5 = 250

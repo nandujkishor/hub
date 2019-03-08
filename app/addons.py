@@ -37,7 +37,7 @@ def addon_purchase(staff, pid, purchasee, qty, scount, mcount, lcount, xlcount, 
             # Outstation: Proshow + Choreonite + Fashionshow
             total = qty*Prices.P2
             if qty >= 3:
-                total -= int(qty/3)*100
+                # total -= int(qty/3)*100
                 message = "Offer applied. Rs. " + str(int(qty/3)*100) + " off."
         elif pid == 3:
             # General: Headbangers + Choreonite + Fashionshow
