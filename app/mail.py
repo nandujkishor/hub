@@ -105,7 +105,7 @@ def sendcho():
     send_mail("Successful registration for Choreonight at Vidyut",
             body="Congratulations on your selection to Choreonight!",
             htmlbody=render_template('emails/norender/choreonight.html'),
-            recipient='annjoejose96@gmail.com'
+            recipient='abhirami.rajasekhar@gmail.com'
             )
     print("Mal sent")
 
