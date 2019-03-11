@@ -67,6 +67,8 @@ class VTransaction(Resource):
                     'message':'Invalid point of sale'
                 }
                 return jsonify(responseObject)
+        except Exception as e:
+            print(e)
         try:
             if pos < 100:
                 truser.balance = truser.balance + amt
@@ -90,7 +92,7 @@ class VTransaction(Resource):
             }
         try:
             # mail the user and send message on the transaction
-            message = "Vallet Transaction of Rs. "+str(amt)+" at "+str(pos.title)"."
+            message = "Vallet Transaction of Rs. "+str(amt)+" at "+str(pos.title)+"."
             r = request.get('')
         except Exception as e:
             responseObject = {

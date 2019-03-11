@@ -301,28 +301,28 @@ class OtherPurchases(db.Model):
 #     point = db.Column()
 #     ip = db.Column()
 
-class Notifications(db.Model):
-    nid = db.Column(db.Integer, primary_key=True)
-    message = db.Column(db.Text)
-    img = db.Column(db.Text)
-    link = db.Column(db.String(1000))
-    typ = db.Column(db.Integer)
-    # 1 for individual, 2 for group (workshops), 3 for group (contests), 4 ..., 0 for general
-    by = db.Column(db.Integer, db.ForeignKey('user.vid'))
-    time = db.Column(db.DateTime, default=datetime.datetime.now)
+# class Notifications(db.Model):
+#     nid = db.Column(db.Integer, primary_key=True)
+#     message = db.Column(db.Text)
+#     img = db.Column(db.Text)
+#     link = db.Column(db.String(1000))
+#     typ = db.Column(db.Integer)
+#     # 1 for individual, 2 for group (workshops), 3 for group (contests), 4 ..., 0 for general
+#     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
+#     time = db.Column(db.DateTime, default=datetime.datetime.now)
 
-class NotifUser(db.Model):
-    nid = db.Column(db.Integer, db.ForeignKey('notifications.nid'), primary_key=True)
-    vid = db.Column(db.Integer, db.ForeignKey('user.vid'), primary_key=True)
-    read = db.Column(db.Boolean, default=False)
-    readtime = db.Column(db.DateTime)
+# class NotifUser(db.Model):
+#     nid = db.Column(db.Integer, db.ForeignKey('notifications.nid'), primary_key=True)
+#     vid = db.Column(db.Integer, db.ForeignKey('user.vid'), primary_key=True)
+#     read = db.Column(db.Boolean, default=False)
+#     readtime = db.Column(db.DateTime)
 
-class Pos(db.Column):
+class Pos(db.Model):
     posid = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(800))
     descr = db.Column(db.Text)
 
-class ValetTransaction(db.Model):
+class ValletTransaction(db.Model):
     tid = db.Column(db.Integer, primary_key=True)
     vid = db.Column(db.Integer, db.ForeignKey('user.vid'), nullable=False)
     typ = db.Column(db.Integer)
