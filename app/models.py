@@ -26,7 +26,11 @@ class User(db.Model):
     mailsent = db.Column(db.Boolean, default=False)
     time_created = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now)
     lastseen = db.Column(db.DateTime)
+    intime = db.Column(db.DateTime)
+    outtime = db.Column(db.DateTime)
     mapping = db.Column(db.String(50))
+    balance = db.Column(db.Integer, default=0)
+    # Assert non-negative values
     referrer = db.Column(db.Integer, db.ForeignKey('user.vid'))
     # regworkshops = db.relationship('Workshops', backref='user', lazy=True)
     # regcontests = db.relationship('Contests', backref='user', lazy=True)
@@ -301,13 +305,28 @@ class Notifications(db.Model):
     nid = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.Text)
     img = db.Column(db.Text)
+    link = db.Column(db.String(1000))
     typ = db.Column(db.Integer)
+    # 1 for individual, 2 for group (workshops), 3 for group (contests), 4 ..., 0 for general
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
     time = db.Column(db.DateTime, default=datetime.datetime.now)
-    # 1 for individual, 2 for group (workshops), 3 for group (contests), 4 ..., 0 for general
 
 class NotifUser(db.Model):
     nid = db.Column(db.Integer, db.ForeignKey('notifications.nid'), primary_key=True)
     vid = db.Column(db.Integer, db.ForeignKey('user.vid'), primary_key=True)
     read = db.Column(db.Boolean, default=False)
     readtime = db.Column(db.DateTime)
+
+class Pos(db.Column):
+    posid = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(800))
+    descr = db.Column(db.Text)
+
+class ValetTransaction(db.Model):
+    tid = db.Column(db.Integer, primary_key=True)
+    vid = db.Column(db.Integer, db.ForeignKey('user.vid'), nullable=False)
+    typ = db.Column(db.Integer)
+    pos = db.Column(db.Integer, db.ForeignKey('pos.posid'), nullable=False)
+    notes = db.Column(db.Text)
+    amt = db.Column(db.Integer, nullable=False)
+    by = db.Column(db.Integer, db.ForeignKey('user.vid'))

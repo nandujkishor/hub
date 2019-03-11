@@ -285,7 +285,7 @@ def trsuccess(t):
                 'status':'success',
                 'message':'Transaction successful. Mail not sent'
             }
-    		return jsonify(responseObject);
+    		return jsonify(responseObject)
 
 def probber(t):
     payload = pay_data(tid=t.trid, amt=t.amount)
@@ -305,7 +305,7 @@ def probber(t):
         if(t.cat == 1 and t.status=='failed'):
             print("Going to give back - 2")
             work = Workshops.query.filter_by(id=t.eid).first()
-            work.rmseats = work.rmseats + 1;
+            work.rmseats = work.rmseats + 1
             db.session.commit()
         else:
             db.session.commit()
@@ -360,8 +360,8 @@ class probbing(Resource):
 class massprobbing(Resource):
     # @authorizestaff(request, 4)
     def get(self):
-        tlist = Transactions.query.filter(Transactions.status=="processing").filter(Transactions.trid<=886).all()
-        tlist.extend(Transactions.query.filter(Transactions.status=="acrd").filter(Transactions.trid<=886).all())
+        tlist = Transactions.query.filter(Transactions.status=="processing").filter(Transactions.trid<=1341).all()
+        tlist.extend(Transactions.query.filter(Transactions.status=="acrd").filter(Transactions.trid<=1341).all())
         res = []
         print(tlist)
         for t in tlist:
