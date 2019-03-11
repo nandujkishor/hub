@@ -3,6 +3,7 @@ vidyut/
 __pycache__
 instance/
 migrations/
+app/__init__.pyc
 app.db
 config.py
 .vscode

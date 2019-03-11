@@ -303,7 +303,7 @@ class events_contests(Resource):
         try:
             contests = Contests.query.order_by('id').all()
             responseObject = []
-                    
+
             for contest in contests:
                 
                 responseObject.append({
