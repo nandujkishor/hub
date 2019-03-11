@@ -54,6 +54,11 @@ class VTransaction(Resource):
                 return jsonify(responseObject)
         except Exception as e:
             print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error: '+str(e)
+            }
+            return jsonify(responseObject)
         try:
             pos = Pos.query.filter_by(posid=data.get('pos')).first()
             if pos is None:
@@ -63,7 +68,10 @@ class VTransaction(Resource):
                 }
                 return jsonify(responseObject)
         try:
-            truser.balance = truser.balance - amt
+            if pos < 100:
+                truser.balance = truser.balance + amt
+            else:
+                truser.balance = truser.balance - amt
             # db.session.commit()
             # Check if working
             vt = ValletTransaction(vid=data.get('vid'),
@@ -129,11 +137,26 @@ class VDeliverNow(Resource):
         'tid':'Transaction ID'
     })
     def post(u, self):
-        data = request.get_json()
-        tid = data.get('tid')
-        t = ValletTransaction.query.filter_by(tid=tid).first()
-        t.delivered = True
-        db.session.commit()
+        try:
+            data = request.get_json()
+            tid = data.get('tid')
+        except Exception as e:
+            responseObject = {
+                'status':'fail',
+                'message':'Invalid data'
+            }
+            return jsonify(responseObject)
+        try:
+            t = ValletTransaction.query.filter_by(tid=tid).first()
+            t.delivered = True
+            db.session.commit()
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error: '+str(e)
+            }
+            return jsonify(responseObject)
         responseObject = {
             'status':'success',
             'message':'Successfully delivered'
@@ -158,3 +181,31 @@ class VBalance(Resource):
             'balance':balance
         }
         return jsonify(responseObject)
+
+@vallet.route('/pos')
+class ValletPOS(Resource):
+    def get(self):
+        try:
+            pos = Pos.query.all()
+            resp = []
+            for i in pos:
+                resp.append({
+                    'posid':i.posid,
+                    'title':i.title,
+                    'descr':i.descr
+                })
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Database error: '+str(e)
+            }
+        responseObject = {
+            'status':'success',
+            'data':jsonify(resp)
+        }
+        return jsonify(responseObject)
+
+    # @authorizestaff(request, "pay", 4)
+    # def post(u, self):
+    #     try:
