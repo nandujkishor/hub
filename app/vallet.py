@@ -96,6 +96,50 @@ class VTransaction(Resource):
         }
         return jsonify(responseObject)
 
+@vallet.route('/deliver/pos/<int:id>')
+class VDeliver(Resource):
+    @authorizestaff(request)
+    # Sends all undelivered transactions
+    def get(u, self, id):
+        if pos < 100:
+            responseObject = {
+                'status':'fail',
+                'message':'No deliveries for recharge station'
+            }
+        und = ValletTransaction.query.filter_by(pos=id, delivered=False).all()
+        resp = []
+        for i in und:
+            resp.append({
+                'tid':i.tid,
+                'vid':i.vid,
+                'notes':i.notes,
+                'amt':i.amt,
+                'by':i.by
+            })
+        responseObject = {
+            'status':'success',
+            'data':jsonify(resp)
+        }
+        return jsonify(responseObject)
+
+@vallet.route('/deliver')
+class VDeliverNow(Resource):
+    @authorizestaff(request)
+    @api.doc(params={
+        'tid':'Transaction ID'
+    })
+    def post(u, self):
+        data = request.get_json()
+        tid = data.get('tid')
+        t = ValletTransaction.query.filter_by(tid=tid).first()
+        t.delivered = True
+        db.session.commit()
+        responseObject = {
+            'status':'success',
+            'message':'Successfully delivered'
+        }
+        return jsonify(responseObject)
+
 @vallet.route('/balance')
 class VBalance(Resource):
     @authorize(request)

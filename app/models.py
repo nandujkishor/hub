@@ -329,4 +329,5 @@ class ValetTransaction(db.Model):
     pos = db.Column(db.Integer, db.ForeignKey('pos.posid'), nullable=False)
     notes = db.Column(db.Text)
     amt = db.Column(db.Integer, nullable=False)
+    delivered = db.Column(db.Boolean, default=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
