@@ -12,12 +12,13 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 from flask_restplus import Resource, Api
 from sqlalchemy.sql import func
+from sqlalchemy import or_
 
 vallet = api.namespace('vallet', description="Vallet service")
 
 def valletbalance(vid):
-    topup = ValletTransaction.query.with_entities(func.sum(ValletTransaction.amt)).filter(__or__(vid==vid, typ=1))
-    spent = ValletTransaction.query.with_entities(func.sum(ValletTransaction.amt)).filter(__or__(vid==vid, typ=2))
+    topup = ValletTransaction.query.with_entities(func.sum(ValletTransaction.amt)).filter(or_(vid==vid, typ=1))
+    spent = ValletTransaction.query.with_entities(func.sum(ValletTransaction.amt)).filter(or_(vid==vid, typ=2))
     balance = topup - spent
     return balance
 
@@ -32,7 +33,8 @@ class VTransaction(Resource):
     @api.doc(params={
         'vid':'Vidyut ID of the staff',
         'pos':'Point of sale ID',
-        'amt':'Transaction Amount'
+        'amt':'Transaction Amount (when pos < 100)',
+        'products':'Products array with product-id. eg: {1, 2, 3, 4}'
     })
     def post(u, self):
         data = request.get_json()
