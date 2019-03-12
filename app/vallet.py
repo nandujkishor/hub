@@ -17,8 +17,15 @@ from sqlalchemy import or_
 vallet = api.namespace('vallet', description="Vallet service")
 
 def valletbalance(vid):
-    topup = ValletTransaction.query.with_entities(func.sum(ValletTransaction.amt)).filter(or_(vid==vid, typ=1))
-    spent = ValletTransaction.query.with_entities(func.sum(ValletTransaction.amt)).filter(or_(vid==vid, typ=2))
+    topup = db.session.execute("select sum(amt) from vallet_transaction where vid="+str(vid)+" and typ=1").scalar()
+    # topup = ValletTransaction.query.with_entities(func.sum(ValletTransaction.amt)).filter(ValletTransaction.vid==vid).filter(ValletTransaction.typ==1)
+    spent = db.session.execute("select sum(amt) from vallet_transaction where vid="+str(vid)+" and typ=2").scalar()
+    print(topup, spent)
+    # spent = ValletTransaction.query.with_entities(func.sum(ValletTransaction.amt)).filter(ValletTransaction.vid==vid).filter(ValletTransaction.typ==2)
+    if topup == None:
+        topup = 0
+    if spent == None:
+        spent = 0
     balance = topup - spent
     return balance
 
