@@ -493,6 +493,30 @@ class userslistd(Resource):
             })
         return jsonify(usej)
 
+@farer.route('/getvid')
+class getvidfromfarer(Resource):
+    @authorizestaff(request, "all", 1)
+    @api.doc(params={
+        'farer':'Farer string'
+    })
+    def get(u, self):
+        try:
+            d = request.get_json()
+            user = User.query.filter_by(farer=data.get('farer')).first()
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured. (DB)',
+                'error':str(e)
+            }
+            return jsonify(responseObject)
+        responseObject = {
+            'status':'success',
+            'vid':user.vid
+        }
+        return jsonify(responseObject)
+
 @farer.route('/user/count')
 class usercount(Resource):
     def get(self):
