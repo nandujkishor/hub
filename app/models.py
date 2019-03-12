@@ -28,7 +28,7 @@ class User(db.Model):
     lastseen = db.Column(db.DateTime)
     intime = db.Column(db.DateTime)
     outtime = db.Column(db.DateTime)
-    mapping = db.Column(db.String(50))
+    farer = db.Column(db.String(50))
     balance = db.Column(db.Integer, default=0)
     # Assert non-negative values
     referrer = db.Column(db.Integer, db.ForeignKey('user.vid'))
@@ -221,6 +221,14 @@ class Registrations(db.Model):
     registime = db.Column(db.DateTime, default=datetime.datetime.now)
     # 0 if not paid, 1 if paid.
 
+class AttendLog(db.Model):
+    aid = db.Column(db.Integer, primary_key=True)
+    vid = db.Column(db.Integer)
+    cat = db.Column(db.Integer)
+    # 1: Workshop, 2:Contest, 3:Culturals
+    eid = db.Column(db.Integer)
+    time = db.Column(db.DateTime)
+
 class Transactions(db.Model):
     trid = db.Column(db.Integer, primary_key=True)
     # Acts as transaction ID
@@ -330,4 +338,12 @@ class ValletTransaction(db.Model):
     notes = db.Column(db.Text)
     amt = db.Column(db.Integer, nullable=False)
     delivered = db.Column(db.Boolean, default=False)
+    by = db.Column(db.Integer, db.ForeignKey('user.vid'))
+
+class ValletProduct(db.Model):
+    prodid = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Text, nullable=False)
+    desc = db.Column(db.Text)
+    pos = db.Column(db.Integer, db.ForeignKey('pos.posid'))
+    amount = db.Column(db.Integer, nullable=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))

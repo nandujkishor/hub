@@ -32,8 +32,8 @@ class events_workshops(Resource):
     # Sends list of all Workshops
     # Accessible to all users
     def get(self):
-        try:
-            workshops = Workshops.query.order_by('id').all()
+        try:    
+            workshops = Workshops.query.filter_by(pub=True).order_by('id').all()
             responseObject = []
             for workshop in workshops:
                 responseObject.append({

@@ -4,7 +4,7 @@ import requests
 import json
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.models import User, Staff, Pos, ValletTransaction
+from app.models import User, Staff, Pos, ValletTransaction, ValletProduct
 from config import Config
 # from app.addons import addon_purchase
 from app.farer import authorizestaff, authorize
@@ -70,14 +70,17 @@ class VTransaction(Resource):
         except Exception as e:
             print(e)
         try:
+            typ = 2
             if pos < 100:
                 truser.balance = truser.balance + amt
+                typ = 1
             else:
                 truser.balance = truser.balance - amt
+                typ = 2
             # db.session.commit()
             # Check if working
             vt = ValletTransaction(vid=data.get('vid'),
-                                    typ=data.get('typ'),
+                                    typ=typ,
                                     pos=data.get('pos'),
                                     notes=data.get('notes'),
                                     amt=data.get('amt'),
@@ -92,8 +95,14 @@ class VTransaction(Resource):
             }
         try:
             # mail the user and send message on the transaction
-            message = "Vallet Transaction of Rs. "+str(amt)+" at "+str(pos.title)+"."
-            r = request.get('')
+            payload = {
+                # 'ip':
+                'key':'vidyuth1908030559',
+                'num':truser.phno,
+                'message':'Vallet Transaction of Rs. '+str(amt)+' at '+str(pos.title)+'.'
+            }
+            r = requests.get('http://sms.amrita.ac.in/', data=payload)
+            # Uncomment only when needed
         except Exception as e:
             responseObject = {
                 'status':'success',
@@ -116,6 +125,7 @@ class VDeliver(Resource):
                 'status':'fail',
                 'message':'No deliveries for recharge station'
             }
+            return jsonify(responseObject)
         und = ValletTransaction.query.filter_by(pos=id, delivered=False).all()
         resp = []
         for i in und:
@@ -131,6 +141,50 @@ class VDeliver(Resource):
             'data':jsonify(resp)
         }
         return jsonify(responseObject)
+
+@vallet.route('/products/<int:id>')
+class PosProducts(Resource):
+    def get(self, id):
+        p = ValletProduct.query.filter_by(pod=id).all()
+        pr = []
+        for i in p:
+            pr.append({
+                'prodid':i.prodid,
+                'title':i.title,
+                'desc':i.desc,
+                'amount':i.amount
+            })
+        responseObject = {
+            'status':'success',
+            'response':jsonify(pr)
+        }
+        return jsonify(responseObject)
+
+    @authorizestaff(request, "pay", 4)
+    def post(u, self, id):
+        try:
+            data = request.get_json()
+            product = ValletProduct(pos=id,
+                                    title=data.get('title'),
+                                    desc=data.get('desc'),
+                                    amount=data.get('amount'),
+                                    by=u.vid
+                                )
+            db.session.add(product)
+            db.session.commit()
+            responseObject = {
+                'status':'success',
+                'message':'Product successfully added'
+            }
+            return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Inadequate data / Database error',
+                'error':str(e)
+            }
+            return jsonify(responseObject)
 
 @vallet.route('/deliver')
 class VDeliverNow(Resource):
@@ -208,6 +262,18 @@ class ValletPOS(Resource):
         }
         return jsonify(responseObject)
 
-    # @authorizestaff(request, "pay", 4)
-    # def post(u, self):
-    #     try:
+    @api.doc(params={
+        'title':'POS title',
+        'descr':'Description'
+    })
+    @authorizestaff(request, "pay", 4)
+    def post(u, self):
+        data = request.get_json()
+        pos = Pos(title=data.get('title'), descr=data.get('descr'))
+        db.session.add(pos)
+        db.session.commit()
+        responseObject = {
+            'status':'success',
+            'message':'POS added'
+        }
+        return jsonify(responseObject)
