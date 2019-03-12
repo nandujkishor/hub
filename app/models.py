@@ -340,6 +340,12 @@ class ValletTransaction(db.Model):
     delivered = db.Column(db.Boolean, default=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
+class ValletPurchaseDetails(db.Model):
+    # Details for a single transaction if of type2
+    tid = db.Column(db.Integer, db.ForeignKey('vallet_transaction.tid'), primary_key=True)
+    prodid = db.Column(db.Integer, db.ForeignKey('vallet_product.prodid'), primary_key=True)
+
+
 class ValletProduct(db.Model):
     prodid = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
