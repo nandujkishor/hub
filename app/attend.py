@@ -58,3 +58,4 @@ class AtEntry(Resource):
             'status':'success',
             'message':'User successfully linked to Farer'
         }
+        return jsonify(responseObject)
