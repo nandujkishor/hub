@@ -34,6 +34,15 @@ def farer_welcome_mail(user):
             )
     return "Okay!"
 
+def checkin_welcome_mail(user):
+    print("Sending check-in welcome mail to " + user.fname)
+    send_mail("Welcome to Vidyut '19 - Check-in successful", 
+            body="Your Vidyut ID is " + str(user.vid) + ". Have a wonderful multifest experience.",
+            htmlbody=render_template('emails/checkin-welcome.html', user=user),
+            recipient=user.email
+            )
+    return "Okay!"
+
 def wkreg_mail(user, workshop, regid, wdept):
     print("Sending Workshop registration mail to " + user.fname)
     send_mail("Workshop: "+ workshop.title + " during Vidyut'19 - registration successful", 

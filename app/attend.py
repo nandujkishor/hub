@@ -60,21 +60,98 @@ class AtEntry(Resource):
         }
         return jsonify(responseObject)
 
-@attend.route('/check/event')
+@attend.route('/check/workshop')
 class AttendCheck(Resource):
     # Checkin with Farer
     @api.doc(params={
         'farer':'farer',
-        'cat':'Event category (1 or 2)',
-        'eid':'Event ID'
+        'id':'Workshop ID'
     })
-    @authorizestaff(request)
+    @authorizestaff(request, "workshop", 4)
     def post(u, self):
-        data = request.get_json()
-        user = User.query.filter_by(farer=data.get('farer')).first()
-        reg = Registrations.query.filter_by(vid=user.vid, cat=data.get('cat'), eid=data.get('eid'))
-        a = AttendLog(vid=user.vid,
-                    cat=data.get('cat'),
-                    eid=data.get('eid'),
-                    )
-                    # Log the registration staff VID as well
+        try:
+            data = request.get_json()
+            user = User.query.filter_by(farer=data.get('farer')).first()
+            reg = Registrations.query.filter_by(vid=user.vid, cat=1, eid=data.get('id')).first()
+            if reg is None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'User not registered for the workshop'
+                }
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'DB error / input error',
+                'error':str(e)
+            }
+            return jsonify(responseObject)
+        try:
+            a = AttendLog(vid=user.vid,
+                        cat=1,
+                        eid=data.get('id'),
+                        by=u.vid
+                        )
+            db.session.add(a)
+            db.session.commit()
+            responseObject = {
+                'status':'success',
+                'message':'User checked in'
+            }
+            return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'DB error',
+                'error':str(e)
+            }
+            return jsonify(responseObject)
+
+@attend.route('/check/contest')
+class AttendCheck(Resource):
+    # Checkin with Farer
+    @api.doc(params={
+        'farer':'farer',
+        'id':'Contest ID'
+    })
+    @authorizestaff(request, "contest", 4)
+    def post(u, self):
+        try:
+            data = request.get_json()
+            user = User.query.filter_by(farer=data.get('farer')).first()
+            reg = Registrations.query.filter_by(vid=user.vid, cat=2, eid=data.get('id')).first()
+            if reg is None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'User not registered for the competition'
+                }
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'DB error / input error',
+                'error':str(e)
+            }
+            return jsonify(responseObject)
+        try:
+            a = AttendLog(vid=user.vid,
+                        cat=2,
+                        eid=data.get('id'),
+                        by=u.vid
+                        )
+            db.session.add(a)
+            db.session.commit()
+            responseObject = {
+                'status':'success',
+                'message':'User checked in'
+            }
+            return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'DB error',
+                'error':str(e)
+            }
+            return jsonify(responseObject)
