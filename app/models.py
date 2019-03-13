@@ -353,3 +353,16 @@ class ValletProduct(db.Model):
     pos = db.Column(db.Integer, db.ForeignKey('pos.posid'))
     amount = db.Column(db.Integer, nullable=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
+
+# class ConsolidatedPurch(db.Model):
+#     vid = db.Column(db.Integer, db.ForeignKey('user.vid')) #Purchasee
+#     pid = db.Column(db.Integer) # Product ID
+#     scount = db.Column(db.Integer,default=0)
+#     mcount = db.Column(db.Integer,default=0)
+#     lcount = db.Column(db.Integer,default=0)
+#     xlcount = db.Column(db.Integer,default=0)
+#     xxlcount = db.Column(db.Integer,default=0)
+#     qty = db.Column(db.Integer)
+#     by = db.Column(db.Integer)
+#     message = db.Column(db.Text)
+#     collecttime = db.Column(db.DateTime, default=datetime.datetime.now)

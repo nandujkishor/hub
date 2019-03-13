@@ -262,7 +262,7 @@ def trsuccess(t):
                 'status':'failed',
                 'message':'Not added to db'
             }
-    		return jsonify(responseObject);
+    		return jsonify(responseObject)
     	try:
     		products = ['Amritapuri: Proshow + Choreonite + Fashionshow','Outstation: Proshow + Choreonite + Fashionshow', 'General: Headbangers + Choreonite + Fashionshow', 'Choreonite + Fashionshow','T-Shirt','Amritapuri: All Tickets + T-Shirt','Outstation: All Tickets + T-Shirt','General: Headbangers + Choreonite + Fashionshow + T-Shirt']
     		print("PID = ", op.pid)
@@ -360,8 +360,8 @@ class probbing(Resource):
 class massprobbing(Resource):
     # @authorizestaff(request, 4)
     def get(self):
-        tlist = Transactions.query.filter(Transactions.status=="processing").filter(Transactions.trid<=2193).all()
-        tlist.extend(Transactions.query.filter(Transactions.status=="acrd").filter(Transactions.trid<=2193).all())
+        tlist = Transactions.query.filter(Transactions.status=="processing").filter(Transactions.trid<=2374).all()
+        tlist.extend(Transactions.query.filter(Transactions.status=="acrd").filter(Transactions.trid<=2374).all())
         res = []
         print(tlist)
         for t in tlist:

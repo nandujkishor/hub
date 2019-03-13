@@ -501,7 +501,7 @@ class getvidfromfarer(Resource):
             user = User.query.filter_by(farer=farer).first()
             if user is None:
                 responseObject = {
-                    'status':'failure',
+                    'status':'fail',
                     'message':'Farer unlinked'
                 }
         except Exception as e:
@@ -515,6 +515,30 @@ class getvidfromfarer(Resource):
         responseObject = {
             'status':'success',
             'vid':user.vid
+        }
+        return jsonify(responseObject)
+
+@farer.route('/user/farer/<farer>')
+class user_contact_farer(Resource):
+    def get(self, farer):
+        user = User.query.filter_by(farer=farer).first()
+        if user is None:
+            responseObject = {
+                'status':'fail',
+                'message':'No such user'
+            }
+            return jsonify(responseObject)
+        resp = {
+            'fname':user.fname,
+            'lname':user.lname,
+            'email':user.email,
+            'phno':user.phno,
+            'ppic':user.ppic
+        }
+        responseObject = {
+            'status':'success',
+            'message':'User found',
+            'user':jsonify(user)
         }
         return jsonify(responseObject)
 

@@ -15,8 +15,8 @@ attend = api.namespace('attend', description="Attend")
 
 @attend.route('/entry')
 class AtEntry(Resource):
-    @api.docs(params={
-        'vid':'VID in (int) format (without V19)'
+    @api.doc(params={
+        'vid':'VID in (int) format (without V19)',
         'farer':'Next farer available for the user'
     })
     @authorizestaff(request, "registration", 1)
@@ -27,7 +27,7 @@ class AtEntry(Resource):
             print("Error: user already checked in")
             responseObject = {
                 'status':'fail',
-                'message':'Student already registered'
+                'message':'Student already checked in'
             }
             return jsonify(responseObject)
         anouser = User.query.filter_by(farer=d.get('farer')).first()
@@ -39,7 +39,7 @@ class AtEntry(Resource):
             return jsonify(responseObject)
         try:
             user.intime = datetime.datetime.now()
-            user.farer = data.get('farer')
+            user.farer = d.get('farer')
             db.session.commit()
         except Exception as e:
             print(e)
@@ -59,3 +59,21 @@ class AtEntry(Resource):
             'message':'User successfully linked to Farer'
         }
         return jsonify(responseObject)
+
+@attend.route('/check')
+class AttendCheck(Resource):
+    # Checkin with Farer
+    @api.doc(params={
+        'farer':'farer',
+        'cat':'Event category',
+        'eid':'Event ID'
+    })
+    @authorizestaff(request)
+    def post(u, self):
+        data = request.get('data')
+        user = User.query.filter_by(farer=data.get('farer')).first()
+        a = AttendLog(vid=user.vid,
+                    cat=data.get('cat'),
+                    eid=data.get('eid'),
+                    )
+                    # Log the registration staff VID as well
