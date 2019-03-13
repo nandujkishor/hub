@@ -358,13 +358,16 @@ class ValletProduct(db.Model):
 
 class ConsolidatedPurch(db.Model):
     vid = db.Column(db.Integer, db.ForeignKey('user.vid'), primary_key=True) #Purchasee
-    pid = db.Column(db.Integer) # Product ID
-    scount = db.Column(db.Integer,default=0)
-    mcount = db.Column(db.Integer,default=0)
-    lcount = db.Column(db.Integer,default=0)
-    xlcount = db.Column(db.Integer,default=0)
-    xxlcount = db.Column(db.Integer,default=0)
-    qty = db.Column(db.Integer)
+    proamr = db.Column(db.Integer)
+    proout = db.Column(db.Integer)
+    prohea = db.Column(db.Integer)
+    chnfas = db.Column(db.Integer)
+    scount = db.Column(db.Integer)
+    mcount = db.Column(db.Integer)
+    lcount = db.Column(db.Integer)
+    xlcount = db.Column(db.Integer)
+    xxlcount = db.Column(db.Integer)
+    qty = db.Column(db.Integer) # Total
     deliverby = db.Column(db.Integer, db.ForeignKey('user.vid'))
     message = db.Column(db.Text)
     deliver = db.Column(db.Boolean, default=False)

@@ -155,3 +155,5 @@ class AttendCheck(Resource):
                 'error':str(e)
             }
             return jsonify(responseObject)
+
+# @attend.route('/')
