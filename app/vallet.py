@@ -83,20 +83,27 @@ class VTransaction(Resource):
             if pos < 100:
                 truser.balance = truser.balance + amt
                 typ = 1
-            else:
-                truser.balance = truser.balance - amt
-                typ = 2
-            # db.session.commit()
-            # Check if working
-            vt = ValletTransaction(vid=data.get('vid'),
+                vt = ValletTransaction(vid=data.get('vid'),
                                     typ=typ,
                                     pos=data.get('pos'),
                                     notes=data.get('notes'),
                                     amt=data.get('amt'),
                                     by=u.vid
                                     )
-            db.session.add(vt)
-            db.session.commit()
+                db.session.add(vt)
+                db.session.commit()
+            else:
+                truser.balance = truser.balance - amt
+                typ = 2
+                vt = ValletTransaction(vid=data.get('vid'),
+                                        typ=typ,
+                                        pos=data.get('pos'),
+                                        notes=data.get('notes'),
+                                        amt=data.get('amt'),
+                                        by=u.vid
+                                        )
+                db.session.add(vt)
+                db.session.commit()
         except Exception as e:
             responseObject = {
                 'status':'fail',

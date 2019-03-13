@@ -360,8 +360,8 @@ class probbing(Resource):
 class massprobbing(Resource):
     # @authorizestaff(request, 4)
     def get(self):
-        tlist = Transactions.query.filter(Transactions.status=="processing").filter(Transactions.trid<=1482).all()
-        tlist.extend(Transactions.query.filter(Transactions.status=="acrd").filter(Transactions.trid<=1482).all())
+        tlist = Transactions.query.filter(Transactions.status=="processing").filter(Transactions.trid<=2193).all()
+        tlist.extend(Transactions.query.filter(Transactions.status=="acrd").filter(Transactions.trid<=2193).all())
         res = []
         print(tlist)
         for t in tlist:
@@ -377,6 +377,7 @@ class custom(Resource):
         t = Transactions.query.filter(Transactions.trid==839).first()
         probber(t)
         return "completed"
+
 # @pay.route('/testing')
 # def payment():
 #     plaintext = "transactionId=VIDYUTTEST10|amount=1|purpose=VIDYUT19TEST|currency=inr"

@@ -493,16 +493,17 @@ class userslistd(Resource):
             })
         return jsonify(usej)
 
-@farer.route('/getvid')
+@farer.route('/getvid/<farer>')
 class getvidfromfarer(Resource):
     @authorizestaff(request, "all", 1)
-    @api.doc(params={
-        'farer':'Farer string'
-    })
-    def get(u, self):
+    def get(u, self, farer):
         try:
-            d = request.get_json()
-            user = User.query.filter_by(farer=data.get('farer')).first()
+            user = User.query.filter_by(farer=farer).first()
+            if user is None:
+                responseObject = {
+                    'status':'failure',
+                    'message':'Farer unlinked'
+                }
         except Exception as e:
             print(e)
             responseObject = {

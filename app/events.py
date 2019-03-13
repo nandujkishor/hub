@@ -147,6 +147,12 @@ class events_workshops_indv(Resource):
         try:
             auth_t = auth_token(request)
             workshop = Workshops.query.filter_by(id=id).first()
+            if workshop.pub == False:
+                responseObject ={
+                    'status':'fail',
+                    'message':'Unpublished Workshop'
+                }
+                return jsonify(responseObject)
             reg = False
             try:
                 auth_t = auth_token(request)
@@ -301,7 +307,7 @@ class events_contests(Resource):
     # Send list of all contests
     def get(self):
         try:
-            contests = Contests.query.order_by('id').all()
+            contests = Contests.query.filter_by(pub=True).order_by('id').all()
             responseObject = []
 
             for contest in contests:
@@ -419,6 +425,12 @@ class events_contests_indv(Resource):
     def get(self, id):
         try:
             contest = Contests.query.filter_by(id=id).first()
+            if contest.pub == False:
+                responseObject = {
+                    'status':'success',
+                    'message':'Unpublished contest'
+                }
+                return jsonify(responseObject)
             if contest is not None:
                 reg = False
                 try:
