@@ -518,6 +518,30 @@ class getvidfromfarer(Resource):
         }
         return jsonify(responseObject)
 
+@farer.route('/user/vid/<int:vid>')
+class user_contact_vid(Resource):
+    def get(self, vid):
+        user = User.query.filter_by(vid=vid).first()
+        if user is None:
+            responseObject = {
+                'status':'fail',
+                'message':'No such user'
+            }
+            return jsonify(responseObject)
+        resp = {
+            'fname':user.fname,
+            'lname':user.lname,
+            'email':user.email,
+            'phno':user.phno,
+            'ppic':user.ppic
+        }
+        responseObject = {
+            'status':'success',
+            'message':'User found',
+            'user':jsonify(user)
+        }
+        return jsonify(responseObject)
+
 @farer.route('/user/farer/<farer>')
 class user_contact_farer(Resource):
     def get(self, farer):
