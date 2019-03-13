@@ -554,18 +554,18 @@ class user_contact_farer(Resource):
                 'message':'No such user'
             }
             return jsonify(responseObject)
-        resp = {
+        responseObject = {
             'fname':user.fname,
             'lname':user.lname,
             'email':user.email,
             'phno':user.phno,
             'ppic':user.ppic
         }
-        responseObject = {
-            'status':'success',
-            'message':'User found',
-            'user':jsonify(user)
-        }
+        # responseObject = {
+        #     'status':'success',
+        #     'message':'User found',
+        #     'user':jsonify(user)
+        # }
         return jsonify(responseObject)
 
 @farer.route('/user/count')
