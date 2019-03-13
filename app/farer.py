@@ -516,7 +516,7 @@ class getvidfromfarer(Resource):
             return jsonify(responseObject)
         responseObject = {
             'status':'success',
-            'vid':str(user.vid),
+            'vid':user.vid,
             'message':'VID available'
         }
         return jsonify(responseObject)
