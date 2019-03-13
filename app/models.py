@@ -356,7 +356,7 @@ class ValletProduct(db.Model):
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
 class ConsolidatedPurch(db.Model):
-    vid = db.Column(db.Integer, db.ForeignKey('user.vid')) #Purchasee
+    vid = db.Column(db.Integer, db.ForeignKey('user.vid'), primary_key=True) #Purchasee
     pid = db.Column(db.Integer) # Product ID
     scount = db.Column(db.Integer,default=0)
     mcount = db.Column(db.Integer,default=0)
