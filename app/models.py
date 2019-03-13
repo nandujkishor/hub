@@ -229,6 +229,7 @@ class AttendLog(db.Model):
     # 1: Workshop, 2:Contest, 3:Culturals
     eid = db.Column(db.Integer)
     time = db.Column(db.DateTime)
+    by = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
 class Transactions(db.Model):
     trid = db.Column(db.Integer, primary_key=True)
