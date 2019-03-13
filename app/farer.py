@@ -86,10 +86,10 @@ def authorizestaff(request, team="all", level=4):
                                 'message':'Go check your DB'
                             }
                             return jsonify(responseObject)
-                        
+
                         if u.super():
                             return func(u, *args, **kwargs)
-                        
+
                         if team=="all":
                             st = Staff.query.filter_by(vid=u.vid).order_by(level).first()
                             if st is None:
@@ -107,7 +107,7 @@ def authorizestaff(request, team="all", level=4):
                             return func(u, *args, **kwargs)
 
                         print("TEAM CHECK = ", team)
-                        
+
                         st = Staff.query.filter_by(vid=u.vid, team=team).first()
                         st2 = Staff.query.filter_by(vid=u.vid, team="web").first()
 
@@ -176,11 +176,11 @@ class user_auth(Resource):
             # Send email on the error
             print("Error encountered - ValueError - Wrong issuer")
             return "Error encountered - ValueError - Wrong issuer"
-        
+
         print(idinfo['email'])
         u = User.query.filter_by(id = userid).first()
         print(u)
-        
+
         if u is None:
             try:
                 u = User(id=userid,
@@ -256,7 +256,7 @@ class user_auth(Resource):
                         'message':'User not logged in'
                     }
                     return jsonify(responseObject)
-                
+
                 print("U = ", u)
 
                 responseObject = {
@@ -278,7 +278,8 @@ class user_auth(Resource):
                         'detailscomp':u.detailscomp,
                         'educomp':u.educomp,
                         'time_created':u.time_created,
-                        'lastseen':u.lastseen
+                        'lastseen':u.lastseen,
+                        'farer':u.farer,
                     }
                 }
                 return jsonify(responseObject)
@@ -520,7 +521,8 @@ class getvidfromfarer(Resource):
 
 @farer.route('/user/vid/<int:vid>')
 class user_contact_vid(Resource):
-    def get(self, vid):
+    @authorizestaff(request, "all", 1)
+    def get(u, self, vid):
         user = User.query.filter_by(vid=vid).first()
         if user is None:
             responseObject = {
@@ -544,7 +546,8 @@ class user_contact_vid(Resource):
 
 @farer.route('/user/farer/<farer>')
 class user_contact_farer(Resource):
-    def get(self, farer):
+    @authorizestaff(request, "all", 1)
+    def get(u, self, farer):
         user = User.query.filter_by(farer=farer).first()
         if user is None:
             responseObject = {
@@ -626,7 +629,7 @@ class StaffAPI(Resource):
                         'message':'Upgraded to Staff'
                     }
                     return jsonify(responseObject)
-    
+
 #need to work on this
 @farer.route('/registered/college')
 class reg_coll(Resource):
