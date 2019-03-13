@@ -515,7 +515,7 @@ class getvidfromfarer(Resource):
             return jsonify(responseObject)
         responseObject = {
             'status':'success',
-            'vid':user.vid
+            'vid':str(user.vid)
         }
         return jsonify(responseObject)
 
@@ -530,17 +530,14 @@ class user_contact_vid(Resource):
                 'message':'No such user'
             }
             return jsonify(responseObject)
-        resp = {
+        responseObject = {
             'fname':user.fname,
             'lname':user.lname,
             'email':user.email,
             'phno':user.phno,
-            'ppic':user.ppic
-        }
-        responseObject = {
+            'ppic':user.ppic,
             'status':'success',
             'message':'User found',
-            'user':jsonify(user)
         }
         return jsonify(responseObject)
 
