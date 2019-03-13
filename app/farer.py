@@ -503,19 +503,21 @@ class getvidfromfarer(Resource):
             if user is None:
                 responseObject = {
                     'status':'fail',
-                    'message':'Farer unlinked'
+                    'message':'Farer unlinked',
+                    'vid':None
                 }
         except Exception as e:
             print(e)
             responseObject = {
                 'status':'fail',
                 'message':'Error occured. (DB)',
-                'error':str(e)
+                'vid':None
             }
             return jsonify(responseObject)
         responseObject = {
             'status':'success',
-            'vid':user.vid
+            'vid':user.vid,
+            'message':'VID available'
         }
         return jsonify(responseObject)
 
