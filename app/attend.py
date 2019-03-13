@@ -60,18 +60,19 @@ class AtEntry(Resource):
         }
         return jsonify(responseObject)
 
-@attend.route('/check')
+@attend.route('/check/event')
 class AttendCheck(Resource):
     # Checkin with Farer
     @api.doc(params={
         'farer':'farer',
-        'cat':'Event category',
+        'cat':'Event category (1 or 2)',
         'eid':'Event ID'
     })
     @authorizestaff(request)
     def post(u, self):
-        data = request.get('data')
+        data = request.get_json()
         user = User.query.filter_by(farer=data.get('farer')).first()
+        reg = Registrations.query.filter_by(vid=user.vid, cat=data.get('cat'), eid=data.get('eid'))
         a = AttendLog(vid=user.vid,
                     cat=data.get('cat'),
                     eid=data.get('eid'),

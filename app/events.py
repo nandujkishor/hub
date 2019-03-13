@@ -58,7 +58,8 @@ class events_workshops(Resource):
                     'd1end':maketime(workshop.d1end),
                     'd2end':maketime(workshop.d2end),
                     'd3end':maketime(workshop.d3end),
-                    'rmseats':workshop.rmseats
+                    'rmseats':workshop.rmseats,
+                    'regclosed':workshop.regclosed
                 })
         except Exception as e:
             print(e)
@@ -193,7 +194,8 @@ class events_workshops_indv(Resource):
                     'd3end':maketime(workshop.d3end),
                     'prereq':workshop.prereq,
                     'rmseats':workshop.rmseats,
-                    'registered':reg
+                    'registered':reg,
+                    'regclosed':workshop.regclosed
                 }
             else:
                 responseObject ={
@@ -338,6 +340,7 @@ class events_contests(Resource):
                     'support':contest.support,
                     'rules':contest.rules,
                     'prereq':contest.prereq,
+                    'regclosed':contest.regclosed
                 })
             print(responseObject)
         except Exception as e:
@@ -473,7 +476,8 @@ class events_contests_indv(Resource):
                     'support':contest.support,
                     'rules':contest.rules,
                     'prereq':contest.prereq,
-                    'registered':reg
+                    'registered':reg,
+                    'regclosed':contest.regclosed
                 }
             else:
                 responseObject ={
