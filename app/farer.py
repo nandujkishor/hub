@@ -545,7 +545,7 @@ class user_contact_vid(Resource):
 
 @farer.route('/user/farer/<farer>')
 class user_contact_farer(Resource):
-    @authorizestaff(request, "all", 1)
+    @authorizestaff(request, "registration", 1)
     def get(u, self, farer):
         user = User.query.filter_by(farer=farer).first()
         if user is None:
