@@ -496,7 +496,7 @@ class userslistd(Resource):
 
 @farer.route('/getvid/<farer>')
 class getvidfromfarer(Resource):
-    @authorizestaff(request, "all", 1)
+    @authorizestaff(request, "registration", 1)
     def get(u, self, farer):
         try:
             user = User.query.filter_by(farer=farer).first()
@@ -523,8 +523,8 @@ class getvidfromfarer(Resource):
 
 @farer.route('/user/vid/<int:vid>')
 class user_contact_vid(Resource):
-    @authorizestaff(request, "all", 1)
-    def get(u, self, vid):
+    @authorizestaff(request, "registration", 1)
+    def get(u,self, vid):
         user = User.query.filter_by(vid=vid).first()
         if user is None:
             responseObject = {
