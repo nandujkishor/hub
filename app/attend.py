@@ -8,6 +8,7 @@ from app.models import User, AttendLog
 from config import Config
 # from app.addons import addon_purchase
 from app.farer import authorizestaff, authorize
+from app.mail import checkin_welcome_mail
 from flask_restplus import Resource, Api
 from sqlalchemy.sql import func
 
@@ -50,8 +51,7 @@ class AtEntry(Resource):
             }
             return jsonify(responseObject)
         try:
-            # Send email
-            p = 1
+            checkin_welcome_mail(user)
         except Exception as e:
             print(e)
         responseObject = {

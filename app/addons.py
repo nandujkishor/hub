@@ -380,6 +380,58 @@ class DeliverAddon(Resource):
         }
         return jsonify(responseObject)
 
+@add.route('/deliver/tshirt/')
+class DeliverAddon(Resource):
+    @authorizestaff(request, "sales", 3)
+    @api.doc(params={
+        'vid':'VID of the attendee',
+        'purid':'Purchase ID of the product'
+    })
+    def post(u, self):
+        data = request.get_json()
+        purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
+        if purchase is None:
+            print("No such purchase")
+            responseObject = {
+                'status':'fail',
+                'message':'No such purchase'
+            }
+        purchase.deliveredshirt = True
+        purchase.shirtdeliverby = u.vid
+        purchase.shirtdelivertime = datetime.datetime.now()
+        db.session.commit()
+        responseObject = {
+            'status':'success',
+            'message':'Delivery confirmed'
+        }
+        return jsonify(responseObject)
+
+@add.route('/deliver/ticket/')
+class DeliverAddon(Resource):
+    @authorizestaff(request, "sales", 3)
+    @api.doc(params={
+        'vid':'VID of the attendee',
+        'purid':'Purchase ID of the product'
+    })
+    def post(u, self, vid):
+        data = request.get_json()
+        purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
+        if purchase is None:
+            print("No such purchase")
+            responseObject = {
+                'status':'fail',
+                'message':'No such purchase'
+            }
+        purchase.deliveredshirt = True
+        purchase.ticketdeliverby = u.vid
+        purchase.ticketdelivertime = datetime.datetime.now()
+        db.session.commit()
+        responseObject = {
+            'status':'success',
+            'message':'Delivery confirmed'
+        }
+        return jsonify(responseObject)
+
 @add.route('/order/stats')
 class AddonStaffCount(Resource):
     @authorizestaff(request, "registration", 3)

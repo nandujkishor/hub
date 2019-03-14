@@ -5,7 +5,7 @@ from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.farer import authorizestaff, authorize
 from app.models import Workshops, Talks, Contests, Registrations, User, College
-from app.mail import test_mail, sendcho, sendfas
+from app.mail import test_mail, sendcho, sendfas, checkin_welcome_mail
 from config import Config
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -34,10 +34,11 @@ def sendchoreo():
 
 # @app.route('/')
 
-# @app.route('/send/fas')
-# def sendfash():
-#     sendfas()
-#     return "Okay"
+@app.route('/send/test')
+def sendfash():
+    user = User.query.filter_by(vid=1).first()
+    checkin_welcome_mail(user)
+    return "Okay"
 
 @api.route('/college/list/')
 class college_list(Resource):
