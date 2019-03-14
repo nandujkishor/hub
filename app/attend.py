@@ -4,7 +4,7 @@ import requests
 import json
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.models import User, AttendLog
+from app.models import User, AttendLog, Registrations, OtherPurchases
 from config import Config
 # from app.addons import addon_purchase
 from app.farer import authorizestaff, authorize
@@ -39,6 +39,15 @@ class AtEntry(Resource):
             }
             return jsonify(responseObject)
         try:
+            if user.college <= 5 and user.college > 1:
+                r = Registrations.query.filter_by(vid=user.vid).first()
+                o = OtherPurchases.query.filter_by(vid=user.vid).first()
+                if r is None and o is None:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Amrita student: Not registered for any event. If any problems, call web services'
+                    }
+                    return jsonify(responseObject)
             user.intime = datetime.datetime.now()
             user.farer = d.get('farer')
             db.session.commit()
