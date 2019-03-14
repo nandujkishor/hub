@@ -36,7 +36,7 @@ def sendchoreo():
 
 @app.route('/send/test')
 def sendfash():
-    user = User.query.filter_by(vid=1).first()
+    user = User.query.filter_by(vid=371).first()
     checkin_welcome_mail(user)
     return "Okay"
 
