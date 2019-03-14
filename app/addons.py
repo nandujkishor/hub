@@ -341,17 +341,39 @@ class DeliverAddon(Resource):
     })
     def post(u, self):
         data = request.get_json()
-        purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
-        if purchase is None:
-            print("No such purchase")
+        try:
+            purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
+            if purchase is None:
+                print("No such purchase")
+                responseObject = {
+                    'status':'fail',
+                    'message':'No such purchase'
+                }
+        except Exception as e:
+            print(e)
             responseObject = {
                 'status':'fail',
-                'message':'No such purchase'
+                'message':'Data inadequate or DB error. Error: '+str(e)
             }
-        purchase.delivered = True
-        purchase.deliverby = u.vid
-        purchase.delivertime = datetime.datetime.now()
-        db.session.commit()
+            return jsonify(responseObject)
+        if purchase.delivered is True:
+            responseObject = {
+                'status':'fail',
+                'message':'Product already delivered'
+            }
+            return jsonify(responseObject)
+        try:
+            purchase.delivered = True
+            purchase.deliverby = u.vid
+            purchase.delivertime = datetime.datetime.now()
+            db.session.commit()
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured. Do not deliver. Contact web team. Error: '+str(e)
+            }
+            return jsonify(responseObject)
         responseObject = {
             'status':'success',
             'message':'Delivery confirmed'
