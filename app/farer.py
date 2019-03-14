@@ -91,7 +91,7 @@ def authorizestaff(request, team="all", level=4):
                             return func(u, *args, **kwargs)
 
                         if team=="all":
-                            st = Staff.query.filter_by(vid=u.vid).order_by(level).first()
+                            st = Staff.query.filter_by(vid=u.vid).order_by('level').first()
                             if st is None:
                                 responseObject = {
                                     'status':'fail',
@@ -496,7 +496,7 @@ class userslistd(Resource):
 
 @farer.route('/getvid/<farer>')
 class getvidfromfarer(Resource):
-    @authorizestaff(request, "registration", 1)
+    @authorize(request)
     def get(u, self, farer):
         try:
             user = User.query.filter_by(farer=farer).first()
