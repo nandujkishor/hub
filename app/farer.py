@@ -506,6 +506,12 @@ class getvidfromfarer(Resource):
                     'message':'Farer unlinked',
                     'vid':None
                 }
+                responseObject = {
+                    'status':'success',
+                    'vid':user.vid,
+                    'message':'VID available'
+                }
+                return jsonify(responseObject)
         except Exception as e:
             print(e)
             responseObject = {
@@ -514,12 +520,6 @@ class getvidfromfarer(Resource):
                 'vid':None
             }
             return jsonify(responseObject)
-        responseObject = {
-            'status':'success',
-            'vid':user.vid,
-            'message':'VID available'
-        }
-        return jsonify(responseObject)
 
 @farer.route('/user/vid/<int:vid>')
 class user_contact_vid(Resource):

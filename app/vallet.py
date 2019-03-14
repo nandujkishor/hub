@@ -29,7 +29,7 @@ def valletbalance(vid):
     balance = topup - spent
     return balance
 
-@vallet.route('/transaction')
+@vallet.route('/transaction/recharge')
 class VTransaction(Resource):
     @authorize(request)
     def get(u, self):
@@ -40,8 +40,7 @@ class VTransaction(Resource):
     @api.doc(params={
         'vid':'Vidyut ID of the staff',
         'pos':'Point of sale ID',
-        'amt':'Transaction Amount (when pos < 100)',
-        'products':'Products array with product-id. eg: {1, 2, 3, 4}'
+        'amt':'Transaction Amount (when pos < 100)'
     })
     def post(u, self):
         data = request.get_json()
@@ -52,7 +51,6 @@ class VTransaction(Resource):
             }
             return jsonify(responseObject)
         try:
-            amt = data.get('amt')
             vid = data.get('vid')
             truser = User.query.filter_by(vid=vid).first()
             if truser is None:
@@ -80,30 +78,100 @@ class VTransaction(Resource):
             print(e)
         try:
             typ = 2
-            if pos < 100:
-                truser.balance = truser.balance + amt
-                typ = 1
-                vt = ValletTransaction(vid=data.get('vid'),
-                                    typ=typ,
-                                    pos=data.get('pos'),
-                                    notes=data.get('notes'),
-                                    amt=data.get('amt'),
-                                    by=u.vid
-                                    )
-                db.session.add(vt)
-                db.session.commit()
-            else:
-                truser.balance = truser.balance - amt
-                typ = 2
-                vt = ValletTransaction(vid=data.get('vid'),
-                                        typ=typ,
-                                        pos=data.get('pos'),
-                                        notes=data.get('notes'),
-                                        amt=data.get('amt'),
-                                        by=u.vid
-                                        )
-                db.session.add(vt)
-                db.session.commit()
+            amt = data.get('amt')
+            truser.balance = truser.balance + amt
+            typ = 1
+            vt = ValletTransaction(vid=data.get('vid'),
+                                typ=typ,
+                                pos=data.get('pos'),
+                                notes=data.get('notes'),
+                                amt=data.get('amt'),
+                                by=u.vid
+                                )
+            db.session.add(vt)
+            db.session.commit()
+        except Exception as e:
+            responseObject = {
+                'status':'fail',
+                'message':'No balance or database error. Error: '+str(e)
+            }
+        try:
+            # mail the user and send message on the transaction
+            payload = {
+                # 'ip':
+                'key':'vidyuth1908030559',
+                'num':truser.phno,
+                'message':'Vallet Transaction of Rs. '+str(amt)+' at '+str(pos.title)+'.'
+            }
+            r = requests.get('http://sms.amrita.ac.in/', data=payload)
+            # Uncomment only when needed
+        except Exception as e:
+            responseObject = {
+                'status':'success',
+                'message':'Transaction succesful with errors (message not sent). Please inform user the transaction is successful. Error: '+str(e)
+            }
+            return jsonify(responseObject)
+        responseObject = {
+            'status':'success',
+            'tid':vt.tid
+        }
+        return jsonify(responseObject)
+
+@vallet.route('/transaction')
+class TransactionManagement(Resource):
+    @authorizestaff(request, "pay", 3)
+    @api.doc(params={
+        'vid':'Vidyut ID of the staff',
+        'pos':'Point of sale ID (>=100)',
+        'products':'Products (ID) + count array. eg: {{1, 2}, {2, 1}, {3, 4}}'
+    })
+    def post(u, self):
+        data = request.get_json()
+        if data.get('vid') is None or data.get('pos') is None:
+            responseObject = {
+                'status':'fail',
+                'message':'Inadequate data'
+            }
+            return jsonify(responseObject)
+        try:
+            vid = data.get('vid')
+            truser = User.query.filter_by(vid=vid).first()
+            if truser is None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Invalid User'
+                }
+                return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error: '+str(e)
+            }
+            return jsonify(responseObject)
+        try:
+            pos = Pos.query.filter_by(posid=data.get('pos')).first()
+            if pos is None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Invalid point of sale'
+                }
+                return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+        try:
+            typ = 2
+            amt = data.get('amt')
+            products 
+            vt = ValletTransaction(vid=data.get('vid'),
+                                typ=typ,
+                                pos=data.get('pos'),
+                                notes=data.get('notes'),
+                                amt=data.get('amt'),
+                                by=u.vid
+                                )
+            db.session.add(vt)
+            db.session.commit()
         except Exception as e:
             responseObject = {
                 'status':'fail',
