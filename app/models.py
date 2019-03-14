@@ -301,7 +301,10 @@ class OtherPurchases(db.Model):
     typ = db.Column(db.Integer)
     message = db.Column(db.Text)
     mail = db.Column(db.Boolean, default = False)
-    trid = db.Column(db.Integer, db.ForeignKey('transactions.trid')) 
+    trid = db.Column(db.Integer, db.ForeignKey('transactions.trid'))
+    delivered = db.Column(db.Boolean, default=False)
+    deliverby = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    delivertime = db.Column(db.DateTime)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now)
 
 # class FarerLog(db.Model):
@@ -355,20 +358,3 @@ class ValletProduct(db.Model):
     pos = db.Column(db.Integer, db.ForeignKey('pos.posid'))
     amount = db.Column(db.Integer, nullable=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
-
-class ConsolidatedPurch(db.Model):
-    vid = db.Column(db.Integer, db.ForeignKey('user.vid'), primary_key=True) #Purchasee
-    proamr = db.Column(db.Integer)
-    proout = db.Column(db.Integer)
-    prohea = db.Column(db.Integer)
-    chnfas = db.Column(db.Integer)
-    scount = db.Column(db.Integer)
-    mcount = db.Column(db.Integer)
-    lcount = db.Column(db.Integer)
-    xlcount = db.Column(db.Integer)
-    xxlcount = db.Column(db.Integer)
-    qty = db.Column(db.Integer) # Total
-    deliverby = db.Column(db.Integer, db.ForeignKey('user.vid'))
-    message = db.Column(db.Text)
-    deliver = db.Column(db.Boolean, default=False)
-    collect = db.Column(db.DateTime, default=datetime.datetime.now)
