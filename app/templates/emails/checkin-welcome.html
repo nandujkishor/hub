@@ -1,4 +1,4 @@
-{% extends "dash/dash.html" %}
+{% extends "emails/email.html" %}
 
 {% block body %}
 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;font-family:Helvetica, arial, sans-serif;">
@@ -10,7 +10,7 @@
     <tr>
         <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
         Hello {{ user.fname }}!<br><br>
-        Welcome to Vidyut '19. We wish you a wonderful weekend of exploration. Your Vidyut ID is <b>V19{{ '%04d' % user.vid }}</b>. Please follow the instructions inside this mail to ensure proper code of conduct and a wonderful multifest experience.
+        Welcome to Vidyut '19. We wish you a wonderful weekend of exploration. Always show your Vidyut Idendity card with you for access to your events and other services. Please follow the instructions inside this mail to ensure proper code of conduct and a wonderful multifest experience.
         <ul>
             <li>All students are advised to obey the instructions given by the Security and Disciplinary volunteers.</li>
             <li>Only students with the entry pass shall be allowed inside the campus.</li>
@@ -22,11 +22,6 @@
             <li>Regarding any disputes, the participants have to approach any of the Security and Disciplinary Volunteers without trying to resolve the situation themselves.</li>
             <li>Smoking, alcohol consumption, or any kind of substance abuse is strictly prohibited inside both the campus and hostel premises. Participants found to be under the influence of any of these shall be terminated from Vidyut '19 and the issue will be reported to the respective institution.</li>
         </ul>
-        </td>
-    </tr>
-    <tr align="center">
-        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;font-size:50px;max-width: 600px;display: block;margin: 0 auto;" bgcolor="white">
-            <img src="{{qrcode(user.farer)}}">
         </td>
     </tr>
     <tr>
