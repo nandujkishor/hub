@@ -302,12 +302,9 @@ class OtherPurchases(db.Model):
     message = db.Column(db.Text)
     mail = db.Column(db.Boolean, default = False)
     trid = db.Column(db.Integer, db.ForeignKey('transactions.trid'))
-    deliveredshirt = db.Column(db.Boolean, default=False)
-    deliveredticket = db.Column(db.Boolean, default=False)
-    shirtdeliverby = db.Column(db.Integer, db.ForeignKey('user.vid'))
-    ticketdeliverby = db.Column(db.Integer, db.ForeignKey('user.vid'))
-    shirtdelivertime = db.Column(db.DateTime)
-    ticketdelivertime = db.Column(db.DateTime)
+    delivered = db.Column(db.Boolean, default=False)
+    deliverby = db.Column(db.Integer, db.ForeignKey('user.vid'))
+    delivertime = db.Column(db.DateTime)
     purtime = db.Column(db.DateTime, default=datetime.datetime.now)
 
 # class FarerLog(db.Model):
