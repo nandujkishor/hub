@@ -22,20 +22,30 @@ class AtEntry(Resource):
     })
     @authorizestaff(request, "registration", 1)
     def post(u, self):
-        d = request.get_json()
-        user = User.query.filter_by(vid=d.get('vid')).first()
-        if user.intime is not None:
-            print("Error: user already checked in")
+        try:
+            d = request.get_json()
+            user = User.query.filter_by(vid=d.get('vid')).first()
+            if user.intime is not None:
+                print("Error: user already checked in")
+                responseObject = {
+                    'status':'fail',
+                    'message':'Student already checked in',
+                    'vid':user.vid
+                }
+                return jsonify(responseObject)
+            anouser = User.query.filter_by(farer=d.get('farer')).first()
+            if anouser is not None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Farer already assigned. Check for duplicate.',
+                    'vid':user.vid
+                }
+                return jsonify(responseObject)
+        except Exception as e:
+            print(e)
             responseObject = {
                 'status':'fail',
-                'message':'Student already checked in'
-            }
-            return jsonify(responseObject)
-        anouser = User.query.filter_by(farer=d.get('farer')).first()
-        if anouser is not None:
-            responseObject = {
-                'status':'fail',
-                'message':'Farer already assigned. Check for duplicate.'
+                'message':'Data inadequate or DB error: '+str(e)
             }
             return jsonify(responseObject)
         try:
@@ -58,7 +68,8 @@ class AtEntry(Resource):
             print(e)
         responseObject = {
             'status':'success',
-            'message':'User successfully linked to Farer'
+            'message':'User successfully linked to Farer',
+            'vid':user.vid
         }
         return jsonify(responseObject)
 
@@ -160,4 +171,14 @@ class AttendCheck(Resource):
 
 @attend.route('/stats')
 class AttendStats(Resource):
-    print("Atten")
+    try:
+        val = db.session.execute("select count(*) from public.user where farer is not null").scalar()
+        responseObject = {
+            'status':'success',
+            'value':val
+        }
+    except Exception as e:
+        responseObject = {
+            'status':'fail',
+            'message':'DB Error: '+str(e)
+        }
