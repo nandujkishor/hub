@@ -67,7 +67,7 @@ class AttendCheck(Resource):
         'farer':'farer',
         'id':'Workshop ID'
     })
-    @authorizestaff(request, "workshop", 4)
+    @authorizestaff(request, "workshops", 4)
     def post(u, self):
         try:
             data = request.get_json()
@@ -115,7 +115,7 @@ class AttendCheck(Resource):
         'farer':'farer',
         'id':'Contest ID'
     })
-    @authorizestaff(request, "contest", 4)
+    @authorizestaff(request, "contests", 4)
     def post(u, self):
         try:
             data = request.get_json()
