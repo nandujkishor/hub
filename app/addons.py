@@ -312,6 +312,12 @@ class AddonStaff(Resource):
         # }
         # return jsonify(responseObject)
 
+# @add.route('/deliver')
+# class DeliverAddon(Resource):
+#     @authorizestaff(request, "sales", 3)
+#     @api.route('')
+#     def get(self):
+
 @add.route('/order/stats')
 class AddonStaffCount(Resource):
     @authorizestaff(request, "registration", 3)
