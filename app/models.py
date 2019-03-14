@@ -29,6 +29,8 @@ class User(db.Model):
     intime = db.Column(db.DateTime)
     outtime = db.Column(db.DateTime)
     farer = db.Column(db.String(50))
+    checkinby = db.Column(db.Integer)
+    checkoutby = db.Column(db.Integer)
     balance = db.Column(db.Integer, default=0)
     # Assert non-negative values
     referrer = db.Column(db.Integer, db.ForeignKey('user.vid'))

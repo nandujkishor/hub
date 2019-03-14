@@ -4,7 +4,7 @@ from functools import wraps
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.models import User, Staff, BlacklistToken
+from app.models import User, Staff, BlacklistToken, Registrations, OtherPurchases
 from app.mail import farer_welcome_mail
 from config import Config
 from werkzeug.utils import secure_filename
@@ -532,6 +532,11 @@ class user_contact_vid(Resource):
                 'message':'No such user'
             }
             return jsonify(responseObject)
+        r = Registrations.query.filter_by(vid=user.vid).first()
+        if r is None:
+            reg = False
+        else:
+            reg = True
         responseObject = {
             'fname':user.fname,
             'lname':user.lname,
@@ -539,6 +544,7 @@ class user_contact_vid(Resource):
             'phno':user.phno,
             'ppic':user.ppic,
             'status':'success',
+            'reg':reg,
             'message':'User found',
         }
         return jsonify(responseObject)
@@ -554,12 +560,18 @@ class user_contact_farer(Resource):
                 'message':'No such user'
             }
             return jsonify(responseObject)
+        r = Registrations.query.filter_by(vid=user.vid).first()
+        if r is None:
+            reg = False
+        else:
+            reg = True
         responseObject = {
             'fname':user.fname,
             'lname':user.lname,
             'email':user.email,
             'phno':user.phno,
-            'ppic':user.ppic
+            'ppic':user.ppic,
+            'reg':reg
         }
         # responseObject = {
         #     'status':'success',

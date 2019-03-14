@@ -39,17 +39,10 @@ class AtEntry(Resource):
             }
             return jsonify(responseObject)
         try:
-            if user.college <= 5 and user.college > 1:
-                r = Registrations.query.filter_by(vid=user.vid).first()
-                o = OtherPurchases.query.filter_by(vid=user.vid).first()
-                if r is None and o is None:
-                    responseObject = {
-                        'status':'fail',
-                        'message':'Amrita student: Not registered for any event. If any problems, call web services'
-                    }
-                    return jsonify(responseObject)
+            # To be or not to be?
             user.intime = datetime.datetime.now()
             user.farer = d.get('farer')
+            user.checkinby = u.vid
             db.session.commit()
         except Exception as e:
             print(e)
@@ -165,4 +158,6 @@ class AttendCheck(Resource):
             }
             return jsonify(responseObject)
 
-# @attend.route('/')
+@attend.route('/stats')
+class AttendStats(Resource):
+    print("Atten")
