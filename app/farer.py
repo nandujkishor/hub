@@ -496,7 +496,7 @@ class userslistd(Resource):
 
 @farer.route('/getvid/<farer>')
 class getvidfromfarer(Resource):
-    @authorizestaff(request, "all", 1)
+    @authorizestaff(request, "registration", 1)
     def get(u, self, farer):
         try:
             user = User.query.filter_by(farer=farer).first()
@@ -523,8 +523,8 @@ class getvidfromfarer(Resource):
 
 @farer.route('/user/vid/<int:vid>')
 class user_contact_vid(Resource):
-    @authorizestaff(request, "all", 1)
-    def get(u, self, vid):
+    @authorizestaff(request, "registration", 1)
+    def get(u,self, vid):
         user = User.query.filter_by(vid=vid).first()
         if user is None:
             responseObject = {
@@ -532,23 +532,20 @@ class user_contact_vid(Resource):
                 'message':'No such user'
             }
             return jsonify(responseObject)
-        resp = {
+        responseObject = {
             'fname':user.fname,
             'lname':user.lname,
             'email':user.email,
             'phno':user.phno,
-            'ppic':user.ppic
-        }
-        responseObject = {
+            'ppic':user.ppic,
             'status':'success',
             'message':'User found',
-            'user':jsonify(user)
         }
         return jsonify(responseObject)
 
 @farer.route('/user/farer/<farer>')
 class user_contact_farer(Resource):
-    @authorizestaff(request, "all", 1)
+    @authorizestaff(request, "registration", 1)
     def get(u, self, farer):
         user = User.query.filter_by(farer=farer).first()
         if user is None:
@@ -557,18 +554,18 @@ class user_contact_farer(Resource):
                 'message':'No such user'
             }
             return jsonify(responseObject)
-        resp = {
+        responseObject = {
             'fname':user.fname,
             'lname':user.lname,
             'email':user.email,
             'phno':user.phno,
             'ppic':user.ppic
         }
-        responseObject = {
-            'status':'success',
-            'message':'User found',
-            'user':jsonify(user)
-        }
+        # responseObject = {
+        #     'status':'success',
+        #     'message':'User found',
+        #     'user':jsonify(user)
+        # }
         return jsonify(responseObject)
 
 @farer.route('/user/count')
