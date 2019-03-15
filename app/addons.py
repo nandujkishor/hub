@@ -316,7 +316,7 @@ class AddonStaff(Resource):
 class DeliverAddon(Resource):
     @authorizestaff(request, "sales", 3)
     def get(u, self, vid):
-        j = OtherPurchases.query.filter_by(vid=vid).filter((shirtdelivered==False)|(ticketdelivered==False)).order_by('purtime').all()
+        j = OtherPurchases.query.filter_by(vid=vid).filter((OtherPurchases.shirtdelivered==False)|(OtherPurchases.ticketdelivered==False)).order_by('purtime').all()
         print(j)
         resp = []
         for i in j:
@@ -365,16 +365,17 @@ class DeliverAddon(Resource):
         'purid':'Purchase ID of the product'
     })
     # Need for shirt in the purchase not asserted
-    def post(u, self):
+    def post(u, self, vid):
         data = request.get_json()
         try:
-            purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
+            purchase = OtherPurchases.query.filter_by(vid=vid, purid=data.get('purid')).first()
             if purchase is None:
                 print("No such purchase")
                 responseObject = {
                     'status':'fail',
                     'message':'No such purchase'
                 }
+                return jsonify(responseObject)
         except Exception as e:
             print(e)
             responseObject = {
@@ -382,7 +383,7 @@ class DeliverAddon(Resource):
                 'message':'Data inadequate or DB error. Error: '+str(e)
             }
             return jsonify(responseObject)
-        if purchase.delivered is True:
+        if purchase.shirtdelivered is True:
             responseObject = {
                 'status':'fail',
                 'message':'Product already delivered'
@@ -429,16 +430,17 @@ class DeliverAddon(Resource):
         'vid':'VID of the attendee',
         'purid':'Purchase ID of the product'
     })
-    def post(u, self):
+    def post(u, self, vid):
         data = request.get_json()
         try:
-            purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
+            purchase = OtherPurchases.query.filter_by(vid=vid, purid=data.get('purid')).first()
             if purchase is None:
                 print("No such purchase")
                 responseObject = {
                     'status':'fail',
                     'message':'No such purchase'
                 }
+                return jsonify(responseObject)
         except Exception as e:
             print(e)
             responseObject = {
@@ -446,7 +448,7 @@ class DeliverAddon(Resource):
                 'message':'Data inadequate or DB error. Error: '+str(e)
             }
             return jsonify(responseObject)
-        if purchase.delivered is True:
+        if purchase.ticketdelivered is True:
             responseObject = {
                 'status':'fail',
                 'message':'Product already delivered'
