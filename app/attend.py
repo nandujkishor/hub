@@ -169,16 +169,16 @@ class AttendCheck(Resource):
             }
             return jsonify(responseObject)
 
-@attend.route('/stats')
-class AttendStats(Resource):
-    try:
-        val = db.session.execute("select count(*) from public.user where farer is not null").scalar()
-        responseObject = {
-            'status':'success',
-            'value':val
-        }
-    except Exception as e:
-        responseObject = {
-            'status':'fail',
-            'message':'DB Error: '+str(e)
-        }
+# @attend.route('/stats')
+# class AttendStats(Resource):
+#     try:
+#         val = db.session.execute("select count(*) from public.user where farer is not null").scalar()
+#         responseObject = {
+#             'status':'success',
+#             'value':val
+#         }
+#     except Exception as e:
+#         responseObject = {
+#             'status':'fail',
+#             'message':'DB Error: '+str(e)
+#         }

@@ -19,4 +19,4 @@ api = Api(app,
     doc=False
     )
 
-from app import routes, farer, events, models, reg, addons, payments, vallet, attend
+from app import routes, farer, events, models, reg, addons, payments, attend
