@@ -161,6 +161,7 @@ def groupassignPasskey():
 @app.route('/testing')
 def testingPasskey():
     groupassignPasskey()
+    return "Check consider"
 
 @farer.route('/auth/user')
 class user_auth(Resource):

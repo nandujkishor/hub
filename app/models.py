@@ -356,7 +356,6 @@ class ValletPurchaseDetails(db.Model):
     tid = db.Column(db.Integer, db.ForeignKey('vallet_transaction.tid'), primary_key=True)
     prodid = db.Column(db.Integer, db.ForeignKey('vallet_product.prodid'), primary_key=True)
 
-
 class ValletProduct(db.Model):
     prodid = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
