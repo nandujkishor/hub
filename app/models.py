@@ -363,6 +363,12 @@ class ValletProduct(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
+class FlagshipCheckin(db.Model):
+    qrcode = db.Column(db.String(20),primary_key=True)
+    checkin = db.Column(db.Boolean,default = False)
+    intime =  db.Column(db.DateTime)
+    checkinby = db.Column(db.Integer, db.ForeignKey('user.vid'))
+
 # class Passkeys(db.Model):
 #     key = db.Column(db.String(50), primary_key=True)
 #     assigned = db.Column(db.Boolean, default=False)

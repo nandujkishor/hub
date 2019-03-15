@@ -4,7 +4,7 @@ import requests
 import json
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.models import User, AttendLog, Registrations, OtherPurchases
+from app.models import User, AttendLog, Registrations, OtherPurchases, FlagshipCheckin
 from config import Config
 # from app.addons import addon_purchase
 from app.farer import authorizestaff, authorize
@@ -162,6 +162,47 @@ class AttendCheck(Resource):
                 'message':'User checked in'
             }
             return jsonify(responseObject)
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'DB error',
+                'error':str(e)
+            }
+            return jsonify(responseObject)
+
+@attend.route('/check/flagship')
+class AttendFlagship(Resource):
+    @api.doc(params={
+        'qrcode':'Scanned QR code'
+    })
+    @authorizestaff(request,"security",2)
+    def post(u,self):
+        try:
+            data=request.get_json()
+            f = FlagshipCheckin.query.filter_by(qrcode=data.get('qrcode')).first()
+            if f is None:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Invalid QR. Restrict Entry'
+                }
+                return jsonify(responseObject)
+            if f.checkin is True:
+                responseObject = {
+                    'status':'fail',
+                    'message':'Already Checked. Restrict Entry'
+                }
+                return jsonify(responseObject)
+            else:
+                f.checkin = True
+                f.checkinby = u.vid
+                f.intime =  datetime.datetime.now()
+                db.session.commit()
+                responseObject = {
+                    'status':'success',
+                    'message':'Check in Successfully'
+                }
+                return jsonify(responseObject)
         except Exception as e:
             print(e)
             responseObject = {
