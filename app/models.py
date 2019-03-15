@@ -29,7 +29,6 @@ class User(db.Model):
     intime = db.Column(db.DateTime)
     outtime = db.Column(db.DateTime)
     farer = db.Column(db.String(50))
-    passkey = db.Column(db.String(50), db.ForeignKey('passkeys.key'))
     checkinby = db.Column(db.Integer)
     checkoutby = db.Column(db.Integer)
     balance = db.Column(db.Integer, default=0)
@@ -364,6 +363,6 @@ class ValletProduct(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
-class Passkeys(db.Model):
-    key = db.Column(db.String(50), primary_key=True)
-    assigned = db.Column(db.Boolean, default=False)
+# class Passkeys(db.Model):
+#     key = db.Column(db.String(50), primary_key=True)
+#     assigned = db.Column(db.Boolean, default=False)
