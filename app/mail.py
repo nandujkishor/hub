@@ -97,6 +97,14 @@ def error_mail(user, point, ip='0', time=datetime.datetime.now):
             )
     return "mail sent - hopefully"
 
+def passkey_mail(user):
+    title = "Complimentary wifi service - Vidyut 19"
+    send_mail("Complimentary wifi service - Vidyut 19",
+            body="Vidyut 19, Amrita Vishwa Vidyapeetham",
+            htmlbody=render_template('emails/addon-purchase.html', user=user, title=title),
+            recipient=user.email
+            )
+
 def send_spam(content):
     print("Sending spam mail")
     send_mail("Pay test",

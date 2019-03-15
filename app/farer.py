@@ -5,7 +5,7 @@ import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
 from app.models import User, Staff, BlacklistToken, Registrations, OtherPurchases
-from app.mail import farer_welcome_mail
+from app.mail import farer_welcome_mail, passkey_mail
 from config import Config
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -149,19 +149,25 @@ def authorizestaff(request, team="all", level=4):
         return d_view
     return auth_with_request
 
-# def assignPasskey(user):
-#     k = Passkeys.query.filter_by(assigned=False).first()
-#     user.passkey = k.key
-#     db.session.commit()
+def assignPasskey(user):
+    k = Passkeys.query.filter_by(assigned=False).first()
+    if user.passkey is None:
+        user.passkey = k.key
+        db.session.commit()
+        passkey_mail(user)
+        print("Passkey "+user.passkey+" assigned for "+user.vid)
+    return "Done"
 
-# def groupassignPasskey():
-#     ulist = User.query.join(Registrations, Registrations.vid==User.vid).filter(farer!=None).filter(passkey==None).all()
-#     print(ulist)
+def groupassignPasskey():
+    ulist = User.query.join(Registrations, Registrations.vid==User.vid).filter(farer!=None).filter(passkey==None).all()
+    print(ulist)
+    for u in ulist:
+        assignPasskey(u)
 
-# @app.route('/testing')
-# def testingPasskey():
-#     groupassignPasskey()
-#     return "Check consider"
+@app.route('/testing')
+def testingPasskey():
+    groupassignPasskey()
+    return "Check terminal"
 
 @farer.route('/auth/user')
 class user_auth(Resource):

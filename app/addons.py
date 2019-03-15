@@ -316,7 +316,7 @@ class AddonStaff(Resource):
 class DeliverAddon(Resource):
     @authorizestaff(request, "sales", 3)
     def get(u, self, vid):
-        j = OtherPurchases.query.filter_by(vid=vid, delivered=False).order_by('purtime').all()
+        j = OtherPurchases.query.filter_by(vid=vid).filter((shirtdelivered==False)|(ticketdelivered==False)).order_by('purtime').all()
         print(j)
         resp = []
         for i in j:
@@ -330,6 +330,8 @@ class DeliverAddon(Resource):
                 'lcount':i.lcount,
                 'xlcount':i.xlcount,
                 'xxlcount':i.xxlcount,
+                'ticketdelivered':i.ticketdelivered,
+                'shirtdelivered':i.shirtdelivered,
                 'qty':i.qty,
             })
         return jsonify(resp)

@@ -28,16 +28,16 @@ def mailtest(u):
     test_mail(u)
     return "Sent"
 
-@app.route('/send/cho')
-def sendchoreo():
-    sendcho()
-    return "Okay"
+# @app.route('/send/cho')
+# def sendchoreo():
+#     sendcho()
+#     return "Okay"
 
 # @app.route('/')
 
 @app.route('/send/test')
 def sendfash():
-    transportation_message()
+    
     return "Okay"
 
 @api.route('/college/list/')
