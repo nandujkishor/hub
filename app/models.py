@@ -364,6 +364,6 @@ class ValletProduct(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
-class Passkeys(db.Model):
-    key = db.Column(db.String(50), primary_key=True)
-    assigned = db.Column(db.Boolean, default=False)
+# class Passkeys(db.Model):
+#     key = db.Column(db.String(50), primary_key=True)
+#     assigned = db.Column(db.Boolean, default=False)
