@@ -381,7 +381,8 @@ class DeliverAddon(Resource):
             }
             return jsonify(responseObject)
         try:
-            addon_deliver(user, purid, count)
+            user = User.query.filter_by(vid=vid).first()
+            addon_deliver(user, data.get('purid'), count=purchase.qty)
         except Exception as e:
             print(e)
         responseObject = {
