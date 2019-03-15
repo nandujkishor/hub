@@ -28,6 +28,7 @@ class User(db.Model):
     lastseen = db.Column(db.DateTime)
     intime = db.Column(db.DateTime)
     outtime = db.Column(db.DateTime)
+    passkey = db.Column(db.String(50))
     farer = db.Column(db.String(50))
     checkinby = db.Column(db.Integer)
     checkoutby = db.Column(db.Integer)
@@ -363,6 +364,6 @@ class ValletProduct(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     by = db.Column(db.Integer, db.ForeignKey('user.vid'))
 
-# class Passkeys(db.Model):
-#     key = db.Column(db.String(50), primary_key=True)
-#     assigned = db.Column(db.Boolean, default=False)
+class Passkeys(db.Model):
+    key = db.Column(db.String(50), primary_key=True)
+    assigned = db.Column(db.Boolean, default=False)
