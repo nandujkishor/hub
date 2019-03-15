@@ -339,6 +339,27 @@ class DeliverAddon(Resource):
 @add.route('/deliver/shirt/<int:vid>')
 class DeliverAddon(Resource):
     @authorizestaff(request, "sales", 3)
+    def get():
+        j = OtherPurchases.query.filter_by(vid=vid, shirtdelivered=False).filter(OtherPurchases.pid>4).order_by('purtime').all()
+        print(j)
+        resp = []
+        for i in j:
+            resp.append({
+                'purid':i.purid,
+                'vid':i.vid,
+                'roll':i.roll,
+                'pid':i.pid,
+                'scount':i.scount,
+                'mcount':i.mcount,
+                'lcount':i.lcount,
+                'xlcount':i.xlcount,
+                'xxlcount':i.xxlcount,
+                'shirtdelivered':i.shirtdelivered,
+                'qty':i.qty,
+            })
+        return jsonify(resp)
+
+    @authorizestaff(request, "sales", 3)
     @api.doc(params={
         'vid':'VID of the attendee',
         'purid':'Purchase ID of the product'
@@ -387,6 +408,22 @@ class DeliverAddon(Resource):
 
 @add.route('/deliver/ticket/<int:vid>')
 class DeliverAddon(Resource):
+    @authorizestaff(request, "sales", 3)
+    def get():
+        j = OtherPurchases.query.filter_by(vid=vid, ticketdelivered=False).filter(OtherPurchases.pid!=5).order_by('purtime').all()
+        print(j)
+        resp = []
+        for i in j:
+            resp.append({
+                'purid':i.purid,
+                'vid':i.vid,
+                'roll':i.roll,
+                'pid':i.pid,
+                'ticketdelivered':i.ticketdelivered,
+                'qty':i.qty,
+            })
+        return jsonify(resp)
+
     @authorizestaff(request, "sales", 3)
     @api.doc(params={
         'vid':'VID of the attendee',
