@@ -330,6 +330,8 @@ class DeliverAddon(Resource):
                 'lcount':i.lcount,
                 'xlcount':i.xlcount,
                 'xxlcount':i.xxlcount,
+                'ticketdelivered':i.ticketdelivered,
+                'shirtdelivered':i.shirtdelivered,
                 'qty':i.qty,
             })
         return jsonify(resp)
