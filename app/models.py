@@ -28,7 +28,7 @@ class User(db.Model):
     lastseen = db.Column(db.DateTime)
     intime = db.Column(db.DateTime)
     outtime = db.Column(db.DateTime)
-    passkey = db.Column(db.String(50))
+    # passkey = db.Column(db.String(50))
     farer = db.Column(db.String(50))
     checkinby = db.Column(db.Integer)
     checkoutby = db.Column(db.Integer)
