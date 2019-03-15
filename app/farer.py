@@ -4,7 +4,7 @@ from functools import wraps
 import datetime
 from flask import render_template, flash, redirect, request, url_for, jsonify
 from app import app, db, api
-from app.models import User, Staff, BlacklistToken, Registrations, OtherPurchases, Passkeys
+from app.models import User, Staff, BlacklistToken, Registrations, OtherPurchases
 from app.mail import farer_welcome_mail
 from config import Config
 from werkzeug.utils import secure_filename
@@ -149,19 +149,19 @@ def authorizestaff(request, team="all", level=4):
         return d_view
     return auth_with_request
 
-def assignPasskey(user):
-    k = Passkeys.query.filter_by(assigned=False).first()
-    user.passkey = k.key
-    db.session.commit()
+# def assignPasskey(user):
+#     k = Passkeys.query.filter_by(assigned=False).first()
+#     user.passkey = k.key
+#     db.session.commit()
 
-def groupassignPasskey():
-    ulist = User.query.join(Registrations, Registrations.vid==User.vid).filter(farer!=None).filter(passkey==None).all()
-    print(ulist)
+# def groupassignPasskey():
+#     ulist = User.query.join(Registrations, Registrations.vid==User.vid).filter(farer!=None).filter(passkey==None).all()
+#     print(ulist)
 
-@app.route('/testing')
-def testingPasskey():
-    groupassignPasskey()
-    return "Check consider"
+# @app.route('/testing')
+# def testingPasskey():
+#     groupassignPasskey()
+#     return "Check consider"
 
 @farer.route('/auth/user')
 class user_auth(Resource):
