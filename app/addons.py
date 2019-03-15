@@ -334,6 +334,57 @@ class DeliverAddon(Resource):
             })
         return jsonify(resp)
 
+@add.route('/deliver/shirt/<int:vid>')
+class DeliverAddon(Resource):
+    @authorizestaff(request, "sales", 3)
+    @api.doc(params={
+        'vid':'VID of the attendee',
+        'purid':'Purchase ID of the product'
+    })
+    # Need for shirt in the purchase not asserted
+    def post(u, self):
+        data = request.get_json()
+        try:
+            purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
+            if purchase is None:
+                print("No such purchase")
+                responseObject = {
+                    'status':'fail',
+                    'message':'No such purchase'
+                }
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Data inadequate or DB error. Error: '+str(e)
+            }
+            return jsonify(responseObject)
+        if purchase.delivered is True:
+            responseObject = {
+                'status':'fail',
+                'message':'Product already delivered'
+            }
+            return jsonify(responseObject)
+        try:
+            purchase.shirtdelivered = True
+            purchase.shirtdeliverby = u.vid
+            purchase.shirtdelivertime = datetime.datetime.now()
+            db.session.commit()
+        except Exception as e:
+            print(e)
+            responseObject = {
+                'status':'fail',
+                'message':'Error occured. Do not deliver. Contact web team. Error: '+str(e)
+            }
+            return jsonify(responseObject)
+        responseObject = {
+            'status':'success',
+            'message':'Delivery confirmed'
+        }
+        return jsonify(responseObject)
+
+@add.route('/deliver/ticket/<int:vid>')
+class DeliverAddon(Resource):
     @authorizestaff(request, "sales", 3)
     @api.doc(params={
         'vid':'VID of the attendee',
@@ -363,9 +414,9 @@ class DeliverAddon(Resource):
             }
             return jsonify(responseObject)
         try:
-            purchase.delivered = True
-            purchase.deliverby = u.vid
-            purchase.delivertime = datetime.datetime.now()
+            purchase.ticketdelivered = True
+            purchase.ticketdeliverby = u.vid
+            purchase.ticketdelivertime = datetime.datetime.now()
             db.session.commit()
         except Exception as e:
             print(e)
@@ -374,58 +425,6 @@ class DeliverAddon(Resource):
                 'message':'Error occured. Do not deliver. Contact web team. Error: '+str(e)
             }
             return jsonify(responseObject)
-        responseObject = {
-            'status':'success',
-            'message':'Delivery confirmed'
-        }
-        return jsonify(responseObject)
-
-@add.route('/deliver/tshirt/')
-class DeliverAddon(Resource):
-    @authorizestaff(request, "sales", 3)
-    @api.doc(params={
-        'vid':'VID of the attendee',
-        'purid':'Purchase ID of the product'
-    })
-    def post(u, self):
-        data = request.get_json()
-        purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
-        if purchase is None:
-            print("No such purchase")
-            responseObject = {
-                'status':'fail',
-                'message':'No such purchase'
-            }
-        purchase.deliveredshirt = True
-        purchase.shirtdeliverby = u.vid
-        purchase.shirtdelivertime = datetime.datetime.now()
-        db.session.commit()
-        responseObject = {
-            'status':'success',
-            'message':'Delivery confirmed'
-        }
-        return jsonify(responseObject)
-
-@add.route('/deliver/ticket/')
-class DeliverAddon(Resource):
-    @authorizestaff(request, "sales", 3)
-    @api.doc(params={
-        'vid':'VID of the attendee',
-        'purid':'Purchase ID of the product'
-    })
-    def post(u, self, vid):
-        data = request.get_json()
-        purchase = OtherPurchases.query.filter_by(vid=data.get('vid'), purid=data.get('purid')).first()
-        if purchase is None:
-            print("No such purchase")
-            responseObject = {
-                'status':'fail',
-                'message':'No such purchase'
-            }
-        purchase.deliveredshirt = True
-        purchase.ticketdeliverby = u.vid
-        purchase.ticketdelivertime = datetime.datetime.now()
-        db.session.commit()
         responseObject = {
             'status':'success',
             'message':'Delivery confirmed'

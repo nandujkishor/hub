@@ -1,0 +1,36 @@
+{% extends "emails/email.html" %}
+
+{% block body %}
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;font-family:Helvetica, arial, sans-serif;">
+    <tr align="center">
+        <td style="padding: 20px 10px 20px 20px;box-sizing:border-box;">
+            <img src="https://vidyut.amrita.edu/static/images/v-logo.png" width="150px">
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
+        Hello {{ user.fname }}!<br><br>
+        This email is a confirmation of delivery of your purchase.
+        </td>
+    </tr>
+    <tr>
+        <td style="background:#BFD2DE;padding: 15px 20px 5px 20px;box-sizing:border-box;font-size:20px;max-width: 600px;margin:0 auto;display: block;" bgcolor="white">
+            <span style="font-size:14px;margin:0;">Purchase ID: {{ purid }}</span>
+            <h3 style="font-weight: 400;margin:0;padding:5px 0 15px 0">{{ title }}</h3>
+            <span style="font-size:14px;margin:0;">Count: {{ count }}</span>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
+        Please check your inbox regularly for communications from Vidyut. Please do not reply to this mail. For any queries, please send an email to <a href="mailto:support@vidyut.amrita.edu">support@vidyut.amrita.edu</a> or contact an experience manager near you.
+        </td>
+    </tr>
+    <tr>
+    <tr align="center">
+        <td style="padding: 10px 10px 8px 5px;box-sizing:border-box;">
+            <img src="https://www.amrita.edu/sites/default/files/amrita-new-logo-color-10.png" width="180px">
+            <p>Clappana P.O<br>Amritapuri, Vallikavu<br>Kerala 690525</p>
+        </td>
+    </tr>
+</table>
+{% endblock %}

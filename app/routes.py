@@ -6,6 +6,7 @@ from app import app, db, api
 from app.farer import authorizestaff, authorize
 from app.models import Workshops, Talks, Contests, Registrations, User, College
 from app.mail import test_mail, sendcho, sendfas, checkin_welcome_mail
+from app.messaging import transportation_message
 from config import Config
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -36,8 +37,7 @@ def sendchoreo():
 
 @app.route('/send/test')
 def sendfash():
-    user = User.query.filter_by(vid=371).first()
-    checkin_welcome_mail(user)
+    transportation_message()
     return "Okay"
 
 @api.route('/college/list/')
