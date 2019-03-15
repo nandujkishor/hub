@@ -91,6 +91,7 @@ class AttendCheck(Resource):
                     'status':'fail',
                     'message':'User not registered for the workshop'
                 }
+                return jsonify(responseObject)
         except Exception as e:
             print(e)
             responseObject = {
@@ -139,6 +140,7 @@ class AttendCheck(Resource):
                     'status':'fail',
                     'message':'User not registered for the competition'
                 }
+                return jsonify(responseObject)
         except Exception as e:
             print(e)
             responseObject = {
