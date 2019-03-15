@@ -88,6 +88,15 @@ def addon_pur(user, title, purid, count):
             )
     return "mail sent - hopefully"
 
+def addon_deliver(user, purid, count):
+    print("Sending delivered purchase mail to " + user.fname)
+    send_mail("Addon: deliver successful - Vidyut'19",
+            body="Delivered. VID: " + str(user.vid),
+            htmlbody=render_template('emails/addon-delivery.html', user=user, purid=purid, count=count),
+            recipient=user.email
+            )
+    return "mail sent - hopefully"
+
 def error_mail(user, point, ip='0', time=datetime.datetime.now):
     print("Sending error mail")
     send_mail("Error occured: "+ title + " purchase successful - Vidyut'19", 
