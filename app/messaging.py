@@ -6,7 +6,8 @@ def send_message(message, number):
     payload = {
         'key':'vidyuth1908030559',
         'num':number,
-        'msg':message
+        'msg':message,
+        'ip':'10.0.0.139'
     }
     r = requests.get('http://sms.amrita.ac.in/', params=payload)
     print(r.url)
