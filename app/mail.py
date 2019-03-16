@@ -135,6 +135,15 @@ def sendcho():
             )
     print("Mal sent")
 
+def send_bulk(user):
+        title = "IMP: College ID mandatory at Vidyut 19"
+        send_mail("IMP: College ID mandatory at Vidyut 19",
+                body="Please make sure you carry your college ID card with you at all times.",
+                htmlbody=render_template('emails/bulk-id-instr.html', user=user, title=title),
+                recipient=user.email
+                )
+        print("Mail sent to "+str(user.vid)+" "+user.email)
+
 def sendfas():
     send_mail("Successful registration for Choreonight at Vidyut",
             body="Congratulations on your selection to Incandescence!",

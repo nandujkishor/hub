@@ -1,0 +1,29 @@
+{% extends "emails/email.html" %}
+
+{% block body %}
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;font-family:Helvetica, arial, sans-serif;">
+    <tr align="center">
+        <td style="padding: 20px 10px 20px 20px;box-sizing:border-box;">
+            <img src="https://vidyut.amrita.edu/static/images/v-logo.png" width="150px">
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
+        Hello {{ user.fname }}!<br><br>
+        It's day 2 of Vidyut and we hope you're having a great time! Please make sure you follow the instructions from our security teams so we can better serve wonderful experiences. College issued ID is <b>mandatory</b> for all attendees during the days of Vidyut. Please produce your college identification when requested by our security teams.
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 20px 10px 20px; box-sizing:border-box;max-width: 600px;display: block;margin: 0 auto;font-size:16px" bgcolor="white">
+        Please check your inbox regularly for communications from Vidyut. Please do not reply to this mail. For any queries, please send an email to <a href="mailto:support@vidyut.amrita.edu">support@vidyut.amrita.edu</a> or contact an experience manager near you.
+        </td>
+    </tr>
+    <tr>
+    <tr align="center">
+        <td style="padding: 10px 10px 8px 5px;box-sizing:border-box;">
+            <img src="https://www.amrita.edu/sites/default/files/amrita-new-logo-color-10.png" width="180px">
+            <p>Clappana P.O<br>Amritapuri, Vallikavu<br>Kerala 690525</p>
+        </td>
+    </tr>
+</table>
+{% endblock %}

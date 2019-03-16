@@ -22,3 +22,17 @@ def transportation_message():
         if u.phno is not None:
             print("Sending message to ", u.fname, u.phno)
             send_message(message, u.phno)
+
+def general_message():
+    # u = User.query.filter(college>5 | college==0).all()
+    u = User.query.filter_by(vid=1).all()
+    u.append(User.query.filter_by(vid=68).first())
+    u.append(User.query.filter_by(vid=12).first())
+    print(u)
+    print("Count: ", len(u))
+    message = "Vidyut Notification: Please make sure you carry your college issued ID cards with you. For notifications and schedule, install app http://bit.ly/vidyutapp"
+    print(len(message))
+    for i in u:
+        if u.phno is not None:
+            print("Sending message to ", u.fname, u.phno)
+            send_message(message, u.phno)
