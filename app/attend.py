@@ -190,7 +190,7 @@ class AttendFlagship(Resource):
             if f.checkin is True:
                 responseObject = {
                     'status':'fail',
-                    'message':'Already Checked. Restrict Entry'
+                    'message':'Already Checked in :'+str(f.intime)+'. Restrict Entry'
                 }
                 return jsonify(responseObject)
             else:
@@ -200,7 +200,7 @@ class AttendFlagship(Resource):
                 db.session.commit()
                 responseObject = {
                     'status':'success',
-                    'message':'Check in Successfully'
+                    'message':'Checked in Successfully'
                 }
                 return jsonify(responseObject)
         except Exception as e:
