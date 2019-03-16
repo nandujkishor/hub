@@ -49,6 +49,15 @@ class AtEntry(Resource):
             }
             return jsonify(responseObject)
         try:
+            if (len(d.get('farer')) != 8):
+                responseObject = {
+                    'status':'fail',
+                    'message':'Invalid farer (QR code). Inform tech support.'
+                }
+                return jsonify(responseObject)
+        except:
+            print(e)
+        try:
             # To be or not to be?
             user.intime = datetime.datetime.now()
             user.farer = d.get('farer')
