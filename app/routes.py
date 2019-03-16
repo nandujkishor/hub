@@ -37,10 +37,11 @@ def mailtest(u):
 
 @app.route('/send/test')
 def sendfash():
-    # ulist = User.query.filter(User.vid>852).filter(User.farer != None).order_by('vid').all()
-    # for u in ulist:
-    #     send_bulk(u)
-    general_message()
+    ulist = User.query.filter(college==0 | college > 5).filter(User.farer != None).order_by('vid').all()
+    print(len(ulist))
+    for u in ulist:
+        send_bulk(u)
+    # general_message()
     return "Okay"
 
 @api.route('/college/list/')
