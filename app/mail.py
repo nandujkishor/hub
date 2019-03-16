@@ -136,8 +136,8 @@ def sendcho():
     print("Mal sent")
 
 def send_bulk(user):
-        title = "IMP: College ID mandatory at Vidyut 19"
-        send_mail("IMP: College ID mandatory at Vidyut 19",
+        title = "IMP: Notification for Culturals entry"
+        send_mail("IMP: Notification for Culturals entry",
                 body="Please make sure you carry your college ID card with you at all times.",
                 htmlbody=render_template('emails/bulk-id-instr.html', user=user, title=title),
                 recipient=user.email
