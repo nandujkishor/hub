@@ -1,6 +1,7 @@
 import requests
 import urllib
 from app.models import User
+from app import db
 
 def send_message(message, number):
     # 'ip':'10.0.0.139',
@@ -40,6 +41,20 @@ def general_message():
         if i.phno is not None:
             print("Sending message to ", i.fname, i.phno)
             send_message(message, i.phno)
+
+def notpurchased():
+    k = db.session.execute("select distinct(phno) from other_purchases, public.user where other_purchases.vid = public.user.vid and shirtdelivered = False and phno is not null").fetchall()
+    # u = User.query.filter_by(vid=1).all()
+    # u.append(User.query.filter_by(vid=68).first())
+    # u.append(User.query.filter_by(vid=12).first())
+    print(k)
+    print("Count: ", len(k))
+    message = "Please collect your proshows ticket from the sales counters in front of the college lobby. Sales end at 04.30pm. Install app from http://bit.ly/vidyutapp"
+    print(len(message))
+    for i in k:
+        if i[0] is not None:
+            print("Sending message to ", i[0])
+            send_message(message, i)
 
 def general_message_amr():
     u = User.query.filter(User.college<6).filter(User.college>0).all()

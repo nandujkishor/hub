@@ -6,7 +6,7 @@ from app import app, db, api
 from app.farer import authorizestaff, authorize
 from app.models import Workshops, Talks, Contests, Registrations, User, College
 from app.mail import test_mail, sendcho, sendfas, checkin_welcome_mail, send_bulk
-from app.messaging import transportation_message, general_message, general_message_amr
+from app.messaging import transportation_message, general_message, general_message_amr, notpurchased
 from config import Config
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -45,14 +45,14 @@ def sendfash():
     general_message()
     return "Okay"
 
-@app.route('/send/test/amr')
+@app.route('/send/test/notyet')
 def sendmessageamr():
     # ulist = User.query.filter(User.vid > 2253).filter(User.college > 5).filter(User.farer != None).order_by('vid').all()
     # ulist.extend(User.query.filter(User.vid > 2253).filter(User.college > 5).filter(User.farer != None).order_by('vid').all())
     # print(len(ulist))
     # for u in ulist:
     #     send_bulk(u)
-    general_message_amr()
+    notpurchased()
     return "Okay"
 
 @api.route('/college/list/')
