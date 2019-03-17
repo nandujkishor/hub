@@ -189,6 +189,15 @@ class AttendFlagship(Resource):
     def post(u,self):
         try:
             data=request.get_json()
+            try:
+                if len(data.get('qrcode')) != 10:
+                    responseObject = {
+                        'status':'fail',
+                        'message':'Total fake. Kick that loser out! Length is '+str(len(data.get('qrcode')))
+                    }
+                    return jsonify(responseObject)
+            except Exception as e:
+                print(e)
             f = FlagshipCheckin.query.filter_by(qrcode=data.get('qrcode')).first()
             if f is None:
                 responseObject = {
