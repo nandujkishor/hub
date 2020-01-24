@@ -1,4 +1,4 @@
-Used for Vidyut - Amrita's largest multi-fest - 2019 edition.
+> Used for Vidyut - Amrita's largest multi-fest - 2019 edition.
 
 # hub
 Microservices point providing authentication and data, integrated as an API Gateway.
